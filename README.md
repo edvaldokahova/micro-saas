@@ -17,4 +17,4 @@ Migração `entrega_core_schema`: `offices`, `clients`, `document_types`, `reque
 O cliente final nunca toca nas tabelas: usa só `get_public_request(token)` e `set_public_item_sent(token, item, bool)`.
 
 ## Variáveis de ambiente
-Ver `.env.example`. A `SUPABASE_SECRET_KEY` e o `MUNDPAY_WEBHOOK_SECRET` vivem só na Vercel.
+Ver `.env.example`. A `SUPABASE_SECRET_KEY` e o `PADDLE_WEBHOOK_SECRET` vivem só na Vercel.
