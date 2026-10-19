@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* Tokens da marca Bilonai: preto profundo, ouro, marfim */
+@theme {
+  --color-ink: #0a0b0d;
+  --color-ink-2: #14161c;
+  --color-ink-3: #1d2028;
+  --color-line: #2a2e38;
+  --color-ivory: #f2eee6;
+  --color-muted: #9a958a;
+  --color-gold: #d9b24a;
+  --color-gold-2: #b8891b;
+  --color-ok: #4fb286;
+  --color-warn: #e0a43a;
+  --color-bad: #e06a5a;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-ivory);
+  -webkit-font-smoothing: antialiased;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #e8c766 0%, #d9b24a 45%, #b8891b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
