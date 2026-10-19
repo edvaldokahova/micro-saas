@@ -1,0 +1,34 @@
+import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { site } from "@/lib/site";
+
+// Layout comum das páginas de texto (termos, privacidade, reembolsos, suporte)
+export function LegalPage({ title, intro, children }: { title: string; intro?: string; children: React.ReactNode }) {
+  return (
+    <>
+      <SiteHeader />
+      <main className="mx-auto max-w-3xl px-5 py-14">
+        <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
+        {intro && <p className="mt-3 text-muted">{intro}</p>}
+        <div className="mt-10 space-y-8 text-[15px] leading-7 text-ivory/85 [&_h2]:mb-3 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-ivory [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_a]:text-gold [&_a:hover]:underline [&_ul]:space-y-1.5">
+          {children}
+        </div>
+        <p className="mt-14 border-t border-line/70 pt-5 text-xs text-muted">
+          Última atualização: {site.lastUpdated}
+        </p>
+      </main>
+      <SiteFooter />
+    </>
+  );
+}
+
+// Identificação do responsável: mostra os dados legais só quando já existirem
+export function Identity() {
+  const { registeredName, taxId, address } = site.legal;
+  return (
+    <p>
+      {registeredName || site.owner}
+      {taxId ? ` · NIF/NIPC ${taxId}` : ""}
+      {address ? ` · ${address}` : ""} · <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+    </p>
+  );
+}
