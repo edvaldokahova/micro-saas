@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CheckCircle2, Circle, MessageCircle, Send } from "lucide-react";
+import { Check, CheckCircle2, Circle, Mail, MessageCircle, Phone, Send } from "lucide-react";
+import { ChannelIcon, type Channel } from "@/components/channel-icon";
 
 // Demonstração animada (dados fictícios): o cliente assinala documentos no telemóvel,
 // o painel do escritório atualiza-se, sai um lembrete por WhatsApp e o pedido fica entregue.
@@ -14,6 +15,7 @@ export type DemoTexts = {
   live: string;
   office: string;
   clients: string[];
+  contacts: { phone: string; email: string }[]; // um por cliente, na mesma ordem
   docs: string[];
   statDelivered: string;
   statPending: string;
@@ -32,10 +34,17 @@ export type DemoTexts = {
   toast: string;
   confirmed: string;
   remind: string;
+  howSent: string;
+  via: Record<Channel, string>;
+  sentVia: string; // "Enviado via {canal}"
 };
 
-const STEPS = 10;
-const STEP_MS = 1500;
+// Linha do tempo (um passo a cada 1,3 s):
+// 1-3 toca no 1.º documento, escolhe WhatsApp · 4-6 o 2.º por e-mail · 7-8 o 3.º por WhatsApp
+// 9 lembrete por WhatsApp ao cliente atrasado · 10 o escritório confirma: entregue · 11-12 pausa
+const STEPS = 13;
+const STEP_MS = 1300;
+const VIAS: Channel[] = ["whatsapp", "email", "whatsapp"];
 
 type Kind = "delivered" | "pending" | "soon" | "late";
 const tone: Record<Kind, string> = {
@@ -52,7 +61,7 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setStep(6); // estado final, sem animação
+      setStep(11); // estado final, sem animação
       return;
     }
     let visible = true;
@@ -68,18 +77,17 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
   }, []);
 
   // Estado derivado do passo
-  const sentCount = Math.min(Math.max(step - 1, 0), 3); // passos 2, 3, 4 assinalam um documento cada
-  const confirmed = step >= 6 && step <= 8;
-  const reminded = step >= 5 && step <= 8;
-  const tapIndex = step >= 1 && step <= 3 ? step - 1 : -1;
+  const sentCount = step >= 8 ? 3 : step >= 6 ? 2 : step >= 3 ? 1 : 0;
+  const menuFor = step === 1 || step === 2 ? 0 : step === 4 || step === 5 ? 1 : step === 7 ? 2 : -1;
+  const pressed: Channel | null = step === 2 || step === 7 ? "whatsapp" : step === 5 ? "email" : null;
+  const reminded = step >= 9;
+  const confirmed = step >= 10;
 
-  const rows: { name: string; got: number; total: number; kind: Kind; detail?: string; awaiting?: number; remind?: boolean }[] = [
-    { name: t.clients[2], got: 2, total: 8, kind: "late", detail: t.lateBy3, remind: true },
-    confirmed
-      ? { name: t.clients[1], got: 8, total: 8, kind: "delivered" }
-      : { name: t.clients[1], got: 5, total: 8, kind: "soon", detail: t.dueIn2, awaiting: sentCount },
-    { name: t.clients[3], got: 6, total: 8, kind: "pending" },
-    { name: t.clients[0], got: 8, total: 8, kind: "delivered" },
+  const rows: { i: number; got: number; total: number; kind: Kind; detail?: string; awaiting?: number; remind?: boolean }[] = [
+    { i: 2, got: 2, total: 8, kind: "late", detail: t.lateBy3, remind: true },
+    confirmed ? { i: 1, got: 8, total: 8, kind: "delivered" } : { i: 1, got: 5, total: 8, kind: "soon", detail: t.dueIn2, awaiting: sentCount },
+    { i: 3, got: 6, total: 8, kind: "pending" },
+    { i: 0, got: 8, total: 8, kind: "delivered" },
   ];
   const delivered = rows.filter((r) => r.kind === "delivered").length;
   const stats = [
@@ -116,11 +124,12 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
         <ul className="divide-y divide-line">
           {rows.map((r) => {
             const pct = (r.got / r.total) * 100;
-            const highlight = r.name === t.clients[1] && (sentCount > 0 || confirmed);
+            const highlight = r.i === 1 && (sentCount > 0 || confirmed);
+            const contact = t.contacts[r.i];
             return (
-              <li key={r.name} className={`px-5 py-3.5 transition-colors duration-500 ${highlight ? "bg-gold/[0.06]" : ""}`}>
+              <li key={r.i} className={`px-5 py-3 transition-colors duration-500 ${highlight ? "bg-gold/[0.06]" : ""}`}>
                 <div className="flex items-center gap-2.5">
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{r.name}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.clients[r.i]}</span>
                   {r.remind && (
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-all duration-500 ${
@@ -135,6 +144,16 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
                     {chip(r.kind)}
                   </span>
                 </div>
+                {contact && (
+                  <p className="mt-0.5 flex min-w-0 items-center gap-x-2.5 text-[10.5px] text-muted">
+                    <span className="inline-flex shrink-0 items-center gap-1">
+                      <Phone className="h-2.5 w-2.5" aria-hidden /> {contact.phone}
+                    </span>
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <Mail className="h-2.5 w-2.5 shrink-0" aria-hidden /> <span className="truncate">{contact.email}</span>
+                    </span>
+                  </p>
+                )}
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-3">
                   <div className={`h-full rounded-full transition-all duration-700 ease-out ${bar[r.kind]}`} style={{ width: `${pct}%` }} />
                 </div>
@@ -142,8 +161,11 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
                   <span>{t.docsOf.replace("{a}", String(r.got)).replace("{b}", String(r.total))}</span>
                   {r.detail && <span className={r.kind === "late" ? "text-bad" : "text-warn"}>{r.detail}</span>}
                   {!!r.awaiting && (
-                    <span key={r.awaiting} className="animate-fade font-medium text-gold">
+                    <span key={r.awaiting} className="inline-flex animate-fade items-center gap-1 font-medium text-gold">
                       {t.awaiting[r.awaiting - 1]}
+                      {VIAS.slice(0, r.awaiting).map((v, k) => (
+                        <ChannelIcon key={k} via={v} className="h-3 w-3 animate-pop" />
+                      ))}
                     </span>
                   )}
                 </p>
@@ -165,7 +187,7 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
       <div className="relative mx-auto mt-5 w-[248px] sm:absolute sm:bottom-0 sm:left-4 sm:mt-0 lg:-left-8">
         <p className="mb-2 text-center text-[11px] font-medium text-muted sm:hidden">{t.clientView}</p>
         <div className="rounded-[2rem] border border-line bg-ink p-2 shadow-[0_30px_60px_-25px_rgba(0,0,0,.6)]">
-          <div className="overflow-hidden rounded-[1.6rem] border border-line bg-ink-2">
+          <div className="relative overflow-hidden rounded-[1.6rem] border border-line bg-ink-2">
             <div className="mx-auto mt-2 h-1.5 w-14 rounded-full bg-ink-3" />
             <div className="px-4 pb-4 pt-3">
               <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">{t.office}</p>
@@ -175,7 +197,7 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
                 {t.docs.map((doc, i) => {
                   const isReceived = confirmed;
                   const isSent = !confirmed && i < sentCount;
-                  const tapping = tapIndex === i;
+                  const tapping = menuFor === i && pressed === null;
                   return (
                     <li
                       key={doc}
@@ -190,7 +212,14 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
                       ) : (
                         <Circle className="h-4 w-4 shrink-0 text-muted" aria-hidden />
                       )}
-                      <span className="min-w-0 flex-1 truncate font-medium">{doc}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{doc}</span>
+                        {(isSent || isReceived) && (
+                          <span className="flex animate-fade items-center gap-1 text-[9.5px] text-muted">
+                            <ChannelIcon via={VIAS[i]} className="h-2.5 w-2.5" /> {t.sentVia.replace("{canal}", t.via[VIAS[i]])}
+                          </span>
+                        )}
+                      </span>
                       <span
                         className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                           isReceived ? "bg-ok/15 text-ok" : isSent ? "bg-gold/15 text-gold" : "bg-accent text-on-accent"
@@ -208,6 +237,31 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
                   );
                 })}
               </ul>
+            </div>
+
+            {/* Mini-menu "Por onde enviou?" (sobe do fundo do ecrã) */}
+            <div
+              className={`absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-line bg-ink-2 px-3.5 pb-4 pt-2.5 shadow-[0_-20px_40px_-20px_rgba(0,0,0,.5)] transition-transform duration-300 ease-out ${
+                menuFor >= 0 ? "translate-y-0" : "translate-y-full"
+              }`}
+              aria-hidden
+            >
+              <div className="mx-auto h-1 w-8 rounded-full bg-line" />
+              <p className="mt-2 text-[11.5px] font-semibold">{t.howSent}</p>
+              <p className="truncate text-[10px] text-muted">{menuFor >= 0 ? t.docs[menuFor] : ""}</p>
+              <div className="mt-2 grid grid-cols-3 gap-1.5">
+                {(["whatsapp", "email", "other"] as Channel[]).map((c) => (
+                  <span
+                    key={c}
+                    className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-2 text-[10px] font-medium transition-all duration-200 ${
+                      pressed === c ? "scale-95 border-gold bg-gold/15" : "border-line bg-ink"
+                    }`}
+                  >
+                    <ChannelIcon via={c} className="h-4 w-4" />
+                    {t.via[c]}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>

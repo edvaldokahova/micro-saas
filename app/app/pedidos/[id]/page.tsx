@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Circle, Send } from "lucide-react";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
+import { ChannelIcon, isChannel } from "@/components/channel-icon";
 import { formatDate, formatPeriod } from "@/lib/i18n";
 import { getSession } from "@/lib/office";
 import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
@@ -24,7 +25,7 @@ type Req = {
   total_items: number;
   received_items: number;
 };
-type Item = { id: string; label: string; status: "pending" | "sent" | "received"; client_marked_at: string | null };
+type Item = { id: string; label: string; status: "pending" | "sent" | "received"; client_marked_at: string | null; sent_via: string | null };
 
 export default async function Pedido({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,7 +39,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       .select("id, client_id, client_name, client_phone, period, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
       .eq("id", id)
       .maybeSingle(),
-    supabase.from("request_items").select("id, label, status, client_marked_at").eq("request_id", id).order("position").order("created_at"),
+    supabase.from("request_items").select("id, label, status, client_marked_at, sent_via").eq("request_id", id).order("position").order("created_at"),
     supabase.from("requests").select("note").eq("id", id).maybeSingle(),
   ]);
   if (!r) notFound();
@@ -130,7 +131,14 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
             ) : (
               <Circle className="h-5 w-5 shrink-0 text-muted" aria-hidden />
             )}
-            <span className="min-w-0 flex-1">{i.label}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block">{i.label}</span>
+              {i.status !== "pending" && isChannel(i.sent_via) && (
+                <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted">
+                  <ChannelIcon via={i.sent_via} /> {d.common.sentVia(d.common.via[i.sent_via])}
+                </span>
+              )}
+            </span>
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${chip[i.status]}`}>{t.status[i.status]}</span>
             <form action={setItemStatus}>
               <input type="hidden" name="item" value={i.id} />

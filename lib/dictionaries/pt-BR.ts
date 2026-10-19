@@ -33,6 +33,8 @@ const dict: Dictionary = {
       dueIn: (n: number) => (n === 1 ? "Falta 1 dia para o prazo" : `Faltam ${n} dias para o prazo`),
       lateBy: (n: number) => (n === 1 ? "Prazo vencido há 1 dia" : `Prazo vencido há ${n} dias`),
     },
+    via: { whatsapp: "WhatsApp", email: "E-mail", other: "Outro meio" },
+    sentVia: (channel: string) => `Enviado via ${channel}`,
     planNames: { starter: "Starter", office: "Escritório" },
   },
   nav: {
@@ -276,6 +278,7 @@ const dict: Dictionary = {
     overdue: (d: string) => `O prazo venceu em ${d}. Envie o que falta o quanto antes.`,
     progress: (a: number, b: number) => `${a} de ${b} resolvidos`,
     instruction: "Envie os documentos pelo canal de sempre e marque aqui o que já enviou.",
+    howSent: "Por onde você enviou?",
     markSent: "Já enviei",
     sent: "Enviado",
     received: "Recebido",

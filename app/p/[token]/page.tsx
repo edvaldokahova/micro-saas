@@ -22,7 +22,7 @@ type PublicRequest = {
   due_date: string | null;
   note: string | null;
   closed: boolean;
-  items: { id: string; label: string; status: "pending" | "sent" | "received" }[];
+  items: { id: string; label: string; status: "pending" | "sent" | "received"; via: "whatsapp" | "email" | "other" | null }[];
 };
 
 export default async function PaginaCliente({ params }: { params: Promise<{ token: string }> }) {
@@ -59,6 +59,10 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
     allDone: t.allDone,
     error: t.error,
     progress: t.progress(-1, -2).replace("-1", "{a}").replace("-2", "{b}"),
+    howSent: t.howSent,
+    cancel: d.common.cancel,
+    via: d.common.via,
+    sentVia: d.common.sentVia("{canal}"),
   };
 
   return (

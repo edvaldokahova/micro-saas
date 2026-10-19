@@ -5,7 +5,7 @@ import { Flag } from "@/components/flags";
 import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
 import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { formatPrice, getDictionary } from "@/lib/i18n";
+import { formatPrice, getDictionary, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site, type PlanKey } from "@/lib/site";
 
@@ -17,6 +17,28 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: "/" },
   };
 }
+
+// Contactos fictícios para a demonstração (formato local de cada país)
+const demoContacts: Record<Locale, { phone: string; email: string }[]> = {
+  "pt-PT": [
+    { phone: "+351 912 340 118", email: "geral@padarialobo.pt" },
+    { phone: "+351 913 552 907", email: "geral@clinicasol.pt" },
+    { phone: "+351 926 118 430", email: "marta.ribeiro@mail.pt" },
+    { phone: "+351 934 210 665", email: "oficina@avenida.pt" },
+  ],
+  "es-ES": [
+    { phone: "+34 612 340 118", email: "hola@panaderialobo.es" },
+    { phone: "+34 613 552 907", email: "info@clinicasol.es" },
+    { phone: "+34 626 118 430", email: "marta.ribera@correo.es" },
+    { phone: "+34 634 210 665", email: "taller@avenida.es" },
+  ],
+  "pt-BR": [
+    { phone: "+55 11 91234-0118", email: "contato@padarialobo.com.br" },
+    { phone: "+55 21 98355-2907", email: "contato@clinicasol.com.br" },
+    { phone: "+55 31 99611-8430", email: "marta.ribeiro@email.com.br" },
+    { phone: "+55 41 99421-0665", email: "oficina@avenida.com.br" },
+  ],
+};
 
 const stepIcons = [ListChecks, Link2, MessageCircle];
 
@@ -35,6 +57,7 @@ export default async function Home() {
     live: h.demo.live,
     office: h.demo.office,
     clients: h.mock.clients,
+    contacts: demoContacts[locale],
     docs: h.demo.docs,
     statDelivered: d.app.dashboard.statComplete,
     statPending: d.app.dashboard.statMissing,
@@ -53,6 +76,9 @@ export default async function Home() {
     toast: h.demo.toast,
     confirmed: h.demo.confirmed,
     remind: h.mock.remind,
+    howSent: d.public.howSent,
+    via: d.common.via,
+    sentVia: d.common.sentVia("{canal}"),
   };
 
   return (

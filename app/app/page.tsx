@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Plus, Sparkles, UserPlus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail, Phone, Plus, Sparkles, UserPlus } from "lucide-react";
+import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
 import { formatDate, formatPeriod } from "@/lib/i18n";
@@ -16,6 +17,7 @@ type Row = {
   client_id: string;
   client_name: string;
   client_phone: string | null;
+  client_email: string | null;
   period: string;
   due_date: string | null;
   token: string;
@@ -36,7 +38,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const [{ data: reqData }, { data: clientData }] = await Promise.all([
     supabase
       .from("requests_overview")
-      .select("id, client_id, client_name, client_phone, period, due_date, token, reminder_count, total_items, received_items, sent_items")
+      .select("id, client_id, client_name, client_phone, client_email, period, due_date, token, reminder_count, total_items, received_items, sent_items")
       .eq("period", period),
     supabase.from("clients").select("id").is("archived_at", null),
   ]);
@@ -46,16 +48,19 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const withoutRequest = (clientData ?? []).filter((c: { id: string }) => !withRequest.has(c.id)).length;
 
   // Documentos ainda não recebidos de cada pedido (para a mensagem de WhatsApp)
+  // e por onde o cliente enviou os que já assinalou
   const pendingByRequest = new Map<string, string[]>();
+  const viasByRequest = new Map<string, Channel[]>();
   if (rows.length) {
     const { data: items } = await supabase
       .from("request_items")
-      .select("request_id, label, status, position")
+      .select("request_id, label, status, sent_via, position")
       .in("request_id", rows.map((r) => r.id))
-      .eq("status", "pending")
+      .in("status", ["pending", "sent"])
       .order("position");
-    for (const i of (items ?? []) as { request_id: string; label: string }[]) {
-      pendingByRequest.set(i.request_id, [...(pendingByRequest.get(i.request_id) ?? []), i.label]);
+    for (const i of (items ?? []) as { request_id: string; label: string; status: string; sent_via: string | null }[]) {
+      if (i.status === "pending") pendingByRequest.set(i.request_id, [...(pendingByRequest.get(i.request_id) ?? []), i.label]);
+      else if (isChannel(i.sent_via)) viasByRequest.set(i.request_id, [...(viasByRequest.get(i.request_id) ?? []), i.sent_via]);
     }
   }
 
@@ -167,6 +172,20 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                           </Link>
                           <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${deadlineTone[st.kind]}`}>{dl.chip}</span>
                         </div>
+                        {(r.client_phone || r.client_email) && (
+                          <p className="mt-1 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
+                            {r.client_phone && (
+                              <a href={`tel:${r.client_phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-ivory">
+                                <Phone className="h-3 w-3" aria-hidden /> {r.client_phone}
+                              </a>
+                            )}
+                            {r.client_email && (
+                              <a href={`mailto:${r.client_email}`} className="inline-flex min-w-0 items-center gap-1.5 hover:text-ivory">
+                                <Mail className="h-3 w-3 shrink-0" aria-hidden /> <span className="truncate">{r.client_email}</span>
+                              </a>
+                            )}
+                          </p>
+                        )}
                         <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ink-3">
                           <div
                             className={`bar-grow h-full rounded-full ${done ? "bg-ok" : st.kind === "late" ? "bg-bad" : "bg-gold"}`}
@@ -176,7 +195,14 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                         <p className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-muted">
                           <span>{t.docsOf(r.received_items, r.total_items)}</span>
                           {dl.detail && <span className={st.kind === "late" ? "text-bad" : "text-warn"}>{dl.detail}</span>}
-                          {r.sent_items > 0 && <span className="text-gold">{t.awaiting(r.sent_items)}</span>}
+                          {r.sent_items > 0 && (
+                            <span className="inline-flex items-center gap-1.5 text-gold">
+                              {t.awaiting(r.sent_items)}
+                              {(viasByRequest.get(r.id) ?? []).map((v, k) => (
+                                <ChannelIcon key={k} via={v} className="h-3 w-3" />
+                              ))}
+                            </span>
+                          )}
                           {r.due_date && !dl.detail && !done && <span>{t.dueOn(formatDate(r.due_date, locale, false))}</span>}
                           {r.reminder_count > 0 && <span>{t.reminders(r.reminder_count)}</span>}
                         </p>
