@@ -67,6 +67,15 @@ const dict: Dictionary = {
       incomplete: "Pendente",
       remind: "Cobrar",
     },
+    demo: {
+      office: "Contabilidade Silva",
+      officeView: "Seu painel",
+      clientView: "O que o cliente vê",
+      live: "Ao vivo",
+      docs: ["Extratos bancários", "Notas fiscais de entrada", "Recibos e comprovantes"],
+      toast: "Cobrança enviada pelo WhatsApp",
+      confirmed: "Documentos confirmados",
+    },
     mockNote: "Exemplo ilustrativo com dados fictícios.",
     stats: [
       { value: "1 link", label: "por cliente e por mês" },

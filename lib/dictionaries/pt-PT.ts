@@ -65,6 +65,15 @@ const dict = {
       incomplete: "Em falta",
       remind: "Lembrar",
     },
+    demo: {
+      office: "Contabilidade Silva",
+      officeView: "O seu painel",
+      clientView: "O que o cliente vê",
+      live: "Ao vivo",
+      docs: ["Extratos bancários", "Faturas de despesas", "Recibos e talões"],
+      toast: "Lembrete enviado por WhatsApp",
+      confirmed: "Documentos confirmados",
+    },
     mockNote: "Exemplo ilustrativo com dados fictícios.",
     stats: [
       { value: "1 link", label: "por cliente e por mês" },

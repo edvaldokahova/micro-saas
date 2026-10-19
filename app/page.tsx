@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, CheckCircle2, Circle, Link2, ListChecks, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, Link2, ListChecks, MessageCircle, ShieldCheck } from "lucide-react";
 import { Flag } from "@/components/flags";
+import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
 import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { formatPrice, getDictionary } from "@/lib/i18n";
@@ -18,18 +19,41 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const stepIcons = [ListChecks, Link2, MessageCircle];
-const mockRows = [
-  { done: 8, total: 8 },
-  { done: 5, total: 8 },
-  { done: 2, total: 8 },
-  { done: 8, total: 8 },
-];
 
 export default async function Home() {
   const locale = await getLocale();
   const d = getDictionary(locale);
   const h = d.home;
   const plans = Object.keys(site.plans) as PlanKey[];
+
+  // Textos da demonstração (só texto simples segue para o navegador)
+  const dl = d.common.deadline;
+  const demo: DemoTexts = {
+    month: h.mock.month,
+    officeView: h.demo.officeView,
+    clientView: h.demo.clientView,
+    live: h.demo.live,
+    office: h.demo.office,
+    clients: h.mock.clients,
+    docs: h.demo.docs,
+    statDelivered: d.app.dashboard.statComplete,
+    statPending: d.app.dashboard.statMissing,
+    statLate: d.app.dashboard.statLate,
+    chipDelivered: dl.delivered,
+    chipPending: dl.pending,
+    chipLate: dl.late,
+    dueIn2: dl.dueIn(2),
+    lateBy3: dl.lateBy(3),
+    docsOf: d.app.dashboard.docsOf(-1, -2).replace("-1", "{a}").replace("-2", "{b}"),
+    awaiting: [1, 2, 3].map((n) => d.app.dashboard.awaiting(n)),
+    hello: d.public.hello(h.mock.clients[1]),
+    markSent: d.public.markSent,
+    sent: d.public.sent,
+    received: d.public.received,
+    toast: h.demo.toast,
+    confirmed: h.demo.confirmed,
+    remind: h.mock.remind,
+  };
 
   return (
     <>
@@ -66,53 +90,10 @@ export default async function Home() {
               </dl>
             </div>
 
-            {/* Pré-visualização do painel (dados fictícios) */}
-            <div className="relative animate-rise [animation-delay:200ms]">
-              <div className="card overflow-hidden">
-                <div className="flex items-center justify-between border-b border-line px-5 py-3.5 text-sm">
-                  <span className="font-medium">{h.mock.month}</span>
-                  <span className="text-muted">{h.mock.summary}</span>
-                </div>
-                <ul className="divide-y divide-line">
-                  {mockRows.map((r, i) => {
-                    const complete = r.done === r.total;
-                    return (
-                      <li key={i} className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 px-5 py-4">
-                        <span className="truncate font-medium">{h.mock.clients[i]}</span>
-                        {complete ? (
-                          <span className="rounded-full bg-ok/15 px-2.5 py-1 text-xs font-medium text-ok">{h.mock.complete}</span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#1f9d55]/15 px-2.5 py-1 text-xs font-medium text-[#1f9d55]">
-                            <MessageCircle className="h-3.5 w-3.5" aria-hidden /> {h.mock.remind}
-                          </span>
-                        )}
-                        <div className="col-span-2">
-                          <div className="h-1.5 overflow-hidden rounded-full bg-ink-3">
-                            <div
-                              className={`bar-grow h-full rounded-full ${complete ? "bg-ok" : "bg-gold"}`}
-                              style={{ width: `${(r.done / r.total) * 100}%`, animationDelay: `${450 + i * 120}ms` }}
-                            />
-                          </div>
-                          <span className="mt-1.5 block text-xs text-muted">{h.mock.docsOf(r.done, r.total)}</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-              {/* Vista do cliente, a flutuar sobre o painel */}
-              <div className="card absolute -bottom-8 -left-3 hidden w-60 animate-rise p-4 text-sm [animation-delay:700ms] sm:block lg:-left-10">
-                <p className="text-xs text-muted">{h.mock.clients[1]}</p>
-                <ul className="mt-3 space-y-2.5">
-                  {[true, true, false].map((ok, i) => (
-                    <li key={i} className="flex items-center gap-2.5">
-                      {ok ? <CheckCircle2 className="h-4 w-4 text-ok" aria-hidden /> : <Circle className="h-4 w-4 text-muted" aria-hidden />}
-                      <span className={`h-2 rounded-full ${ok ? "w-28 bg-ink-3" : "w-20 bg-ink-3"}`} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <p className="mt-3 text-right text-xs text-muted">{h.mockNote}</p>
+            {/* Demonstração animada (dados fictícios) */}
+            <div className="animate-rise [animation-delay:200ms]">
+              <HeroDemo t={demo} />
+              <p className="mt-4 text-center text-xs text-muted sm:text-right">{h.mockNote}</p>
             </div>
           </div>
         </section>

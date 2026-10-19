@@ -68,6 +68,15 @@ const dict: Dictionary = {
       incomplete: "Pendiente",
       remind: "Recordar",
     },
+    demo: {
+      office: "Asesoría Silva",
+      officeView: "Tu panel",
+      clientView: "Lo que ve tu cliente",
+      live: "En directo",
+      docs: ["Extractos bancarios", "Facturas de gastos", "Tickets y recibos"],
+      toast: "Recordatorio enviado por WhatsApp",
+      confirmed: "Documentos confirmados",
+    },
     mockNote: "Ejemplo ilustrativo con datos ficticios.",
     stats: [
       { value: "1 enlace", label: "por cliente y por mes" },
