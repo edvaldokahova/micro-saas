@@ -16,7 +16,7 @@ export const site = {
   legal: {
     registeredName: "Edvaldo Eugénio Cahova Eduardo (pessoa singular, sob a marca A Bilonai Group)" as string,
     taxId: "023173713LA056" as string, // NIF (Angola)
-    address: "" as string, // por preencher: morada ou localidade a mostrar publicamente
+    address: "Rua Simeone Mukune, bairro São José Canjaia, Huambo, Angola" as string,
   },
   lastUpdated: "19 de outubro de 2026",
 };
