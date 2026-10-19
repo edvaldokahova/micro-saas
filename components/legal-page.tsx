@@ -27,7 +27,7 @@ export function Identity() {
   return (
     <p>
       {registeredName || site.owner}
-      {taxId ? ` · NIF/NIPC ${taxId}` : ""}
+      {taxId ? ` · NIF ${taxId}` : ""}
       {address ? ` · ${address}` : ""} · <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
     </p>
   );

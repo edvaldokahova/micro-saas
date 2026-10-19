@@ -54,7 +54,7 @@ export default function Termos() {
           <li>
             <strong>Paddle.com Market Limited é o Merchant of Record de todas as nossas encomendas.</strong> A Paddle
             trata do pagamento, da faturação, dos impostos e dos reembolsos. Ao comprar, aceita também os termos do
-            comprador da Paddle. O contrato de utilização do serviço é celebrado entre si e a {site.owner}.
+            comprador da Paddle. O contrato de utilização do serviço é celebrado entre si e {site.seller}, a operar sob a marca {site.owner}.
           </li>
           <li>Não recebemos nem guardamos os seus dados de cartão.</li>
           <li>Podemos alterar os preços com pelo menos 30 dias de aviso; a alteração aplica-se à renovação seguinte.</li>

@@ -10,11 +10,13 @@ export const site = {
     starter: { key: "starter", name: "Starter", priceEur: 9, clientLimit: 20 },
     office: { key: "office", name: "Escritório", priceEur: 15, clientLimit: 60 },
   },
-  // Preencher quando "A Bilonai Group" estiver registada. Só aparece nas páginas legais se tiver valor.
+  // Vendedor: pessoa singular a operar sob a marca "A Bilonai Group".
+  // Quando a empresa for registada, trocar aqui (nome, NIF e morada) e as páginas legais atualizam-se sozinhas.
+  seller: "Edvaldo Eugénio Cahova Eduardo",
   legal: {
-    registeredName: "" as string, // ex.: "A Bilonai Group, Lda."
-    taxId: "" as string, // NIF / NIPC
-    address: "" as string,
+    registeredName: "Edvaldo Eugénio Cahova Eduardo (pessoa singular, sob a marca A Bilonai Group)" as string,
+    taxId: "023173713LA056" as string, // NIF (Angola)
+    address: "" as string, // por preencher: morada ou localidade a mostrar publicamente
   },
   lastUpdated: "19 de outubro de 2026",
 };
