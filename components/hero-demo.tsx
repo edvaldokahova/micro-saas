@@ -98,9 +98,9 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
   const chip = (k: Kind) => (k === "delivered" ? t.chipDelivered : k === "late" ? t.chipLate : t.chipPending);
 
   return (
-    <div ref={ref} className="relative sm:pb-44">
+    <div ref={ref} className="relative">
       {/* Painel do escritório */}
-      <div className="card relative overflow-hidden pb-16 sm:pb-24">
+      <div className="card relative overflow-hidden pb-14">
         <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm">
           <span className="font-medium">{t.month}</span>
           <span className="inline-flex items-center gap-2 text-xs text-muted">
@@ -183,89 +183,89 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
         </div>
       </div>
 
-      {/* Telemóvel do cliente */}
-      <div className="relative mx-auto mt-5 w-[248px] sm:absolute sm:bottom-0 sm:left-4 sm:mt-0 lg:-left-8">
-        <p className="mb-2 text-center text-[11px] font-medium text-muted sm:hidden">{t.clientView}</p>
-        <div className="rounded-[2rem] border border-line bg-ink p-2 shadow-[0_30px_60px_-25px_rgba(0,0,0,.6)]">
-          <div className="relative overflow-hidden rounded-[1.6rem] border border-line bg-ink-2">
-            <div className="mx-auto mt-2 h-1.5 w-14 rounded-full bg-ink-3" />
-            <div className="px-4 pb-4 pt-3">
-              <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">{t.office}</p>
-              <p className="mt-2 font-display text-[15px] font-semibold leading-tight">{t.hello}</p>
-              <p className="mt-1 text-[11px] text-warn">{confirmed ? t.chipDelivered : t.dueIn2}</p>
-              <ul className="mt-3 space-y-2">
-                {t.docs.map((doc, i) => {
-                  const isReceived = confirmed;
-                  const isSent = !confirmed && i < sentCount;
-                  const tapping = menuFor === i && pressed === null;
-                  return (
-                    <li
-                      key={doc}
-                      className={`relative flex items-center gap-2 rounded-xl border px-2.5 py-2 text-[11.5px] transition-all duration-300 ${
-                        isReceived ? "border-ok/40" : isSent ? "border-gold/50 bg-gold/[0.06]" : tapping ? "scale-[0.98] border-gold/40" : "border-line"
-                      }`}
-                    >
-                      {isReceived ? (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 animate-pop text-ok" aria-hidden />
-                      ) : isSent ? (
-                        <Send className="h-4 w-4 shrink-0 animate-pop text-gold" aria-hidden />
-                      ) : (
-                        <Circle className="h-4 w-4 shrink-0 text-muted" aria-hidden />
-                      )}
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{doc}</span>
-                        {(isSent || isReceived) && (
-                          <span className="flex animate-fade items-center gap-1 text-[9.5px] text-muted">
-                            <ChannelIcon via={VIAS[i]} className="h-2.5 w-2.5" /> {t.sentVia.replace("{canal}", t.via[VIAS[i]])}
-                          </span>
-                        )}
-                      </span>
-                      <span
-                        className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          isReceived ? "bg-ok/15 text-ok" : isSent ? "bg-gold/15 text-gold" : "bg-accent text-on-accent"
-                        }`}
-                      >
-                        {isReceived ? t.received : isSent ? t.sent : t.markSent}
-                      </span>
-                      {tapping && (
-                        <span className="absolute right-6 top-1/2 h-6 w-6 -translate-y-1/2" aria-hidden>
-                          <span className="absolute inset-0 animate-ping rounded-full bg-gold/40" />
-                          <span className="absolute inset-1.5 rounded-full bg-gold/70" />
+      {/* O que o cliente vê: mesmo tamanho e estilo do painel */}
+      <div className="card relative mt-5 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm">
+          <span className="truncate font-medium">{t.office}</span>
+          <span className="text-xs text-muted">{t.clientView}</span>
+        </div>
+        <div className="px-5 pb-5 pt-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <p className="font-display text-lg font-semibold leading-tight">{t.hello}</p>
+            <span key={confirmed ? "d" : "s"} className={`animate-pop rounded-full px-2 py-0.5 text-[11px] font-medium ${confirmed ? tone.delivered : tone.soon}`}>
+              {confirmed ? t.chipDelivered : t.dueIn2}
+            </span>
+          </div>
+          <ul className="mt-4 space-y-2">
+            {t.docs.map((doc, i) => {
+              const isReceived = confirmed;
+              const isSent = !confirmed && i < sentCount;
+              const open = menuFor === i;
+              const tapping = open && pressed === null;
+              return (
+                <li
+                  key={doc}
+                  className={`overflow-hidden rounded-xl border transition-all duration-300 ${
+                    isReceived ? "border-ok/40" : isSent ? "border-gold/50 bg-gold/[0.05]" : open ? "border-gold/60" : "border-line"
+                  }`}
+                >
+                  <div className="relative flex items-center gap-3 px-3.5 py-2.5 text-sm">
+                    {isReceived ? (
+                      <CheckCircle2 className="h-5 w-5 shrink-0 animate-pop text-ok" aria-hidden />
+                    ) : isSent ? (
+                      <Send className="h-5 w-5 shrink-0 animate-pop text-gold" aria-hidden />
+                    ) : (
+                      <Circle className="h-5 w-5 shrink-0 text-muted" aria-hidden />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">{doc}</span>
+                      {(isSent || isReceived) && (
+                        <span className="flex animate-fade items-center gap-1.5 text-[11px] text-muted">
+                          <ChannelIcon via={VIAS[i]} className="h-3 w-3" /> {t.sentVia.replace("{canal}", t.via[VIAS[i]])}
                         </span>
                       )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+                    </span>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        isReceived ? "bg-ok/15 text-ok" : isSent ? "bg-gold/15 text-gold" : "bg-accent text-on-accent"
+                      }`}
+                    >
+                      {isReceived ? t.received : isSent ? t.sent : t.markSent}
+                    </span>
+                    {tapping && (
+                      <span className="absolute right-8 top-1/2 h-7 w-7 -translate-y-1/2" aria-hidden>
+                        <span className="absolute inset-0 animate-ping rounded-full bg-gold/40" />
+                        <span className="absolute inset-2 rounded-full bg-gold/70" />
+                      </span>
+                    )}
+                  </div>
 
-            {/* Mini-menu "Por onde enviou?" (sobe do fundo do ecrã) */}
-            <div
-              className={`absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-line bg-ink-2 px-3.5 pb-4 pt-2.5 shadow-[0_-20px_40px_-20px_rgba(0,0,0,.5)] transition-transform duration-300 ease-out ${
-                menuFor >= 0 ? "translate-y-0" : "translate-y-full"
-              }`}
-              aria-hidden
-            >
-              <div className="mx-auto h-1 w-8 rounded-full bg-line" />
-              <p className="mt-2 text-[11.5px] font-semibold">{t.howSent}</p>
-              <p className="truncate text-[10px] text-muted">{menuFor >= 0 ? t.docs[menuFor] : ""}</p>
-              <div className="mt-2 grid grid-cols-3 gap-1.5">
-                {(["whatsapp", "email", "other"] as Channel[]).map((c) => (
-                  <span
-                    key={c}
-                    className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-2 text-[10px] font-medium transition-all duration-200 ${
-                      pressed === c ? "scale-95 border-gold bg-gold/15" : "border-line bg-ink"
-                    }`}
-                  >
-                    <ChannelIcon via={c} className="h-4 w-4" />
-                    {t.via[c]}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+                  {/* Mini-menu "Por onde enviou?", como na página real */}
+                  <div className={`grid transition-all duration-300 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                    <div className="overflow-hidden">
+                      <div className="border-t border-line bg-ink-3/40 px-3.5 py-3">
+                        <p className="text-xs font-semibold">{t.howSent}</p>
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          {(["whatsapp", "email", "other"] as Channel[]).map((c) => (
+                            <span
+                              key={c}
+                              className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-2 text-[11px] font-medium transition-all duration-200 ${
+                                pressed === c ? "scale-95 border-gold bg-gold/15" : "border-line bg-ink-2"
+                              }`}
+                            >
+                              <ChannelIcon via={c} className="h-4 w-4" />
+                              {t.via[c]}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-        <p className="mt-2 hidden text-center text-[11px] font-medium text-muted sm:block">{t.clientView}</p>
       </div>
     </div>
   );
