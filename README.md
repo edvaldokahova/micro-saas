@@ -4,7 +4,7 @@ Micro SaaS da **A Bilonai Group** para escritórios de contabilidade em Portugal
 
 - Produção: `https://entrega.bilonai.com`
 - Stack: Next.js 15 (App Router) · Tailwind CSS 4 · Lucide · Supabase (eu-west-1) · Vercel · Paddle (assinaturas, Merchant of Record) · Resend
-- Idiomas: `pt-PT`, `es-ES`
+- Idiomas: `pt-PT`, `es-ES`, `pt-BR` (textos em `lib/dictionaries/`). Preços: euros (PT, ES) e reais no Brasil (R$ 49 / R$ 79), configurados na Paddle como preço por país (BR, BRL) no mesmo produto.
 
 ## Estrutura
 - `app/` — páginas (público, `/app` privado, `/p/[token]` página do cliente)

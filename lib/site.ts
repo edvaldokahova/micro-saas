@@ -6,9 +6,10 @@ export const site = {
   owner: "A Bilonai Group",
   supportEmail: "suporte@bilonai.com",
   trialDays: 5,
+  // Euros para Portugal e Espanha; reais para o Brasil (na Paddle: preço por país no mesmo produto)
   plans: {
-    starter: { key: "starter", name: "Starter", priceEur: 9, clientLimit: 20 },
-    office: { key: "office", name: "Escritório", priceEur: 15, clientLimit: 60 },
+    starter: { key: "starter", name: "Starter", priceEur: 9, priceBrl: 49, clientLimit: 20 },
+    office: { key: "office", name: "Escritório", priceEur: 15, priceBrl: 79, clientLimit: 60 },
   },
   // Vendedor: pessoa singular a operar sob a marca "A Bilonai Group".
   // Quando a empresa for registada, trocar aqui (nome, NIF e morada) e as páginas legais atualizam-se sozinhas.

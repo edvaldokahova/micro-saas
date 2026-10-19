@@ -6,6 +6,9 @@ import { paddleApi } from "@/lib/paddle/server";
 import { priceIds } from "@/lib/paddle/config";
 import type { PlanKey } from "@/lib/site";
 
+// Os erros são códigos; o texto traduzido está no dicionário (app.billing.errors)
+export type BillingError = "invalid" | "hasLive" | "start" | "noLive" | "change";
+
 type Office = {
   id: string;
   plan: string;
@@ -34,10 +37,10 @@ async function currentOffice(): Promise<Office> {
 }
 
 // Cria a transação no servidor, com o escritório em custom_data (o navegador não o consegue alterar)
-export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: string; error?: string }> {
-  if (!isPlan(plan) || !priceIds[plan]) return { error: "Plano inválido." };
+export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: string; error?: BillingError }> {
+  if (!isPlan(plan) || !priceIds[plan]) return { error: "invalid" };
   const office = await currentOffice();
-  if (hasLiveSubscription(office)) return { error: "Já tem uma assinatura ativa. Use “Mudar de plano”." };
+  if (hasLiveSubscription(office)) return { error: "hasLive" };
 
   try {
     const txn = await paddleApi<{ id: string }>("/transactions", {
@@ -49,16 +52,16 @@ export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: st
     });
     return { transactionId: txn.id };
   } catch {
-    return { error: "Não foi possível iniciar o pagamento. Tente de novo dentro de momentos." };
+    return { error: "start" };
   }
 }
 
 // Muda entre Starter e Escritório; a Paddle cobra ou credita a diferença de imediato
-export async function changePlan(plan: PlanKey): Promise<{ ok?: true; error?: string }> {
-  if (!isPlan(plan) || !priceIds[plan]) return { error: "Plano inválido." };
+export async function changePlan(plan: PlanKey): Promise<{ ok?: true; error?: BillingError }> {
+  if (!isPlan(plan) || !priceIds[plan]) return { error: "invalid" };
   const office = await currentOffice();
   if (!hasLiveSubscription(office) || !/^sub_[a-z0-9]+$/i.test(office.paddle_subscription_id ?? "")) {
-    return { error: "Não encontrámos uma assinatura ativa." };
+    return { error: "noLive" };
   }
   if (office.plan === plan) return { ok: true };
 
@@ -72,7 +75,7 @@ export async function changePlan(plan: PlanKey): Promise<{ ok?: true; error?: st
     });
     return { ok: true };
   } catch {
-    return { error: "Não foi possível mudar de plano. Tente de novo ou contacte o suporte." };
+    return { error: "change" };
   }
 }
 

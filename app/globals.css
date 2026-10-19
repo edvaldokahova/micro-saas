@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
-/* Tokens da marca Bilonai: preto profundo, ouro, marfim */
+/* Tokens da marca Bilonai. Os nomes são semânticos:
+   ink = fundo, ivory = texto, gold = acento. O modo claro só troca os valores. */
 @theme {
   --color-ink: #0a0b0d;
-  --color-ink-2: #14161c;
-  --color-ink-3: #1d2028;
-  --color-line: #2a2e38;
+  --color-ink-2: #121419;
+  --color-ink-3: #1b1e25;
+  --color-line: #262a33;
   --color-ivory: #f2eee6;
   --color-muted: #9a958a;
   --color-gold: #d9b24a;
@@ -13,29 +14,277 @@
   --color-ok: #4fb286;
   --color-warn: #e0a43a;
   --color-bad: #e06a5a;
+  --color-on-accent: #0a0b0d;
+  --color-accent: #d9b24a;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-fade: fade 0.6s ease both;
 }
 
-html {
+:root {
   color-scheme: dark;
+  --glow: rgba(217, 178, 74, 0.16);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 20px 50px -30px rgba(0, 0, 0, 0.8);
+}
+
+/* Modo claro: escolhido pelo utilizador, ou pelo sistema quando não há escolha */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #faf8f4;
+  --color-ink-2: #ffffff;
+  --color-ink-3: #f1ede4;
+  --color-line: #e5dfd3;
+  --color-ivory: #15161a;
+  --color-muted: #6e685d;
+  --color-gold: #a27714;
+  --color-gold-2: #7f5c0c;
+  --color-ok: #23805a;
+  --color-warn: #a86a12;
+  --color-bad: #b9402f;
+  --color-on-accent: #faf8f4;
+  --color-accent: #15161a;
+  --glow: rgba(196, 150, 40, 0.14);
+  --shadow-card: 0 1px 2px rgba(20, 18, 12, 0.04), 0 24px 48px -32px rgba(20, 18, 12, 0.25);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --color-ink: #faf8f4;
+    --color-ink-2: #ffffff;
+    --color-ink-3: #f1ede4;
+    --color-line: #e5dfd3;
+    --color-ivory: #15161a;
+    --color-muted: #6e685d;
+    --color-gold: #a27714;
+    --color-gold-2: #7f5c0c;
+    --color-ok: #23805a;
+    --color-warn: #a86a12;
+    --color-bad: #b9402f;
+    --color-on-accent: #faf8f4;
+    --color-accent: #15161a;
+    --glow: rgba(196, 150, 40, 0.14);
+    --shadow-card: 0 1px 2px rgba(20, 18, 12, 0.04), 0 24px 48px -32px rgba(20, 18, 12, 0.25);
+  }
 }
 
 body {
   background: var(--color-ink);
   color: var(--color-ivory);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.text-gold-gradient {
-  background: linear-gradient(135deg, #e8c766 0%, #d9b24a 45%, #b8891b 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+::selection {
+  background: color-mix(in oklab, var(--color-gold) 35%, transparent);
 }
 
 :focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+@layer components {
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #f3d77a 0%, #d4a936 45%, #a67c1a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Botões */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.8rem;
+    padding: 0.8rem 1.35rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease, opacity 0.2s;
+    white-space: nowrap;
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.99);
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 10px 30px -14px color-mix(in oklab, var(--color-gold) 70%, transparent);
+  }
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s ease;
+  }
+  .btn-primary:hover::after {
+    transform: translateX(120%);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 14px 34px -12px color-mix(in oklab, var(--color-gold) 85%, transparent);
+  }
+  .btn-secondary {
+    border: 1px solid var(--color-line);
+    background: color-mix(in oklab, var(--color-ink-2) 70%, transparent);
+  }
+  .btn-secondary:hover {
+    border-color: color-mix(in oklab, var(--color-gold) 60%, transparent);
+  }
+  .btn-whatsapp {
+    background: #1f9d55;
+    color: #fff;
+  }
+  .btn-whatsapp:hover {
+    background: #1b8a4b;
+  }
+  .btn-sm {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+    border-radius: 0.65rem;
+  }
+
+  /* Superfícies */
+  .card {
+    border: 1px solid var(--color-line);
+    background: var(--color-ink-2);
+    border-radius: 1.1rem;
+    box-shadow: var(--shadow-card);
+  }
+  .field {
+    width: 100%;
+    border-radius: 0.8rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-ink-2);
+    padding: 0.75rem 0.95rem;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field::placeholder {
+    color: color-mix(in oklab, var(--color-muted) 75%, transparent);
+  }
+  .field:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-gold) 15%, transparent);
+  }
+  .label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+
+  /* Brilho dourado discreto atrás do herói */
+  .hero-glow {
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 620px;
+    background:
+      radial-gradient(40% 50% at 30% 30%, var(--glow), transparent 70%),
+      radial-gradient(30% 40% at 75% 20%, color-mix(in oklab, var(--glow) 60%, transparent), transparent 70%);
+    filter: blur(10px);
+    animation: drift 18s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  .grid-fade {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--color-line) 55%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 55%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 0%, black 20%, transparent 70%);
+  }
+
+  .bar-grow {
+    transform-origin: left;
+    animation: grow 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+
+/* Revelação ao fazer scroll, sem JavaScript (navegadores sem suporte mostram tudo de imediato) */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes drift {
+  from {
+    transform: translate3d(-2%, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) scale(1.06);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-pop {
+  animation: pop 0.35s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

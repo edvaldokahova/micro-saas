@@ -1,0 +1,162 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft, CheckCircle2, Circle, Send } from "lucide-react";
+import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
+import { formatDate, formatPeriod } from "@/lib/i18n";
+import { getSession } from "@/lib/office";
+import { publicLink, reminderUrl } from "@/lib/reminder";
+import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
+
+export const metadata: Metadata = { title: "Pedido" };
+
+type Req = {
+  id: string;
+  client_id: string;
+  client_name: string;
+  client_phone: string | null;
+  period: string;
+  due_date: string | null;
+  token: string;
+  reminder_count: number;
+  last_reminder_at: string | null;
+  total_items: number;
+  received_items: number;
+};
+type Item = { id: string; label: string; status: "pending" | "sent" | "received"; client_marked_at: string | null };
+
+export default async function Pedido({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
+  const { supabase, office, locale, d } = await getSession();
+  const t = d.app.request;
+
+  const [{ data: r }, { data: it }, { data: noteRow }] = await Promise.all([
+    supabase
+      .from("requests_overview")
+      .select("id, client_id, client_name, client_phone, period, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase.from("request_items").select("id, label, status, client_marked_at").eq("request_id", id).order("position").order("created_at"),
+    supabase.from("requests").select("note").eq("id", id).maybeSingle(),
+  ]);
+  if (!r) notFound();
+  const req = r as Req;
+  const items = (it ?? []) as Item[];
+  const note = (noteRow as { note: string | null } | null)?.note;
+  const done = req.total_items > 0 && req.received_items === req.total_items;
+  const pct = req.total_items ? Math.round((req.received_items / req.total_items) * 100) : 0;
+  const wa = done ? null : reminderUrl(office, locale, d, req, items.filter((i) => i.status === "pending").map((i) => i.label));
+  const link = publicLink(req.token);
+
+  const chip = {
+    pending: "bg-warn/15 text-warn",
+    sent: "bg-gold/15 text-gold",
+    received: "bg-ok/15 text-ok",
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl">
+      <Link href={`/app?mes=${req.period.slice(0, 7)}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
+        <ArrowLeft className="h-4 w-4" aria-hidden /> {formatPeriod(req.period, locale)}
+      </Link>
+
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow">{formatPeriod(req.period, locale)}</p>
+          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">
+            <Link href={`/app/clientes/${req.client_id}`} className="hover:text-gold">
+              {req.client_name}
+            </Link>
+          </h1>
+          <p className="mt-1 text-sm text-muted">
+            {d.app.dashboard.docsOf(req.received_items, req.total_items)}
+            {req.due_date ? ` · ${d.app.dashboard.dueOn(formatDate(req.due_date, locale))}` : ""}
+          </p>
+        </div>
+        {done && (
+          <span className="inline-flex animate-pop items-center gap-1.5 rounded-full bg-ok/15 px-3 py-1.5 text-sm font-medium text-ok">
+            <CheckCircle2 className="h-4 w-4" aria-hidden /> {d.app.dashboard.complete}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-5 h-2 overflow-hidden rounded-full bg-ink-3">
+        <div className={`bar-grow h-full rounded-full ${done ? "bg-ok" : "bg-gold"}`} style={{ width: `${pct}%` }} />
+      </div>
+
+      {/* Link e lembrete */}
+      <section className="card mt-6 p-5">
+        <p className="text-sm font-medium">{t.link}</p>
+        <p className="mt-1 text-xs text-muted">{t.linkHint}</p>
+        <code className="mt-3 block truncate rounded-lg border border-line bg-ink-3 px-3 py-2.5 text-xs text-muted">{link}</code>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {wa ? (
+            <ReminderButton requestId={req.id} href={wa} label={d.app.remind} />
+          ) : (
+            !done && <p className="w-full text-sm text-muted">{d.app.remindNoPhone}</p>
+          )}
+          <CopyButton value={link} label={d.common.copy} done={d.common.copied} />
+          <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+            {d.common.open}
+          </a>
+        </div>
+        {req.last_reminder_at && (
+          <p className="mt-3 text-xs text-muted">
+            {t.lastReminder(formatDate(req.last_reminder_at, locale))} · {d.app.dashboard.reminders(req.reminder_count)}
+          </p>
+        )}
+      </section>
+
+      {note && (
+        <section className="card mt-4 p-5 text-sm">
+          <p className="text-xs text-muted">{t.noteLabel}</p>
+          <p className="mt-1 whitespace-pre-line">{note}</p>
+        </section>
+      )}
+
+      {/* Documentos */}
+      <ul className="card mt-6 divide-y divide-line overflow-hidden">
+        {items.map((i) => (
+          <li key={i.id} className="flex flex-wrap items-center gap-3 px-4 py-3.5 sm:px-5">
+            {i.status === "received" ? (
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-ok" aria-hidden />
+            ) : i.status === "sent" ? (
+              <Send className="h-5 w-5 shrink-0 text-gold" aria-hidden />
+            ) : (
+              <Circle className="h-5 w-5 shrink-0 text-muted" aria-hidden />
+            )}
+            <span className="min-w-0 flex-1">{i.label}</span>
+            <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${chip[i.status]}`}>{t.status[i.status]}</span>
+            <form action={setItemStatus}>
+              <input type="hidden" name="item" value={i.id} />
+              <input type="hidden" name="request" value={req.id} />
+              <input type="hidden" name="status" value={i.status === "received" ? "pending" : "received"} />
+              <SubmitButton className={`btn btn-sm ${i.status === "received" ? "btn-secondary" : "btn-primary"}`}>
+                {i.status === "received" ? t.undo : t.markReceived}
+              </SubmitButton>
+            </form>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        {!done && items.length > 0 ? (
+          <form action={markAllReceived}>
+            <input type="hidden" name="request" value={req.id} />
+            <SubmitButton className="btn btn-secondary btn-sm">{t.allReceived}</SubmitButton>
+          </form>
+        ) : (
+          <span />
+        )}
+        <form action={deleteRequest}>
+          <input type="hidden" name="request" value={req.id} />
+          <input type="hidden" name="period" value={req.period.slice(0, 7)} />
+          <SubmitButton className="btn btn-sm text-bad hover:bg-bad/10" confirm={t.removeConfirm}>
+            {t.remove}
+          </SubmitButton>
+        </form>
+      </div>
+    </div>
+  );
+}

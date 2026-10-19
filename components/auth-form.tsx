@@ -3,17 +3,33 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MailCheck } from "lucide-react";
+import { Flag } from "@/components/flags";
 import { createClient } from "@/lib/supabase/client";
+import { localeMeta, locales, type Locale } from "@/lib/locales";
 
 type Mode = "login" | "signup";
 
-const input =
-  "w-full rounded-xl border border-line bg-ink-2 px-4 py-3 text-[15px] outline-none transition placeholder:text-muted/70 focus:border-gold";
+export type AuthTexts = {
+  officeName: string;
+  language: string;
+  email: string;
+  acceptA: string;
+  acceptTerms: string;
+  acceptAnd: string;
+  acceptPrivacy: string;
+  submitSignup: string;
+  submitLogin: string;
+  sending: string;
+  checkTitle: string;
+  checkTextA: string;
+  checkTextB: string;
+  rateLimit: string;
+};
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts; initialLocale: Locale }) {
   const [email, setEmail] = useState("");
   const [officeName, setOfficeName] = useState("");
-  const [locale, setLocale] = useState<"pt-PT" | "es-ES">("pt-PT");
+  const [locale, setLocale] = useState<Locale>(initialLocale);
   const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -32,7 +48,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     // Resposta igual quer o e-mail exista ou não (não revela quem tem conta)
     if (error && error.code === "over_email_send_rate_limit") {
       setState("error");
-      setMessage("Pediu demasiados e-mails seguidos. Aguarde alguns minutos e tente de novo.");
+      setMessage(t.rateLimit);
       return;
     }
     setState("sent");
@@ -40,25 +56,26 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   if (state === "sent") {
     return (
-      <div className="rounded-2xl border border-line bg-ink-2 p-7 text-center">
-        <MailCheck className="mx-auto h-9 w-9 text-gold" aria-hidden />
-        <h2 className="mt-4 font-display text-xl font-semibold">Verifique o seu e-mail</h2>
+      <div className="card animate-rise p-8 text-center">
+        <span className="mx-auto grid h-14 w-14 animate-pop place-items-center rounded-2xl border border-line bg-ink-3">
+          <MailCheck className="h-7 w-7 text-gold" aria-hidden />
+        </span>
+        <h2 className="mt-5 font-display text-xl font-semibold">{t.checkTitle}</h2>
         <p className="mt-2 text-[15px] leading-7 text-muted">
-          Se o endereço <strong className="text-ivory">{email}</strong> estiver correto, enviámos-lhe um link de acesso.
-          É válido durante 1 hora. Veja também o spam.
+          {t.checkTextA} <strong className="text-ivory">{email}</strong> {t.checkTextB}
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-5">
       {mode === "signup" && (
         <>
-          <label className="block space-y-1.5 text-sm">
-            <span className="text-muted">Nome do escritório</span>
+          <label className="block">
+            <span className="label">{t.officeName}</span>
             <input
-              className={input}
+              className="field"
               required
               maxLength={120}
               value={officeName}
@@ -66,19 +83,29 @@ export function AuthForm({ mode }: { mode: Mode }) {
               autoComplete="organization"
             />
           </label>
-          <label className="block space-y-1.5 text-sm">
-            <span className="text-muted">Idioma</span>
-            <select className={input} value={locale} onChange={(e) => setLocale(e.target.value as "pt-PT" | "es-ES")}>
-              <option value="pt-PT">Português (Portugal)</option>
-              <option value="es-ES">Español (España)</option>
-            </select>
-          </label>
+          <fieldset>
+            <legend className="label">{t.language}</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {locales.map((l) => (
+                <label
+                  key={l}
+                  className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition ${
+                    locale === l ? "border-gold bg-gold/10" : "border-line hover:border-gold/50"
+                  }`}
+                >
+                  <input type="radio" name="locale" value={l} checked={locale === l} onChange={() => setLocale(l)} className="sr-only" />
+                  <Flag locale={l} />
+                  <span className="leading-tight">{localeMeta[l].name}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
         </>
       )}
-      <label className="block space-y-1.5 text-sm">
-        <span className="text-muted">E-mail</span>
+      <label className="block">
+        <span className="label">{t.email}</span>
         <input
-          className={input}
+          className="field"
           type="email"
           required
           value={email}
@@ -94,21 +121,18 @@ export function AuthForm({ mode }: { mode: Mode }) {
             required
             checked={accepted}
             onChange={(e) => setAccepted(e.target.checked)}
-            className="mt-1 h-4 w-4 accent-[#d9b24a]"
+            className="mt-1 h-4 w-4 accent-[var(--color-gold)]"
           />
           <span>
-            Li e aceito os <Link className="text-gold hover:underline" href="/termos" target="_blank">Termos</Link> e a{" "}
-            <Link className="text-gold hover:underline" href="/privacidade" target="_blank">Política de privacidade</Link>.
+            {t.acceptA}{" "}
+            <Link className="text-gold hover:underline" href="/termos" target="_blank">{t.acceptTerms}</Link> {t.acceptAnd}{" "}
+            <Link className="text-gold hover:underline" href="/privacidade" target="_blank">{t.acceptPrivacy}</Link>.
           </span>
         </label>
       )}
       {state === "error" && <p className="text-sm text-bad">{message}</p>}
-      <button
-        type="submit"
-        disabled={state === "sending"}
-        className="w-full rounded-xl bg-gold px-5 py-3.5 font-semibold text-ink transition hover:brightness-110 disabled:opacity-60"
-      >
-        {state === "sending" ? "A enviar…" : mode === "signup" ? "Criar conta e receber link" : "Receber link de acesso"}
+      <button type="submit" disabled={state === "sending"} className="btn btn-primary w-full py-3.5">
+        {state === "sending" ? t.sending : mode === "signup" ? t.submitSignup : t.submitLogin}
       </button>
     </form>
   );

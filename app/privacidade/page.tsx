@@ -111,7 +111,7 @@ export default function Privacidade() {
           seus dados. Escreva para <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>. Se for cliente de um
           escritório e quiser exercer direitos sobre os seus dados, deve contactar primeiro o escritório, que é o
           responsável; ajudamo-lo a responder. Tem ainda o direito de apresentar reclamação à autoridade de controlo:
-          a CNPD, em Portugal, ou a AEPD, em Espanha.
+          a CNPD, em Portugal, a AEPD, em Espanha, ou a ANPD, no Brasil (Lei Geral de Proteção de Dados, LGPD).
         </p>
       </section>
 

@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) {
-      const target = type === "recovery" ? "/app/definir-palavra-passe" : next;
+      // Sem palavras-passe: a recuperação também entra direto no painel
+      const target = type === "recovery" ? "/app" : next;
       return NextResponse.redirect(new URL(target, origin));
     }
   }

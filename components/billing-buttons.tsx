@@ -2,14 +2,17 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { changePlan, startCheckout } from "@/app/app/assinatura/actions";
+import { changePlan, startCheckout, type BillingError } from "@/app/app/assinatura/actions";
 import { loadPaddle } from "@/lib/paddle/client";
 import type { PlanKey } from "@/lib/site";
 
-const base = "w-full rounded-xl px-5 py-3 text-center font-semibold transition disabled:opacity-60";
-const styles = {
-  primary: `${base} bg-gold text-ink hover:brightness-110`,
-  secondary: `${base} border border-line hover:border-gold/60`,
+export type BillingTexts = {
+  opening: string;
+  changing: string;
+  changeConfirm: string;
+  changeSent: string;
+  openError: string;
+  errors: Record<BillingError, string>;
 };
 
 export function SubscribeButton({
@@ -17,11 +20,13 @@ export function SubscribeButton({
   label,
   locale,
   primary = false,
+  t,
 }: {
   plan: PlanKey;
   label: string;
   locale: "pt" | "es";
   primary?: boolean;
+  t: BillingTexts;
 }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
@@ -36,7 +41,7 @@ export function SubscribeButton({
     start(async () => {
       const res = await startCheckout(plan);
       if (!res.transactionId) {
-        setError(res.error ?? "Erro inesperado.");
+        setError(res.error ? t.errors[res.error] : t.openError);
         return;
       }
       try {
@@ -46,44 +51,44 @@ export function SubscribeButton({
           settings: { successUrl: `${window.location.origin}/app/assinatura?ok=1`, locale },
         });
       } catch {
-        setError("Não foi possível abrir o pagamento. Verifique a ligação e tente de novo.");
+        setError(t.openError);
       }
     });
   }
 
   return (
     <div className="space-y-2">
-      <button type="button" onClick={onClick} disabled={pending} className={primary ? styles.primary : styles.secondary}>
-        {pending ? "A abrir pagamento…" : label}
+      <button type="button" onClick={onClick} disabled={pending} className={`btn w-full ${primary ? "btn-primary" : "btn-secondary"}`}>
+        {pending ? t.opening : label}
       </button>
       {error && <p className="text-sm text-bad">{error}</p>}
     </div>
   );
 }
 
-export function ChangePlanButton({ plan, label }: { plan: PlanKey; label: string }) {
+export function ChangePlanButton({ plan, label, t }: { plan: PlanKey; label: string; t: BillingTexts }) {
   const [pending, start] = useTransition();
   const [message, setMessage] = useState("");
   const router = useRouter();
 
   function onClick() {
-    if (!window.confirm("Mudar de plano agora? A diferença de preço é cobrada ou creditada de imediato.")) return;
+    if (!window.confirm(t.changeConfirm)) return;
     setMessage("");
     start(async () => {
       const res = await changePlan(plan);
       if (res.error) {
-        setMessage(res.error);
+        setMessage(t.errors[res.error]);
         return;
       }
-      setMessage("Pedido enviado. O plano atualiza-se em alguns segundos.");
+      setMessage(t.changeSent);
       setTimeout(() => router.refresh(), 4000);
     });
   }
 
   return (
     <div className="space-y-2">
-      <button type="button" onClick={onClick} disabled={pending} className={styles.secondary}>
-        {pending ? "A mudar…" : label}
+      <button type="button" onClick={onClick} disabled={pending} className="btn btn-secondary w-full">
+        {pending ? t.changing : label}
       </button>
       {message && <p className="text-sm text-muted">{message}</p>}
     </div>
