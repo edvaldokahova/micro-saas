@@ -43,7 +43,7 @@ export default function Privacidade() {
           <li>Clientes do escritório: nome, telefone, e-mail e notas que o escritório decidir registar.</li>
           <li>Pedidos: período, lista de documentos pedidos, estado de cada um (em falta, enviado, recebido) e histórico de lembretes.</li>
           <li>Dados técnicos de segurança e funcionamento: registos de acesso e erros.</li>
-          <li>Faturação: identificador da assinatura e estado do pagamento. <strong>Não recebemos nem guardamos dados de cartão</strong>; os pagamentos são tratados pela MundPay.</li>
+          <li>Faturação: identificador da assinatura e estado do pagamento. <strong>Não recebemos nem guardamos dados de cartão</strong>; os pagamentos são tratados pela Paddle.</li>
         </ul>
         <p>
           <strong>Nesta fase, a plataforma não recebe nem armazena ficheiros ou documentos contabilísticos.</strong> Guarda
@@ -79,7 +79,11 @@ export default function Privacidade() {
           <li><strong>Supabase</strong>: base de dados e autenticação, numa região da União Europeia (Irlanda).</li>
           <li><strong>Vercel</strong>: alojamento da aplicação. Quando aplicável, as transferências para fora do Espaço Económico Europeu apoiam-se em cláusulas contratuais-tipo.</li>
           <li><strong>Resend</strong>: envio de e-mails de acesso, com servidores na União Europeia.</li>
-          <li><strong>MundPay</strong>: processamento de pagamentos e assinaturas.</li>
+          <li>
+            <strong>Paddle</strong> (Paddle.com Market Limited): <em>Merchant of Record</em>. Trata do pagamento, da
+            faturação, dos impostos e dos reembolsos das assinaturas, e atua como responsável autónomo pelos dados de
+            pagamento que lhe fornece no checkout, segundo a sua própria política de privacidade.
+          </li>
         </ul>
       </section>
 

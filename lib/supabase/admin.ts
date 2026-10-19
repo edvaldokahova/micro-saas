@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-// Cliente com chave secreta: ignora RLS. Usar APENAS no servidor (webhook MundPay, tarefas internas).
+// Cliente com chave secreta: ignora RLS. Usar APENAS no servidor (webhook Paddle, tarefas internas).
 export function createAdminClient() {
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!key) throw new Error("SUPABASE_SECRET_KEY em falta");

@@ -3,7 +3,7 @@
 Micro SaaS da **A Bilonai Group** para escritórios de contabilidade em Portugal e Espanha: pedir os documentos do mês por link, ver quem ainda não entregou e enviar lembretes por WhatsApp.
 
 - Produção: `https://entrega.bilonai.com`
-- Stack: Next.js 15 (App Router) · Tailwind CSS 4 · Lucide · Supabase (eu-west-1) · Vercel · MundPay (assinaturas) · Resend
+- Stack: Next.js 15 (App Router) · Tailwind CSS 4 · Lucide · Supabase (eu-west-1) · Vercel · Paddle (assinaturas, Merchant of Record) · Resend
 - Idiomas: `pt-PT`, `es-ES`
 
 ## Estrutura

@@ -59,8 +59,9 @@ export default function Suporte() {
       <section>
         <h2>Problemas de pagamento</h2>
         <p>
-          Os pagamentos são processados pela MundPay. Se a cobrança falhar ou tiver dúvidas sobre uma fatura, envie-nos o
-          e-mail da conta e a data da cobrança.
+          Os pagamentos, as faturas e os impostos são tratados pela Paddle, que é o <em>Merchant of Record</em> das
+          nossas vendas. Se a cobrança falhar ou tiver dúvidas sobre uma fatura, envie-nos o e-mail da conta e a data da
+          cobrança, ou consulte o recibo que a Paddle lhe enviou por e-mail (também em paddle.net).
         </p>
       </section>
     </LegalPage>

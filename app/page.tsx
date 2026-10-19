@@ -158,7 +158,7 @@ export default function Home() {
         <section id="precos" className="mx-auto max-w-6xl px-5 py-20">
           <h2 className="font-display text-3xl font-semibold tracking-tight">Preço simples, por escritório</h2>
           <p className="mt-3 text-muted">
-            Comece com {site.trialDays} dias grátis. Os preços são mensais, em euros, e o IVA aplica-se quando devido.
+            Comece com {site.trialDays} dias grátis. Os preços são mensais e os impostos aplicáveis são calculados no checkout, consoante o seu país.
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {Object.values(site.plans).map((p) => (

@@ -49,9 +49,14 @@ export default function Termos() {
         <ul>
           <li>{starter.name}: {starter.priceEur} €/mês, até {starter.clientLimit} clientes.</li>
           <li>{office.name}: {office.priceEur} €/mês, até {office.clientLimit} clientes.</li>
-          <li>Os preços são mensais, em euros, e o IVA é acrescentado quando aplicável.</li>
+          <li>Os preços são mensais e os impostos aplicáveis (como o IVA) são calculados no checkout, consoante o seu país.</li>
           <li>A assinatura renova-se automaticamente todos os meses até ser cancelada.</li>
-          <li>Os pagamentos são processados pela MundPay. Não recebemos nem guardamos os seus dados de cartão.</li>
+          <li>
+            <strong>Paddle.com Market Limited é o Merchant of Record de todas as nossas encomendas.</strong> A Paddle
+            trata do pagamento, da faturação, dos impostos e dos reembolsos. Ao comprar, aceita também os termos do
+            comprador da Paddle. O contrato de utilização do serviço é celebrado entre si e a {site.owner}.
+          </li>
+          <li>Não recebemos nem guardamos os seus dados de cartão.</li>
           <li>Podemos alterar os preços com pelo menos 30 dias de aviso; a alteração aplica-se à renovação seguinte.</li>
         </ul>
       </section>
