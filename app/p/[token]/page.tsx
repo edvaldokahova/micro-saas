@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarClock, Lock, Mail, MessageCircle } from "lucide-react";
-import { Wordmark } from "@/components/logo";
+import { ProductMark, Wordmark } from "@/components/logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, whatsappNumber, type Locale } from "@/lib/i18n";
 import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
@@ -121,7 +121,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
         <footer className="mt-14 flex flex-wrap items-center justify-center gap-2 text-xs text-muted">
           <Lock className="h-3.5 w-3.5" aria-hidden /> {t.footer(req.office_name)}
           <Link href="/" className="inline-flex items-center gap-1.5 text-ivory/80 hover:text-ivory">
-            <Wordmark className="h-[11px] w-auto" /> <span className="text-gold">Entrega</span>
+            <Wordmark className="h-[11px] w-auto" /> <ProductMark className="scale-90" />
           </Link>
         </footer>
       </main>

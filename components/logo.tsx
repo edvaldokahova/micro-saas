@@ -41,8 +41,33 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <Wordmark />
-      <span aria-hidden className="h-3.5 w-px bg-line" />
-      <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">Entrega</span>
+      <ProductMark />
+    </span>
+  );
+}
+
+// Selo do produto: cápsula com contorno dourado, visto de entrega e nome em dourado
+export function ProductMark({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`relative inline-flex items-center gap-1.5 rounded-full py-[3px] pl-1.5 pr-2.5 ${className}`}
+      style={{
+        background:
+          "linear-gradient(var(--color-ink-2), var(--color-ink-2)) padding-box, linear-gradient(135deg, #f3d77a, #d4a936 50%, #a67c1a) border-box",
+        border: "1px solid transparent",
+      }}
+    >
+      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" aria-hidden="true">
+        <defs>
+          <linearGradient id="pm-gold" x1="0" y1="0" x2="16" y2="16" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#F3D77A" />
+            <stop offset="1" stopColor="#A67C1A" />
+          </linearGradient>
+        </defs>
+        <circle cx="8" cy="8" r="8" fill="url(#pm-gold)" />
+        <path d="M4.6 8.3 7 10.6l4.5-5" fill="none" stroke="#0a0b0d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span className="text-gold-gradient font-display text-[13px] font-semibold leading-none tracking-[0.02em]">Entrega</span>
     </span>
   );
 }
