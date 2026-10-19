@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { authTexts } from "@/lib/auth-texts";
+import { NoCard } from "@/components/no-card";
 import { SiteHeader } from "@/components/site-chrome";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -17,7 +18,7 @@ export default async function Registar() {
       <SiteHeader />
       <main className="relative mx-auto max-w-md px-5 py-16">
         <h1 className="animate-rise font-display text-3xl font-semibold tracking-tight">{d.auth.signupTitle(site.trialDays)}</h1>
-        <p className="mt-2 animate-rise text-muted [animation-delay:80ms]">{d.auth.signupLead}</p>
+        <NoCard text={d.auth.signupLead} className="mt-3 animate-rise text-[15px] [animation-delay:80ms]" />
         <div className="mt-8 animate-rise [animation-delay:160ms]">
           <AuthForm mode="signup" t={authTexts(d)} initialLocale={locale} />
         </div>

@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, Circle, Send } from "lucide-react";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { formatDate, formatPeriod } from "@/lib/i18n";
 import { getSession } from "@/lib/office";
+import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
 import { publicLink, reminderUrl } from "@/lib/reminder";
 import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
 
@@ -48,6 +49,8 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const pct = req.total_items ? Math.round((req.received_items / req.total_items) * 100) : 0;
   const wa = done ? null : reminderUrl(office, locale, d, req, items.filter((i) => i.status === "pending").map((i) => i.label));
   const link = publicLink(req.token);
+  const st = deadlineState(req.due_date, done);
+  const dl = deadlineLabel(st, d);
 
   const chip = {
     pending: "bg-warn/15 text-warn",
@@ -74,15 +77,16 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
             {req.due_date ? ` · ${d.app.dashboard.dueOn(formatDate(req.due_date, locale))}` : ""}
           </p>
         </div>
-        {done && (
-          <span className="inline-flex animate-pop items-center gap-1.5 rounded-full bg-ok/15 px-3 py-1.5 text-sm font-medium text-ok">
-            <CheckCircle2 className="h-4 w-4" aria-hidden /> {d.app.dashboard.complete}
+        <div className="flex flex-col items-end gap-1.5">
+          <span className={`inline-flex animate-pop items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${deadlineTone[st.kind]}`}>
+            {done && <CheckCircle2 className="h-4 w-4" aria-hidden />} {dl.chip}
           </span>
-        )}
+          {dl.detail && <span className={`text-xs ${st.kind === "late" ? "text-bad" : "text-warn"}`}>{dl.detail}</span>}
+        </div>
       </div>
 
       <div className="mt-5 h-2 overflow-hidden rounded-full bg-ink-3">
-        <div className={`bar-grow h-full rounded-full ${done ? "bg-ok" : "bg-gold"}`} style={{ width: `${pct}%` }} />
+        <div className={`bar-grow h-full rounded-full ${done ? "bg-ok" : st.kind === "late" ? "bg-bad" : "bg-gold"}`} style={{ width: `${pct}%` }} />
       </div>
 
       {/* Link e lembrete */}

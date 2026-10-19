@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
+import { suggestedDue } from "@/lib/deadline";
 import { getSession, officeAccess, resolvePeriod } from "@/lib/office";
 import { createRequest } from "../../actions";
 
@@ -76,7 +77,7 @@ export default async function NovoPedido({
             <span className="label">
               {t.due} <span className="opacity-70">({d.common.optional})</span>
             </span>
-            <input name="due" type="date" className="field" />
+            <input name="due" type="date" defaultValue={suggestedDue(period)} className="field" />
           </label>
         </div>
 

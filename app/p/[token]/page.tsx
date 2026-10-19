@@ -4,6 +4,7 @@ import { CalendarClock, Lock, Mail, MessageCircle } from "lucide-react";
 import { Wordmark } from "@/components/logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, whatsappNumber, type Locale } from "@/lib/i18n";
+import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
 import { getLocale } from "@/lib/prefs";
 import { createClient } from "@/lib/supabase/server";
 import { Checklist, type ChecklistTexts } from "./checklist";
@@ -47,6 +48,8 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
 
   const period = formatPeriod(req.period, locale);
   const wa = whatsappNumber(req.office_phone, locale);
+  const st = deadlineState(req.due_date, req.items.length > 0 && req.items.every((i) => i.status === "received"));
+  const dl = deadlineLabel(st, d);
   const texts: ChecklistTexts = {
     markSent: t.markSent,
     sent: t.sent,
@@ -72,9 +75,14 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
           <h1 className="mt-3 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{t.hello(req.client_name)}</h1>
           <p className="mt-3 text-[15px] leading-7 text-muted">{t.intro(req.office_name, period)}</p>
           {req.due_date && (
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-line bg-ink-2 px-3.5 py-1.5 text-sm">
-              <CalendarClock className="h-4 w-4 text-gold" aria-hidden /> {t.due(formatDate(req.due_date, locale))}
-            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <p className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2 px-3.5 py-1.5 text-sm">
+                <CalendarClock className="h-4 w-4 text-gold" aria-hidden /> {t.due(formatDate(req.due_date, locale))}
+              </p>
+              {st.kind !== "pending" && (
+                <span className={`rounded-full px-3 py-1.5 text-sm font-medium ${deadlineTone[st.kind]}`}>{dl.detail ?? dl.chip}</span>
+              )}
+            </div>
           )}
         </header>
 

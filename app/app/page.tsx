@@ -5,6 +5,7 @@ import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-butto
 import { Flash } from "@/components/flash";
 import { formatDate, formatPeriod } from "@/lib/i18n";
 import { getSession, officeAccess, resolvePeriod, shiftPeriod } from "@/lib/office";
+import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, suggestedDue, type Deadline } from "@/lib/deadline";
 import { publicLink, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests } from "./actions";
 
@@ -59,15 +60,23 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   }
 
   const isComplete = (r: Row) => r.total_items > 0 && r.received_items === r.total_items;
-  rows.sort((a, b) => Number(isComplete(a)) - Number(isComplete(b)) || a.client_name.localeCompare(b.client_name, locale));
-  const complete = rows.filter(isComplete).length;
-  const awaiting = rows.reduce((s, r) => s + r.sent_items, 0);
+  const state = new Map<string, Deadline>(rows.map((r) => [r.id, deadlineState(r.due_date, isComplete(r))]));
+  const kindOf = (r: Row) => state.get(r.id)!.kind;
+  rows.sort(
+    (a, b) =>
+      deadlineOrder[kindOf(a)] - deadlineOrder[kindOf(b)] ||
+      (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999") ||
+      a.client_name.localeCompare(b.client_name, locale),
+  );
+  const count = (k: Deadline["kind"]) => rows.filter((r) => kindOf(r) === k).length;
+  const delivered = count("delivered");
+  const late = count("late");
 
   const stats = [
     { label: t.statRequests, value: rows.length },
-    { label: t.statComplete, value: complete, tone: "text-ok" },
-    { label: t.statMissing, value: rows.length - complete, tone: rows.length - complete ? "text-warn" : "" },
-    { label: t.statAwaiting, value: awaiting, tone: awaiting ? "text-gold" : "" },
+    { label: t.statComplete, value: delivered, tone: "text-ok" },
+    { label: t.statMissing, value: rows.length - delivered - late, tone: rows.length - delivered - late ? "text-warn" : "" },
+    { label: t.statLate, value: late, tone: late ? "text-bad" : "" },
   ];
 
   return (
@@ -127,7 +136,13 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                   <p className="mt-1 text-sm text-muted">{t.createAllHint}</p>
                 </div>
               </div>
-              <SubmitButton pendingText="…">{d.app.request.create}</SubmitButton>
+              <div className="flex flex-wrap items-end gap-2">
+                <label className="block">
+                  <span className="label">{d.app.request.due}</span>
+                  <input name="due" type="date" defaultValue={suggestedDue(period)} className="field py-2" />
+                </label>
+                <SubmitButton pendingText="…">{d.app.request.create}</SubmitButton>
+              </div>
             </form>
           )}
 
@@ -137,6 +152,8 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
             <ul className="card mt-6 divide-y divide-line overflow-hidden">
               {rows.map((r, i) => {
                 const done = isComplete(r);
+                const st = state.get(r.id)!;
+                const dl = deadlineLabel(st, d);
                 const pct = r.total_items ? Math.round((r.received_items / r.total_items) * 100) : 0;
                 const pending = pendingByRequest.get(r.id) ?? [];
                 const wa = done ? null : reminderUrl(office, locale, d, r, pending);
@@ -148,21 +165,19 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                           <Link href={`/app/pedidos/${r.id}`} className="truncate font-medium hover:text-gold">
                             {r.client_name}
                           </Link>
-                          {done ? (
-                            <span className="shrink-0 rounded-full bg-ok/15 px-2 py-0.5 text-[11px] font-medium text-ok">{t.complete}</span>
-                          ) : (
-                            <span className="shrink-0 rounded-full bg-warn/15 px-2 py-0.5 text-[11px] font-medium text-warn">
-                              {t.missing(r.total_items - r.received_items)}
-                            </span>
-                          )}
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${deadlineTone[st.kind]}`}>{dl.chip}</span>
                         </div>
                         <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ink-3">
-                          <div className={`bar-grow h-full rounded-full ${done ? "bg-ok" : "bg-gold"}`} style={{ width: `${pct}%` }} />
+                          <div
+                            className={`bar-grow h-full rounded-full ${done ? "bg-ok" : st.kind === "late" ? "bg-bad" : "bg-gold"}`}
+                            style={{ width: `${pct}%` }}
+                          />
                         </div>
                         <p className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-muted">
                           <span>{t.docsOf(r.received_items, r.total_items)}</span>
+                          {dl.detail && <span className={st.kind === "late" ? "text-bad" : "text-warn"}>{dl.detail}</span>}
                           {r.sent_items > 0 && <span className="text-gold">{t.awaiting(r.sent_items)}</span>}
-                          {r.due_date && <span>{t.dueOn(formatDate(r.due_date, locale, false))}</span>}
+                          {r.due_date && !dl.detail && !done && <span>{t.dueOn(formatDate(r.due_date, locale, false))}</span>}
                           {r.reminder_count > 0 && <span>{t.reminders(r.reminder_count)}</span>}
                         </p>
                       </div>

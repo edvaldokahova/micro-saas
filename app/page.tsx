@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check, CheckCircle2, Circle, Link2, ListChecks, MessageCircle, ShieldCheck } from "lucide-react";
 import { Flag } from "@/components/flags";
+import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { formatPrice, getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -53,7 +54,7 @@ export default async function Home() {
                 <Link href="/registar" className="btn btn-primary px-6 py-3.5">
                   {d.common.trialFree(site.trialDays)} <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
-                <span className="text-sm text-muted">{d.common.noCard}</span>
+                <NoCard text={d.common.noCard} />
               </div>
               <dl className="mt-12 grid max-w-lg animate-rise grid-cols-3 gap-4 border-t border-line pt-6 [animation-delay:320ms]">
                 {h.stats.map((s) => (
