@@ -18,3 +18,10 @@ O cliente final nunca toca nas tabelas: usa só `get_public_request(token)` e `s
 
 ## Variáveis de ambiente
 Ver `.env.example`. A `SUPABASE_SECRET_KEY` e o `PADDLE_WEBHOOK_SECRET` vivem só na Vercel.
+
+## Pagamentos (Paddle)
+- Checkout: `/app/assinatura` cria a transação no servidor (`custom_data.office_id`) e abre o overlay do Paddle.js.
+- Webhook: `POST /api/webhooks/paddle` — verifica `Paddle-Signature`, grava em `billing_events` (idempotente por `event_id`), ignora eventos fora de ordem (`offices.paddle_event_at`) e nunca deixa uma 2.ª assinatura sobrepor uma ativa.
+- Eventos a subscrever na Paddle: `transaction.completed`, `subscription.created`, `subscription.updated`, `subscription.activated`, `subscription.past_due`, `subscription.paused`, `subscription.resumed`, `subscription.canceled`.
+- Default payment link na Paddle: `https://entrega.bilonai.com/pagamento`.
+- Sandbox por defeito (token e preços públicos em `lib/paddle/config.ts`); produção via variáveis `NEXT_PUBLIC_PADDLE_*`.

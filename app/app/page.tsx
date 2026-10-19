@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { createClient } from "@/lib/supabase/server";
@@ -31,15 +32,23 @@ export default async function Painel() {
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center gap-5 px-5">
       <Logo />
       <h1 className="font-display text-3xl font-semibold tracking-tight">Conta criada{office ? `, ${office.name}` : ""}.</h1>
-      {trialEnd && (
+      {office?.plan_status === "trialing" && trialEnd && (
         <p className="text-muted">
           O seu teste gratuito termina a {trialEnd.toLocaleDateString("pt-PT")}.
         </p>
       )}
       <p className="text-muted">O painel de clientes e pedidos está a ser construído.</p>
-      <form action={sair}>
-        <button className="rounded-xl border border-line px-5 py-2.5 text-sm transition hover:border-gold/60">Sair</button>
-      </form>
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href="/app/assinatura"
+          className="rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition hover:brightness-110"
+        >
+          Assinatura
+        </Link>
+        <form action={sair}>
+          <button className="rounded-xl border border-line px-5 py-2.5 text-sm transition hover:border-gold/60">Sair</button>
+        </form>
+      </div>
     </main>
   );
 }
