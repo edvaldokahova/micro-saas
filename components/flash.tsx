@@ -10,6 +10,8 @@ export function errorText(d: Dictionary, code: string): string {
     name: e.name,
     exists: d.app.request.exists,
     items: d.app.request.noItems,
+    teamLimit: e.teamLimit,
+    url: e.url,
   };
   return map[code] ?? d.common.errorGeneric;
 }

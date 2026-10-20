@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { ChangePlanButton, SubscribeButton, type BillingTexts } from "@/components/billing-buttons";
-import { formatDate, formatPrice, localeMeta } from "@/lib/i18n";
+import { formatDate, formatPrice, formatYearlyPerMonth, localeMeta } from "@/lib/i18n";
+import { IntervalToggle } from "@/components/interval-toggle";
+import { annualEnabled, type BillingInterval } from "@/lib/paddle/config";
 import { getSession } from "@/lib/office";
 import { site, type PlanKey } from "@/lib/site";
 import { openPortal } from "./actions";
@@ -18,10 +20,12 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
   const live = !!office.paddle_subscription_id && ["active", "past_due"].includes(office.plan_status);
   const trialActive = office.plan_status === "trialing" && new Date(office.trial_ends_at) > new Date();
   const currentPlan = live && (office.plan === "starter" || office.plan === "office") ? (office.plan as PlanKey) : null;
+  const currentInterval: BillingInterval = office.billing_interval === "year" ? "year" : "month";
+  const intervals: BillingInterval[] = annualEnabled ? ["month", "year"] : ["month"];
 
   let status: { tone: "ok" | "warn" | "bad"; text: string };
   if (office.plan_status === "active" && currentPlan) {
-    status = { tone: "ok", text: t.active(plans[currentPlan], office.current_period_end ? formatDate(office.current_period_end, locale) : null) };
+    status = { tone: "ok", text: t.active(`${plans[currentPlan]} ${d.common.intervalName[currentInterval]}`, office.current_period_end ? formatDate(office.current_period_end, locale) : null) };
   } else if (office.plan_status === "past_due") {
     status = { tone: "bad", text: d.app.banner.pastDue };
   } else if (trialActive) {
@@ -55,34 +59,59 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
 
       <p className={`mt-6 rounded-xl border px-4 py-3 text-sm ${toneClass}`}>{status.text}</p>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2">
-        {(Object.keys(site.plans) as PlanKey[]).map((key) => {
-          const p = site.plans[key];
-          const isCurrent = currentPlan === key;
-          return (
-            <div key={key} className={`card p-6 ${isCurrent ? "border-gold/60 ring-1 ring-gold/25" : ""}`}>
-              <div className="flex items-center justify-between">
+      <IntervalToggle
+        className="mt-8"
+        initial={currentInterval}
+        showControl={annualEnabled}
+        labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}
+      >
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          {(Object.keys(site.plans) as PlanKey[]).map((key) => {
+            const p = site.plans[key];
+            return (
+              <div key={key} className="card p-6">
                 <h2 className="font-display text-lg font-semibold">{plans[key]}</h2>
-                {isCurrent && <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
+                {intervals.map((iv) => {
+                  const isCurrent = currentPlan === key && currentInterval === iv;
+                  const label = iv === "year" ? `${plans[key]} ${d.common.intervalName.year}` : plans[key];
+                  return (
+                    <div key={iv} className={iv === "year" ? "hidden group-data-[interval=year]:block" : "group-data-[interval=year]:hidden"}>
+                      <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
+                        <span className="font-display text-3xl font-semibold">
+                          {iv === "year" ? formatYearlyPerMonth(locale, key) : formatPrice(locale, key)}
+                        </span>
+                        <span className="text-muted">{d.common.perMonth}</span>
+                        {isCurrent && <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
+                      </p>
+                      <p className="mt-1 h-5 text-xs text-muted">{iv === "year" ? d.common.billedYearly(formatPrice(locale, key, "year")) : ""}</p>
+                      <p className="mt-2 flex items-center gap-2 text-sm text-muted">
+                        <Check className="h-4 w-4 text-gold" aria-hidden /> {d.common.upToClients(p.clientLimit)}
+                      </p>
+                      <p className="mt-1 flex items-center gap-2 text-sm text-muted">
+                        <Check className="h-4 w-4 text-gold" aria-hidden /> {d.common.upToTeam(p.teamLimit)}
+                      </p>
+                      <div className="mt-5">
+                        {isCurrent ? null : live ? (
+                          <ChangePlanButton plan={key} interval={iv} label={t.change(label)} t={texts} />
+                        ) : (
+                          <SubscribeButton
+                            plan={key}
+                            interval={iv}
+                            label={t.subscribe(label)}
+                            locale={localeMeta[locale].paddle}
+                            primary={key === "office"}
+                            t={texts}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="mt-3">
-                <span className="font-display text-3xl font-semibold">{formatPrice(locale, key)}</span>
-                <span className="text-muted">{d.common.perMonth}</span>
-              </p>
-              <p className="mt-1 flex items-center gap-2 text-sm text-muted">
-                <Check className="h-4 w-4 text-gold" aria-hidden /> {d.common.upToClients(p.clientLimit)}
-              </p>
-              <div className="mt-5">
-                {isCurrent ? null : live ? (
-                  <ChangePlanButton plan={key} label={t.change(plans[key])} t={texts} />
-                ) : (
-                  <SubscribeButton plan={key} label={t.subscribe(plans[key])} locale={localeMeta[locale].paddle} primary={key === "office"} t={texts} />
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </IntervalToggle>
 
       {office.paddle_customer_id && (
         <form action={openPortal} className="mt-8">

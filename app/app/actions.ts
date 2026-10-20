@@ -28,6 +28,7 @@ function errorCode(message: string | undefined, code: string | undefined): strin
   if (message?.includes("CLIENT_LIMIT_REACHED")) return "limit";
   if (message?.includes("SUBSCRIPTION_INACTIVE")) return "inactive";
   if (message?.includes("NO_ITEMS")) return "items";
+  if (message?.includes("TEAM_LIMIT_REACHED")) return "teamLimit";
   if (code === "23505") return "exists";
   if (code === "23514") return "phone";
   return "generic";
@@ -47,6 +48,7 @@ export async function addClient(formData: FormData) {
     phone: p,
     email: text(formData.get("email"), 254),
     notes: text(formData.get("notes"), 2000),
+    assignee_id: uuid(formData.get("assignee")),
   });
   if (error) redirect(`/app/clientes?erro=${errorCode(error.message, error.code)}`);
   revalidatePath("/app", "layout");
@@ -63,7 +65,13 @@ export async function updateClient(formData: FormData) {
   if (p === "invalid") redirect(`/app/clientes/${id}?erro=phone`);
   const { error } = await supabase
     .from("clients")
-    .update({ name, phone: p, email: text(formData.get("email"), 254), notes: text(formData.get("notes"), 2000) })
+    .update({
+      name,
+      phone: p,
+      email: text(formData.get("email"), 254),
+      notes: text(formData.get("notes"), 2000),
+      assignee_id: uuid(formData.get("assignee")),
+    })
     .eq("id", id);
   if (error) redirect(`/app/clientes/${id}?erro=${errorCode(error.message, error.code)}`);
   revalidatePath("/app", "layout");
@@ -168,11 +176,19 @@ export async function updateSettings(formData: FormData) {
   const email = text(formData.get("contact_email"), 254);
   const locale = formData.get("locale");
   const template = text(formData.get("reminder_template"), 1000);
+  const uploadUrl = text(formData.get("upload_url"), 500);
   if (!name) redirect("/app/definicoes?erro=name");
   if (p === "invalid") redirect("/app/definicoes?erro=phone");
   if (email && !email.includes("@")) redirect("/app/definicoes?erro=generic");
+  if (uploadUrl && !/^https:\/\/\S+$/.test(uploadUrl)) redirect("/app/definicoes?erro=url");
 
-  const update: Record<string, string | null> = { name, contact_phone: p, contact_email: email, reminder_template: template };
+  const update: Record<string, string | null> = {
+    name,
+    contact_phone: p,
+    contact_email: email,
+    reminder_template: template,
+    upload_url: uploadUrl,
+  };
   if (isLocale(locale)) update.locale = locale;
   const { error } = await supabase.from("offices").update(update).eq("id", office.id);
   if (error) redirect(`/app/definicoes?erro=${errorCode(error.message, error.code)}`);
@@ -199,6 +215,30 @@ export async function removeDocType(formData: FormData) {
   const id = uuid(formData.get("id"));
   if (id) await supabase.from("document_types").delete().eq("id", id);
   redirect("/app/definicoes#tipos");
+}
+
+/* ---------- Equipa (responsáveis) ---------- */
+
+export async function addTeamMember(formData: FormData) {
+  const { supabase, office } = await getSession();
+  const name = text(formData.get("name"), 120);
+  const p = phone(formData.get("phone"));
+  const email = text(formData.get("email"), 254);
+  if (!name) redirect("/app/definicoes?erro=name#equipa");
+  if (p === "invalid") redirect("/app/definicoes?erro=phone#equipa");
+  if (email && !email.includes("@")) redirect("/app/definicoes?erro=generic#equipa");
+  const { error } = await supabase.from("team_members").insert({ office_id: office.id, name, phone: p, email });
+  if (error) redirect(`/app/definicoes?erro=${errorCode(error.message, error.code)}#equipa`);
+  revalidatePath("/app", "layout");
+  redirect("/app/definicoes?ok=1#equipa");
+}
+
+export async function removeTeamMember(formData: FormData) {
+  const { supabase } = await getSession();
+  const id = uuid(formData.get("id"));
+  if (id) await supabase.from("team_members").delete().eq("id", id);
+  revalidatePath("/app", "layout");
+  redirect("/app/definicoes#equipa");
 }
 
 export async function signOut() {

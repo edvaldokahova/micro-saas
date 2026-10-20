@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarClock, Lock, Mail, MessageCircle } from "lucide-react";
+import { CalendarClock, FolderUp, Lock, Mail, MessageCircle, UserRound } from "lucide-react";
 import { ProductMark, Wordmark } from "@/components/logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, whatsappNumber, type Locale } from "@/lib/i18n";
@@ -18,6 +18,8 @@ type PublicRequest = {
   client_name: string;
   office_phone: string | null;
   office_email: string | null;
+  contact_name: string | null;
+  upload_url: string | null;
   period: string;
   due_date: string | null;
   note: string | null;
@@ -101,9 +103,14 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
           <Checklist token={token} initial={req.items} closed={req.closed} t={texts} />
         </section>
 
-        {(wa || req.office_email) && !req.closed && (
+        {(wa || req.office_email || req.upload_url) && !req.closed && (
           <section className="card mt-8 animate-rise p-5 [animation-delay:200ms]">
             <h2 className="font-display text-base font-semibold">{t.sendTitle}</h2>
+            {req.contact_name && (
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
+                <UserRound className="h-4 w-4 text-gold" aria-hidden /> {t.yourContact(req.contact_name)}
+              </p>
+            )}
             <div className="mt-4 flex flex-wrap gap-2">
               {wa && (
                 <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
@@ -116,6 +123,11 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
                   className="btn btn-secondary"
                 >
                   <Mail className="h-4 w-4" aria-hidden /> {t.sendEmail}
+                </a>
+              )}
+              {req.upload_url && /^https:\/\//.test(req.upload_url) && (
+                <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+                  <FolderUp className="h-4 w-4" aria-hidden /> {t.sendPortal}
                 </a>
               )}
             </div>

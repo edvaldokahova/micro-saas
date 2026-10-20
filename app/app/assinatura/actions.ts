@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { paddleApi } from "@/lib/paddle/server";
-import { priceIds } from "@/lib/paddle/config";
+import { priceIds, type BillingInterval } from "@/lib/paddle/config";
 import type { PlanKey } from "@/lib/site";
 
 // Os erros são códigos; o texto traduzido está no dicionário (app.billing.errors)
@@ -13,11 +13,13 @@ type Office = {
   id: string;
   plan: string;
   plan_status: string;
+  billing_interval: string | null;
   paddle_subscription_id: string | null;
   paddle_customer_id: string | null;
 };
 
 const isPlan = (p: unknown): p is PlanKey => p === "starter" || p === "office";
+const isInterval = (i: unknown): i is BillingInterval => i === "month" || i === "year";
 const hasLiveSubscription = (o: Office) =>
   !!o.paddle_subscription_id && (o.plan_status === "active" || o.plan_status === "past_due");
 
@@ -30,15 +32,18 @@ async function currentOffice(): Promise<Office> {
   if (!user) redirect("/entrar");
   const { data } = await supabase
     .from("offices")
-    .select("id, plan, plan_status, paddle_subscription_id, paddle_customer_id")
+    .select("id, plan, plan_status, billing_interval, paddle_subscription_id, paddle_customer_id")
     .maybeSingle();
   if (!data) redirect("/entrar");
   return data as Office;
 }
 
 // Cria a transação no servidor, com o escritório em custom_data (o navegador não o consegue alterar)
-export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: string; error?: BillingError }> {
-  if (!isPlan(plan) || !priceIds[plan]) return { error: "invalid" };
+export async function startCheckout(
+  plan: PlanKey,
+  interval: BillingInterval = "month",
+): Promise<{ transactionId?: string; error?: BillingError }> {
+  if (!isPlan(plan) || !isInterval(interval) || !priceIds[plan][interval]) return { error: "invalid" };
   const office = await currentOffice();
   if (hasLiveSubscription(office)) return { error: "hasLive" };
 
@@ -46,7 +51,7 @@ export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: st
     const txn = await paddleApi<{ id: string }>("/transactions", {
       method: "POST",
       body: {
-        items: [{ price_id: priceIds[plan], quantity: 1 }],
+        items: [{ price_id: priceIds[plan][interval], quantity: 1 }],
         custom_data: { office_id: office.id },
       },
     });
@@ -56,20 +61,20 @@ export async function startCheckout(plan: PlanKey): Promise<{ transactionId?: st
   }
 }
 
-// Muda entre Starter e Escritório; a Paddle cobra ou credita a diferença de imediato
-export async function changePlan(plan: PlanKey): Promise<{ ok?: true; error?: BillingError }> {
-  if (!isPlan(plan) || !priceIds[plan]) return { error: "invalid" };
+// Muda de plano e/ou de periodicidade (mensal/anual); a Paddle cobra ou credita a diferença de imediato
+export async function changePlan(plan: PlanKey, interval: BillingInterval = "month"): Promise<{ ok?: true; error?: BillingError }> {
+  if (!isPlan(plan) || !isInterval(interval) || !priceIds[plan][interval]) return { error: "invalid" };
   const office = await currentOffice();
   if (!hasLiveSubscription(office) || !/^sub_[a-z0-9]+$/i.test(office.paddle_subscription_id ?? "")) {
     return { error: "noLive" };
   }
-  if (office.plan === plan) return { ok: true };
+  if (office.plan === plan && (office.billing_interval ?? "month") === interval) return { ok: true };
 
   try {
     await paddleApi(`/subscriptions/${office.paddle_subscription_id}`, {
       method: "PATCH",
       body: {
-        items: [{ price_id: priceIds[plan], quantity: 1 }],
+        items: [{ price_id: priceIds[plan][interval], quantity: 1 }],
         proration_billing_mode: "prorated_immediately",
       },
     });

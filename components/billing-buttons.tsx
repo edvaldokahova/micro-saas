@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { changePlan, startCheckout, type BillingError } from "@/app/app/assinatura/actions";
 import { loadPaddle } from "@/lib/paddle/client";
+import type { BillingInterval } from "@/lib/paddle/config";
 import type { PlanKey } from "@/lib/site";
 
 export type BillingTexts = {
@@ -20,9 +21,11 @@ export function SubscribeButton({
   label,
   locale,
   primary = false,
+  interval = "month",
   t,
 }: {
   plan: PlanKey;
+  interval?: BillingInterval;
   label: string;
   locale: "pt" | "es";
   primary?: boolean;
@@ -39,7 +42,7 @@ export function SubscribeButton({
   function onClick() {
     setError("");
     start(async () => {
-      const res = await startCheckout(plan);
+      const res = await startCheckout(plan, interval);
       if (!res.transactionId) {
         setError(res.error ? t.errors[res.error] : t.openError);
         return;
@@ -66,7 +69,17 @@ export function SubscribeButton({
   );
 }
 
-export function ChangePlanButton({ plan, label, t }: { plan: PlanKey; label: string; t: BillingTexts }) {
+export function ChangePlanButton({
+  plan,
+  label,
+  t,
+  interval = "month",
+}: {
+  plan: PlanKey;
+  label: string;
+  t: BillingTexts;
+  interval?: BillingInterval;
+}) {
   const [pending, start] = useTransition();
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -75,7 +88,7 @@ export function ChangePlanButton({ plan, label, t }: { plan: PlanKey; label: str
     if (!window.confirm(t.changeConfirm)) return;
     setMessage("");
     start(async () => {
-      const res = await changePlan(plan);
+      const res = await changePlan(plan, interval);
       if (res.error) {
         setMessage(t.errors[res.error]);
         return;

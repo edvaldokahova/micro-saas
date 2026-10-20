@@ -110,7 +110,7 @@ export async function applyPaddleEvent(db: SupabaseClient, event: PaddleEvent): 
     }
 
     const status = mapStatus(d.status);
-    const plan = planFromPriceId(d.items?.[0]?.price?.id);
+    const match = planFromPriceId(d.items?.[0]?.price?.id);
     const patch: Record<string, string | null> = {
       paddle_subscription_id: d.id,
       paddle_event_at: event.occurred_at,
@@ -118,7 +118,10 @@ export async function applyPaddleEvent(db: SupabaseClient, event: PaddleEvent): 
     };
     if (d.customer_id) patch.paddle_customer_id = d.customer_id;
     if (status) patch.plan_status = status;
-    if (plan) patch.plan = plan;
+    if (match) {
+      patch.plan = match.plan;
+      patch.billing_interval = match.interval;
+    }
 
     const { error } = await db.from("offices").update(patch).eq("id", office.id);
     if (error) throw error;

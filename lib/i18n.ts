@@ -25,9 +25,32 @@ export function localeFromAcceptLanguage(header: string | null): Locale {
   return "pt-PT";
 }
 
-export function formatPrice(locale: Locale, plan: PlanKey): string {
+export function formatMoney(locale: Locale, amount: number): string {
+  const currency = localeMeta[locale].currency;
+  const decimals = Number.isInteger(amount) ? 0 : 2;
+  const n = new Intl.NumberFormat(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(amount);
+  return currency === "BRL" ? `R$ ${n}` : `${n} €`;
+}
+
+// Preço do plano: mensal, ou o total anual
+export function formatPrice(locale: Locale, plan: PlanKey, interval: "month" | "year" = "month"): string {
   const p = site.plans[plan];
-  return localeMeta[locale].currency === "BRL" ? `R$ ${p.priceBrl}` : `${p.priceEur} €`;
+  const brl = localeMeta[locale].currency === "BRL";
+  return formatMoney(locale, interval === "year" ? (brl ? p.yearBrl : p.yearEur) : brl ? p.priceBrl : p.priceEur);
+}
+
+// Equivalente mensal do plano anual (ex.: 89 € / 12 = 7,42 €)
+export function formatYearlyPerMonth(locale: Locale, plan: PlanKey): string {
+  const p = site.plans[plan];
+  const total = localeMeta[locale].currency === "BRL" ? p.yearBrl : p.yearEur;
+  return formatMoney(locale, Math.round((total / 12) * 100) / 100);
+}
+
+// Custo por dia do plano mensal mais barato (para a secção de valor)
+export function formatPerDay(locale: Locale): string {
+  const p = site.plans.starter;
+  const monthly = localeMeta[locale].currency === "BRL" ? p.priceBrl : p.priceEur;
+  return formatMoney(locale, Math.round((monthly / 30) * 100) / 100);
 }
 
 // "2026-09-01" -> "Setembro de 2026"

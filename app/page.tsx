@@ -3,9 +3,11 @@ import Link from "next/link";
 import { ArrowRight, Check, Link2, ListChecks, MessageCircle, ShieldCheck } from "lucide-react";
 import { Flag } from "@/components/flags";
 import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
+import { IntervalToggle } from "@/components/interval-toggle";
+import { ValueEquation } from "@/components/value-equation";
 import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { formatPrice, getDictionary, type Locale } from "@/lib/i18n";
+import { formatMoney, formatPerDay, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site, type PlanKey } from "@/lib/site";
 
@@ -152,11 +154,30 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Equação de valor */}
+        <ValueEquation
+          t={{
+            eyebrow: h.value.eyebrow,
+            title: h.value.title,
+            lead: h.value.lead,
+            dream: h.value.dream,
+            likelihood: h.value.likelihood,
+            time: h.value.time,
+            effort: h.value.effort,
+            equals: h.value.equals,
+            perDay: h.value.perDay(formatPerDay(locale)),
+          }}
+        />
+
         {/* Preços */}
         <section id="precos" className="scroll-mt-16 mx-auto max-w-6xl px-5 py-24">
           <h2 className="reveal font-display text-3xl font-semibold tracking-tight sm:text-4xl">{h.pricingTitle}</h2>
           <p className="reveal mt-3 max-w-2xl text-muted">{h.pricingLead(site.trialDays)}</p>
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <IntervalToggle
+            className="reveal mt-10"
+            labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}
+          >
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
             {plans.map((key) => {
               const p = site.plans[key];
               const featured = key === "office";
@@ -171,11 +192,28 @@ export default async function Home() {
                     </span>
                   )}
                   <h3 className="font-display text-lg font-semibold">{d.common.planNames[key]}</h3>
-                  <p className="mt-5 flex items-baseline gap-1">
-                    <span className="font-display text-5xl font-semibold tracking-tight">{formatPrice(locale, key)}</span>
-                    <span className="text-muted">{d.common.perMonth}</span>
-                  </p>
-                  <p className="mt-2 text-sm text-muted">{d.common.upToClients(p.clientLimit)}</p>
+                  {/* Mensal */}
+                  <div className="group-data-[interval=year]:hidden">
+                    <p className="mt-5 flex items-baseline gap-1">
+                      <span className="font-display text-5xl font-semibold tracking-tight">{formatPrice(locale, key)}</span>
+                      <span className="text-muted">{d.common.perMonth}</span>
+                    </p>
+                    <p className="mt-1 h-5 text-sm text-muted" />
+                  </div>
+                  {/* Anual: equivalente mensal em destaque, total por ano por baixo */}
+                  <div className="hidden animate-fade group-data-[interval=year]:block">
+                    <p className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                      <span className="font-display text-5xl font-semibold tracking-tight">{formatYearlyPerMonth(locale, key)}</span>
+                      <span className="text-muted">{d.common.perMonth}</span>
+                      <span className="rounded-full bg-ok/15 px-2 py-0.5 text-xs font-semibold text-ok">{d.common.twoMonthsFree}</span>
+                    </p>
+                    <p className="mt-1 h-5 text-sm text-muted">
+                      <span className="line-through opacity-70">{formatMoney(locale, (localeMeta[locale].currency === "BRL" ? p.priceBrl : p.priceEur) * 12)}</span>{" "}
+                      {d.common.billedYearly(formatPrice(locale, key, "year"))}
+                    </p>
+                  </div>
+                  <p className="mt-3 text-sm text-muted">{d.common.upToClients(p.clientLimit)}</p>
+                  <p className="mt-1 text-sm text-muted">{d.common.upToTeam(p.teamLimit)}</p>
                   <ul className="mt-7 space-y-3 text-[15px]">
                     {h.features.map((f) => (
                       <li key={f} className="flex items-start gap-3">
@@ -190,6 +228,7 @@ export default async function Home() {
               );
             })}
           </div>
+          </IntervalToggle>
         </section>
 
         {/* Perguntas */}

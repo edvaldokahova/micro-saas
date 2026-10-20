@@ -16,11 +16,13 @@ export type Office = {
   paddle_customer_id: string | null;
   contact_phone: string | null;
   contact_email: string | null;
+  upload_url: string | null;
+  billing_interval: string | null;
   reminder_template: string | null;
 };
 
 const columns =
-  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, reminder_template";
+  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template";
 
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {

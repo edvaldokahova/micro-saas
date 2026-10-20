@@ -8,13 +8,18 @@ import { addClient } from "../actions";
 
 export const metadata: Metadata = { title: "Clientes" };
 
-type Client = { id: string; name: string; phone: string | null; email: string | null; archived_at: string | null };
+type Client = { id: string; name: string; phone: string | null; email: string | null; archived_at: string | null; assignee_id: string | null };
 
 export default async function Clientes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string }> }) {
   const sp = await searchParams;
   const { supabase, office, d } = await getSession();
   const t = d.app.clients;
-  const { data } = await supabase.from("clients").select("id, name, phone, email, archived_at").order("name");
+  const [{ data }, { data: teamData }] = await Promise.all([
+    supabase.from("clients").select("id, name, phone, email, archived_at, assignee_id").order("name"),
+    supabase.from("team_members").select("id, name").order("name"),
+  ]);
+  const team = (teamData ?? []) as { id: string; name: string }[];
+  const teamName = new Map(team.map((m) => [m.id, m.name]));
   const all = (data ?? []) as Client[];
   const active = all.filter((c) => !c.archived_at);
   const archived = all.filter((c) => c.archived_at);
@@ -50,6 +55,9 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                       <span className="flex items-center gap-1.5 truncate text-xs text-muted">
                         {c.phone && <Phone className="h-3 w-3" aria-hidden />}
                         {c.phone ?? c.email ?? "—"}
+                        {c.assignee_id && teamName.get(c.assignee_id) && (
+                          <span className="ml-1 rounded-full bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
+                        )}
                       </span>
                     </Link>
                     {officeAccess(office).canWrite && (
@@ -105,6 +113,19 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               </span>
               <input name="email" type="email" maxLength={254} className="field" disabled={!canAdd} autoComplete="off" />
             </label>
+            {team.length > 0 && (
+            <label className="block">
+              <span className="label">{d.app.team.assignee}</span>
+              <select name="assignee" defaultValue={""} className="field" disabled={!canAdd}>
+                <option value="">{d.app.team.general}</option>
+                {team.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            )}
             {canAdd ? (
               <SubmitButton pendingText={d.common.saving} className="btn btn-primary w-full">
                 {t.add}

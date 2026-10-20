@@ -10,7 +10,15 @@ import { setClientArchived, updateClient } from "../../actions";
 
 export const metadata: Metadata = { title: "Cliente" };
 
-type Client = { id: string; name: string; phone: string | null; email: string | null; notes: string | null; archived_at: string | null };
+type Client = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  archived_at: string | null;
+  assignee_id: string | null;
+};
 type Req = { id: string; period: string; total_items: number; received_items: number };
 
 export default async function Cliente({
@@ -26,10 +34,12 @@ export default async function Cliente({
   const { supabase, office, locale, d } = await getSession();
   const t = d.app.clients;
 
-  const [{ data: c }, { data: reqs }] = await Promise.all([
-    supabase.from("clients").select("id, name, phone, email, notes, archived_at").eq("id", id).maybeSingle(),
+  const [{ data: c }, { data: reqs }, { data: teamData }] = await Promise.all([
+    supabase.from("clients").select("id, name, phone, email, notes, archived_at, assignee_id").eq("id", id).maybeSingle(),
     supabase.from("requests_overview").select("id, period, total_items, received_items").eq("client_id", id).order("period", { ascending: false }).limit(24),
+    supabase.from("team_members").select("id, name").order("name"),
   ]);
+  const team = (teamData ?? []) as { id: string; name: string }[];
   if (!c) notFound();
   const client = c as Client;
   const history = (reqs ?? []) as Req[];
@@ -68,6 +78,21 @@ export default async function Cliente({
           <span className="label">{t.email}</span>
           <input name="email" type="email" maxLength={254} defaultValue={client.email ?? ""} className="field" />
         </label>
+        {team.length > 0 && (
+          <div className="sm:col-span-2">
+            <label className="block">
+              <span className="label">{d.app.team.assignee}</span>
+              <select name="assignee" defaultValue={client.assignee_id ?? ""} className="field">
+                <option value="">{d.app.team.general}</option>
+                {team.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
         <label className="block sm:col-span-2">
           <span className="label">{t.notes}</span>
           <textarea name="notes" rows={3} maxLength={2000} defaultValue={client.notes ?? ""} className="field" />

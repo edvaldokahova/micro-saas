@@ -8,8 +8,9 @@ export const site = {
   trialDays: 5,
   // Euros para Portugal e Espanha; reais para o Brasil (na Paddle: preço por país no mesmo produto)
   plans: {
-    starter: { key: "starter", name: "Starter", priceEur: 9, priceBrl: 49, clientLimit: 20 },
-    office: { key: "office", name: "Escritório", priceEur: 15, priceBrl: 79, clientLimit: 60 },
+    // Anual: abaixo de 10 mensalidades (mais de 2 meses grátis), com preço psicológico
+    starter: { key: "starter", name: "Starter", priceEur: 9, priceBrl: 49, yearEur: 89, yearBrl: 489, clientLimit: 20, teamLimit: 3 },
+    office: { key: "office", name: "Escritório", priceEur: 15, priceBrl: 79, yearEur: 149, yearBrl: 789, clientLimit: 60, teamLimit: 15 },
   },
   // Vendedor: pessoa singular a operar sob a marca "A Bilonai Group".
   // Quando a empresa for registada, trocar aqui (nome, NIF e morada) e as páginas legais atualizam-se sozinhas.

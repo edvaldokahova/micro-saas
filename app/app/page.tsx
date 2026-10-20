@@ -18,6 +18,8 @@ type Row = {
   client_name: string;
   client_phone: string | null;
   client_email: string | null;
+  assignee_id: string | null;
+  assignee_name: string | null;
   period: string;
   due_date: string | null;
   token: string;
@@ -27,7 +29,7 @@ type Row = {
   sent_items: number;
 };
 
-export default async function Painel({ searchParams }: { searchParams: Promise<{ mes?: string; criados?: string; erro?: string }> }) {
+export default async function Painel({ searchParams }: { searchParams: Promise<{ mes?: string; criados?: string; erro?: string; resp?: string }> }) {
   const sp = await searchParams;
   const { supabase, office, locale, d } = await getSession();
   const t = d.app.dashboard;
@@ -38,13 +40,17 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const [{ data: reqData }, { data: clientData }] = await Promise.all([
     supabase
       .from("requests_overview")
-      .select("id, client_id, client_name, client_phone, client_email, period, due_date, token, reminder_count, total_items, received_items, sent_items")
+      .select("id, client_id, client_name, client_phone, client_email, assignee_id, assignee_name, period, due_date, token, reminder_count, total_items, received_items, sent_items")
       .eq("period", period),
     supabase.from("clients").select("id").is("archived_at", null),
   ]);
-  const rows = (reqData ?? []) as Row[];
+  const { data: teamData } = await supabase.from("team_members").select("id, name").order("name");
+  const team = (teamData ?? []) as { id: string; name: string }[];
+  const resp = team.some((m) => m.id === sp.resp) ? sp.resp : undefined;
+  const allRows = (reqData ?? []) as Row[];
+  const rows = resp ? allRows.filter((r) => r.assignee_id === resp) : allRows;
   const activeClients = (clientData ?? []).length;
-  const withRequest = new Set(rows.map((r) => r.client_id));
+  const withRequest = new Set(allRows.map((r) => r.client_id));
   const withoutRequest = (clientData ?? []).filter((c: { id: string }) => !withRequest.has(c.id)).length;
 
   // Documentos ainda não recebidos de cada pedido (para a mensagem de WhatsApp)
@@ -122,6 +128,23 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
         </div>
       ) : (
         <>
+          {team.length > 0 && (
+            <nav className="mt-6 flex flex-wrap gap-2 text-sm" aria-label={d.app.team.assignee}>
+              {[{ id: "", name: d.app.team.all }, ...team].map((m) => {
+                const active = (resp ?? "") === m.id;
+                return (
+                  <Link
+                    key={m.id || "all"}
+                    href={`/app?mes=${ym}${m.id ? `&resp=${m.id}` : ""}`}
+                    className={`rounded-full border px-3.5 py-1.5 transition ${active ? "border-gold bg-gold/10 text-ivory" : "border-line text-muted hover:text-ivory"}`}
+                  >
+                    {m.name}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
+
           <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {stats.map((s, i) => (
               <div key={s.label} className="card animate-rise p-5" style={{ animationDelay: `${i * 60}ms` }}>
@@ -171,6 +194,9 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                             {r.client_name}
                           </Link>
                           <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${deadlineTone[st.kind]}`}>{dl.chip}</span>
+                          {r.assignee_name && !resp && (
+                            <span className="hidden shrink-0 rounded-full border border-line px-2 py-0.5 text-[11px] text-muted sm:inline">{r.assignee_name}</span>
+                          )}
                         </div>
                         {(r.client_phone || r.client_email) && (
                           <p className="mt-1 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">

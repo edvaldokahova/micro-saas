@@ -271,6 +271,39 @@ body {
     transform: translate3d(3%, 2%, 0) scale(1.06);
   }
 }
+@keyframes bob-up {
+  0%, 100% { transform: translateY(1px); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes bob-down {
+  0%, 100% { transform: translateY(-1px); }
+  50% { transform: translateY(2px); }
+}
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(0 0 18px color-mix(in oklab, var(--color-gold) 45%, transparent)); }
+}
+.animate-bob-up {
+  animation: bob-up 1.6s ease-in-out infinite;
+}
+.animate-bob-down {
+  animation: bob-down 1.6s ease-in-out infinite;
+}
+.value-glow {
+  animation: glow 3.2s ease-in-out infinite;
+}
+.draw-line {
+  transform-origin: center;
+  animation: grow 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@supports (animation-timeline: view()) {
+  .draw-line {
+    animation: grow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 35%;
+  }
+}
+
 @keyframes pop {
   0% {
     transform: scale(0.6);
