@@ -178,6 +178,7 @@ const dict: Dictionary = {
       complete: "Completo",
       missing: (c: number) => `${c} pendentes`,
       reminders: (c: number) => n(c, "cobrança", "cobranças"),
+      showDocs: "Ver documentos",
       dueOn: (d: string) => `Prazo: ${d}`,
     },
     team: {

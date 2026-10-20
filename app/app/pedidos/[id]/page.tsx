@@ -136,6 +136,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
               {i.status !== "pending" && isChannel(i.sent_via) && (
                 <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted">
                   <ChannelIcon via={i.sent_via} /> {d.common.sentVia(d.common.via[i.sent_via])}
+                  {i.client_marked_at && <> · {formatDate(i.client_marked_at, locale)}</>}
                 </span>
               )}
             </span>

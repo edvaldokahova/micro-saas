@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Mail, Phone, Plus, Sparkles, UserPlus } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Circle, Mail, Phone, Plus, Send, Sparkles, UserPlus } from "lucide-react";
 import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
@@ -48,9 +48,8 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
     // Documentos em falta ou enviados deste mês (para a mensagem de WhatsApp e os canais)
     supabase
       .from("request_items")
-      .select("request_id, label, status, sent_via, position, requests!inner(period)")
+      .select("request_id, label, status, sent_via, client_marked_at, position, requests!inner(period)")
       .eq("requests.period", period)
-      .in("status", ["pending", "sent"])
       .order("position"),
   ]);
   const team = (teamData ?? []) as { id: string; name: string }[];
@@ -63,9 +62,13 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
 
   const pendingByRequest = new Map<string, string[]>();
   const viasByRequest = new Map<string, Channel[]>();
-  for (const i of (items ?? []) as { request_id: string; label: string; status: string; sent_via: string | null }[]) {
+  // e a lista completa de cada pedido (para ver documento a documento por onde chegou)
+  type Doc = { request_id: string; label: string; status: "pending" | "sent" | "received"; sent_via: string | null; client_marked_at: string | null };
+  const docsByRequest = new Map<string, Doc[]>();
+  for (const i of (items ?? []) as Doc[]) {
+    docsByRequest.set(i.request_id, [...(docsByRequest.get(i.request_id) ?? []), i]);
     if (i.status === "pending") pendingByRequest.set(i.request_id, [...(pendingByRequest.get(i.request_id) ?? []), i.label]);
-    else if (isChannel(i.sent_via)) viasByRequest.set(i.request_id, [...(viasByRequest.get(i.request_id) ?? []), i.sent_via]);
+    else if (i.status === "sent" && isChannel(i.sent_via)) viasByRequest.set(i.request_id, [...(viasByRequest.get(i.request_id) ?? []), i.sent_via]);
   }
 
   const isComplete = (r: Row) => r.total_items > 0 && r.received_items === r.total_items;
@@ -236,6 +239,39 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
                         <CopyButton value={publicLink(r.token)} label={d.common.copy} done={d.common.copied} compact />
                       </div>
                     </div>
+
+                    {/* Documento a documento: estado, por onde chegou e quando */}
+                    {(docsByRequest.get(r.id) ?? []).length > 0 && (
+                      <details className="group/docs mt-2">
+                        <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-muted transition hover:text-ivory [&::-webkit-details-marker]:hidden">
+                          {t.showDocs}
+                          <ChevronDown className="h-3.5 w-3.5 transition group-open/docs:rotate-180" aria-hidden />
+                        </summary>
+                        <ul className="mt-2.5 grid animate-fade gap-1.5 sm:grid-cols-2">
+                          {(docsByRequest.get(r.id) ?? []).map((doc, k) => (
+                            <li key={k} className="flex items-center gap-2.5 rounded-lg border border-line bg-ink/40 px-3 py-2 text-[13px]">
+                              {doc.status === "received" ? (
+                                <CheckCircle2 className="h-4 w-4 shrink-0 text-ok" aria-hidden />
+                              ) : doc.status === "sent" ? (
+                                <Send className="h-4 w-4 shrink-0 text-gold" aria-hidden />
+                              ) : (
+                                <Circle className="h-4 w-4 shrink-0 text-muted" aria-hidden />
+                              )}
+                              <span className="min-w-0 flex-1 truncate">{doc.label}</span>
+                              {doc.status !== "pending" && isChannel(doc.sent_via) ? (
+                                <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-muted" title={doc.client_marked_at ? formatDate(doc.client_marked_at, locale) : undefined}>
+                                  <ChannelIcon via={doc.sent_via} className="h-3.5 w-3.5" />
+                                  {d.common.via[doc.sent_via]}
+                                  {doc.client_marked_at && <span className="hidden sm:inline">· {formatDate(doc.client_marked_at, locale, false)}</span>}
+                                </span>
+                              ) : (
+                                <span className="shrink-0 text-[11px] text-muted">{d.app.request.status[doc.status]}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
                   </li>
                 );
               })}

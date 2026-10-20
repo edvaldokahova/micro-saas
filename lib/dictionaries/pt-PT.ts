@@ -176,6 +176,7 @@ const dict = {
       complete: "Completo",
       missing: (c: number) => `${c} em falta`,
       reminders: (c: number) => n(c, "lembrete", "lembretes"),
+      showDocs: "Ver documentos",
       dueOn: (d: string) => `Prazo: ${d}`,
     },
     team: {
