@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
+import { CadenceField } from "@/components/cadence-field";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
 import { formatPeriod } from "@/lib/i18n";
@@ -18,8 +19,9 @@ type Client = {
   notes: string | null;
   archived_at: string | null;
   assignee_id: string | null;
+  cadence: string;
 };
-type Req = { id: string; period: string; total_items: number; received_items: number };
+type Req = { id: string; period: string; months: number; total_items: number; received_items: number };
 
 export default async function Cliente({
   params,
@@ -35,8 +37,8 @@ export default async function Cliente({
   const t = d.app.clients;
 
   const [{ data: c }, { data: reqs }, { data: teamData }] = await Promise.all([
-    supabase.from("clients").select("id, name, phone, email, notes, archived_at, assignee_id").eq("id", id).maybeSingle(),
-    supabase.from("requests_overview").select("id, period, total_items, received_items").eq("client_id", id).order("period", { ascending: false }).limit(24),
+    supabase.from("clients").select("id, name, phone, email, notes, archived_at, assignee_id, cadence").eq("id", id).maybeSingle(),
+    supabase.from("requests_overview").select("id, period, months, total_items, received_items").eq("client_id", id).order("period", { ascending: false }).limit(24),
     supabase.from("team_members").select("id, name").order("name"),
   ]);
   const team = (teamData ?? []) as { id: string; name: string }[];
@@ -78,6 +80,14 @@ export default async function Cliente({
           <span className="label">{t.email}</span>
           <input name="email" type="email" maxLength={254} defaultValue={client.email ?? ""} className="field" />
         </label>
+        <div className="sm:col-span-2">
+          <CadenceField
+            defaultValue={client.cadence === "quarterly" ? "quarterly" : "monthly"}
+            labels={d.common.cadence}
+            label={t.cadence}
+            hint={t.cadenceHint}
+          />
+        </div>
         {team.length > 0 && (
           <div className="sm:col-span-2">
             <label className="block">
@@ -113,7 +123,7 @@ export default async function Cliente({
               return (
                 <li key={r.id}>
                   <Link href={`/app/pedidos/${r.id}`} className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm hover:bg-ink-3/50">
-                    <span className="font-medium">{formatPeriod(r.period, locale)}</span>
+                    <span className="font-medium">{formatPeriod(r.period, locale, r.months)}</span>
                     <span className={done ? "text-ok" : "text-muted"}>{d.app.dashboard.docsOf(r.received_items, r.total_items)}</span>
                   </Link>
                 </li>

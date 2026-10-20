@@ -3,11 +3,12 @@ import Link from "next/link";
 import { ArrowRight, Check, Link2, ListChecks, MessageCircle, ShieldCheck } from "lucide-react";
 import { Flag } from "@/components/flags";
 import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
+import { MessagePreview } from "@/components/message-preview";
 import { IntervalToggle } from "@/components/interval-toggle";
 import { ValueEquation } from "@/components/value-equation";
 import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { formatMoney, formatPerDay, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, type Locale } from "@/lib/i18n";
+import { fill, formatMoney, formatPerDay, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site, type PlanKey } from "@/lib/site";
 
@@ -83,6 +84,26 @@ export default async function Home() {
     sentVia: d.common.sentVia("{canal}"),
   };
 
+  // A mensagem que o cliente do escritório recebe, gerada pelo modelo real (dados fictícios).
+  // Em Espanha o exemplo é trimestral, como a maioria dos pedidos de uma gestoria.
+  const demoLink = "entrega.bilonai.com/p/k7m2x9qa4hfp";
+  const demoPeriod = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
+  const message = {
+    ...h.message,
+    office: h.demo.office,
+    message: fill(d.app.whatsappTemplate, {
+      cliente: h.mock.clients[2],
+      periodo: demoPeriod,
+      lista: h.demo.docs.slice(0, 2).map((l) => `• ${l}`).join("\n"),
+      link: demoLink,
+      escritorio: h.demo.office,
+    }),
+    link: demoLink,
+    previewTitle: d.public.metaTitle(demoPeriod, h.demo.office),
+    previewText: d.public.metaDescription(h.demo.office),
+    note: h.mockNote,
+  };
+
   return (
     <>
       <SiteHeader />
@@ -154,6 +175,9 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* O que o cliente recebe */}
+        <MessagePreview t={message} />
+
         {/* Equação de valor */}
         <ValueEquation
           t={{
@@ -192,6 +216,7 @@ export default async function Home() {
                     </span>
                   )}
                   <h3 className="font-display text-lg font-semibold">{d.common.planNames[key]}</h3>
+                  <p className="mt-1 text-sm text-muted">{h.planFor[key]}</p>
                   {/* Mensal */}
                   <div className="group-data-[interval=year]:hidden">
                     <p className="mt-5 flex items-baseline gap-1">

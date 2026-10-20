@@ -5,7 +5,7 @@ import { ArrowLeft, CheckCircle2, Circle, Send } from "lucide-react";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { ChannelIcon, isChannel } from "@/components/channel-icon";
 import { formatDate, formatPeriod } from "@/lib/i18n";
-import { getSession } from "@/lib/office";
+import { dashboardMonth, getSession } from "@/lib/office";
 import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
 import { publicLink, reminderUrl } from "@/lib/reminder";
 import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
@@ -18,6 +18,7 @@ type Req = {
   client_name: string;
   client_phone: string | null;
   period: string;
+  months: number;
   due_date: string | null;
   token: string;
   reminder_count: number;
@@ -36,7 +37,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const [{ data: r }, { data: it }, { data: noteRow }] = await Promise.all([
     supabase
       .from("requests_overview")
-      .select("id, client_id, client_name, client_phone, period, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
+      .select("id, client_id, client_name, client_phone, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("request_items").select("id, label, status, client_marked_at, sent_via").eq("request_id", id).order("position").order("created_at"),
@@ -52,6 +53,8 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const link = publicLink(req.token);
   const st = deadlineState(req.due_date, done);
   const dl = deadlineLabel(st, d);
+  const periodLabel = formatPeriod(req.period, locale, req.months);
+  const backMonth = dashboardMonth(req.period, req.months);
 
   const chip = {
     pending: "bg-warn/15 text-warn",
@@ -61,13 +64,13 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href={`/app?mes=${req.period.slice(0, 7)}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
-        <ArrowLeft className="h-4 w-4" aria-hidden /> {formatPeriod(req.period, locale)}
+      <Link href={`/app?mes=${backMonth}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
+        <ArrowLeft className="h-4 w-4" aria-hidden /> {formatPeriod(`${backMonth}-01`, locale)}
       </Link>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">{formatPeriod(req.period, locale)}</p>
+          <p className="eyebrow">{periodLabel}</p>
           <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">
             <Link href={`/app/clientes/${req.client_id}`} className="hover:text-gold">
               {req.client_name}
@@ -164,7 +167,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
         )}
         <form action={deleteRequest}>
           <input type="hidden" name="request" value={req.id} />
-          <input type="hidden" name="period" value={req.period.slice(0, 7)} />
+          <input type="hidden" name="period" value={backMonth} />
           <SubmitButton className="btn btn-sm text-bad hover:bg-bad/10" confirm={t.removeConfirm}>
             {t.remove}
           </SubmitButton>

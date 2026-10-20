@@ -15,6 +15,7 @@ const text = (v: FormDataEntryValue | null, max: number) => {
 const uuid = (v: unknown) => (typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v) ? v : null);
 const month = (v: FormDataEntryValue | null) => (typeof v === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) ? v : null);
 const date = (v: FormDataEntryValue | null) => (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null);
+const cadence = (v: FormDataEntryValue | null) => (v === "quarterly" ? "quarterly" : "monthly");
 
 // Normaliza telemóveis: mantém o + inicial, números e espaços; tira parênteses, hífenes e pontos
 function phone(v: FormDataEntryValue | null): string | null | "invalid" {
@@ -49,6 +50,7 @@ export async function addClient(formData: FormData) {
     email: text(formData.get("email"), 254),
     notes: text(formData.get("notes"), 2000),
     assignee_id: uuid(formData.get("assignee")),
+    cadence: cadence(formData.get("cadence")),
   });
   if (error) redirect(`/app/clientes?erro=${errorCode(error.message, error.code)}`);
   revalidatePath("/app", "layout");
@@ -71,6 +73,7 @@ export async function updateClient(formData: FormData) {
       email: text(formData.get("email"), 254),
       notes: text(formData.get("notes"), 2000),
       assignee_id: uuid(formData.get("assignee")),
+      cadence: cadence(formData.get("cadence")),
     })
     .eq("id", id);
   if (error) redirect(`/app/clientes/${id}?erro=${errorCode(error.message, error.code)}`);
@@ -140,6 +143,7 @@ export async function setItemStatus(formData: FormData) {
   if (!id || !request || (status !== "received" && status !== "pending")) return;
   await supabase.from("request_items").update({ status }).eq("id", id);
   revalidatePath(`/app/pedidos/${request}`);
+  revalidatePath("/app");
 }
 
 export async function markAllReceived(formData: FormData) {
@@ -165,6 +169,8 @@ export async function bumpReminder(requestId: string): Promise<void> {
   if (!id) return;
   const { supabase } = await getSession();
   await supabase.rpc("bump_reminder", { p_request: id });
+  // Atualiza o painel: o cliente sai de "Por lembrar"
+  revalidatePath("/app");
 }
 
 /* ---------- Definições ---------- */

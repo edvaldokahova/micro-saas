@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, Phone, Plus } from "lucide-react";
+import { CadenceField } from "@/components/cadence-field";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
 import { clientLimit, getSession, officeAccess } from "@/lib/office";
@@ -8,14 +9,14 @@ import { addClient } from "../actions";
 
 export const metadata: Metadata = { title: "Clientes" };
 
-type Client = { id: string; name: string; phone: string | null; email: string | null; archived_at: string | null; assignee_id: string | null };
+type Client = { id: string; name: string; phone: string | null; email: string | null; archived_at: string | null; assignee_id: string | null; cadence: string };
 
 export default async function Clientes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string }> }) {
   const sp = await searchParams;
   const { supabase, office, d } = await getSession();
   const t = d.app.clients;
   const [{ data }, { data: teamData }] = await Promise.all([
-    supabase.from("clients").select("id, name, phone, email, archived_at, assignee_id").order("name"),
+    supabase.from("clients").select("id, name, phone, email, archived_at, assignee_id, cadence").order("name"),
     supabase.from("team_members").select("id, name").order("name"),
   ]);
   const team = (teamData ?? []) as { id: string; name: string }[];
@@ -55,6 +56,9 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                       <span className="flex items-center gap-1.5 truncate text-xs text-muted">
                         {c.phone && <Phone className="h-3 w-3" aria-hidden />}
                         {c.phone ?? c.email ?? "—"}
+                        {c.cadence === "quarterly" && (
+                          <span className="ml-1 rounded-full border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>
+                        )}
                         {c.assignee_id && teamName.get(c.assignee_id) && (
                           <span className="ml-1 rounded-full bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
                         )}
@@ -113,6 +117,14 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               </span>
               <input name="email" type="email" maxLength={254} className="field" disabled={!canAdd} autoComplete="off" />
             </label>
+            {/* Em Espanha o ciclo normal é trimestral (modelo 303); em Portugal e no Brasil, mensal */}
+            <CadenceField
+              defaultValue={office.locale === "es-ES" ? "quarterly" : "monthly"}
+              labels={d.common.cadence}
+              label={t.cadence}
+              hint={t.cadenceHint}
+              disabled={!canAdd}
+            />
             {team.length > 0 && (
             <label className="block">
               <span className="label">{d.app.team.assignee}</span>

@@ -65,6 +65,19 @@ export function resolvePeriod(value: string | undefined): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Pedidos trimestrais aparecem no painel no último mês do trimestre
+export function isQuarterEnd(period: string): boolean {
+  return [3, 6, 9, 12].includes(Number(period.slice(5, 7)));
+}
+export function quarterStart(period: string): string {
+  const [y, m] = period.split("-").map(Number);
+  return `${y}-${String(Math.floor((m - 1) / 3) * 3 + 1).padStart(2, "0")}-01`;
+}
+// Mês do painel onde o pedido aparece ("2026-07-01" com 3 meses -> "2026-09")
+export function dashboardMonth(period: string, months: number): string {
+  return months === 3 ? shiftPeriod(period, 2) : period.slice(0, 7);
+}
+
 export function shiftPeriod(period: string, months: number): string {
   const [y, m] = period.split("-").map(Number);
   const d = new Date(Date.UTC(y, m - 1 + months, 1));

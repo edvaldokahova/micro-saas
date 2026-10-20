@@ -1,5 +1,5 @@
 import "server-only";
-import { fill, formatPeriod, whatsappNumber, type Dictionary, type Locale } from "@/lib/i18n";
+import { fill, formatPeriod, periodOf, whatsappNumber, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Office } from "@/lib/office";
 import { site } from "@/lib/site";
 
@@ -12,7 +12,7 @@ export function reminderUrl(
   office: Office,
   locale: Locale,
   d: Dictionary,
-  req: { token: string; period: string; client_name: string; client_phone: string | null },
+  req: { token: string; period: string; months?: number; client_name: string; client_phone: string | null },
   pendingLabels: string[],
 ): string | null {
   const number = whatsappNumber(req.client_phone, locale);
@@ -22,7 +22,8 @@ export function reminderUrl(
     : d.app.whatsappAllSent;
   const text = fill(template, {
     cliente: req.client_name,
-    mes: formatPeriod(req.period, locale).toLowerCase(),
+    mes: formatPeriod(req.period, locale, req.months).toLowerCase(),
+    periodo: periodOf(req.period, locale, req.months),
     lista: pendingLabels.map((l) => `• ${l}`).join("\n"),
     link: publicLink(req.token),
     escritorio: office.name,

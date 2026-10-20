@@ -8,7 +8,8 @@ type Via = "whatsapp" | "email" | "other";
 // A função na base de dados valida o token, só mexe em documentos desse pedido
 // e nunca altera o que o escritório já marcou como recebido.
 export async function markSent(token: string, itemId: string, sent: boolean, via: Via | null): Promise<"pending" | "sent" | null> {
-  if (typeof token !== "string" || token.length !== 32 || !/^[0-9a-f-]{36}$/i.test(itemId)) return null;
+  // Links curtos (12 caracteres) e antigos (32)
+  if (typeof token !== "string" || (token.length !== 12 && token.length !== 32) || !/^[0-9a-f-]{36}$/i.test(itemId)) return null;
   const channel = via === "whatsapp" || via === "email" || via === "other" ? via : null;
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("set_public_item_sent", {

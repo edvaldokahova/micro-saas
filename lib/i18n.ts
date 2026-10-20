@@ -53,11 +53,28 @@ export function formatPerDay(locale: Locale): string {
   return formatMoney(locale, Math.round((monthly / 30) * 100) / 100);
 }
 
-// "2026-09-01" -> "Setembro de 2026"
-export function formatPeriod(period: string, locale: Locale): string {
+// Trimestre com a ordinal de cada mercado: "3.º trimestre" (PT), "3º trimestre" (BR), "3.er trimestre" (ES)
+function quarterLabel(q: number, year: number, locale: Locale): string {
+  if (locale === "es-ES") return `${q}.${q === 1 || q === 3 ? "er" : "º"} trimestre de ${year}`;
+  return `${q}${locale === "pt-BR" ? "º" : ".º"} trimestre de ${year}`;
+}
+
+// "2026-09-01" -> "Setembro de 2026"; com months = 3 -> "3.º trimestre de 2026"
+export function formatPeriod(period: string, locale: Locale, months = 1): string {
+  if (months === 3) {
+    const [y, m] = period.slice(0, 7).split("-").map(Number);
+    return quarterLabel(Math.floor((m - 1) / 3) + 1, y, locale);
+  }
   const d = new Date(`${period.slice(0, 10)}T00:00:00Z`);
   const s = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// Período com a preposição certa, para usar a meio de uma frase:
+// "de setembro de 2026" / "do 3.º trimestre de 2026" (PT, BR) · "de septiembre de 2026" / "del 3.er trimestre de 2026" (ES)
+export function periodOf(period: string, locale: Locale, months = 1): string {
+  if (months === 3) return `${locale === "es-ES" ? "del" : "do"} ${formatPeriod(period, locale, 3)}`;
+  return `de ${formatPeriod(period, locale).toLowerCase()}`;
 }
 
 // Datas "AAAA-MM-DD" (sem hora) ou ISO completas

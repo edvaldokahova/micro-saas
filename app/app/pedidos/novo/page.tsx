@@ -22,7 +22,7 @@ export default async function NovoPedido({
   const clientId = sp.cliente && /^[0-9a-f-]{36}$/i.test(sp.cliente) ? sp.cliente : null;
 
   const [{ data: clients }, { data: types }, { data: last }] = await Promise.all([
-    supabase.from("clients").select("id, name").is("archived_at", null).order("name"),
+    supabase.from("clients").select("id, name, cadence").is("archived_at", null).order("name"),
     supabase.from("document_types").select("label").order("position"),
     clientId
       ? supabase.from("requests").select("id").eq("client_id", clientId).order("period", { ascending: false }).limit(1).maybeSingle()
@@ -61,9 +61,9 @@ export default async function NovoPedido({
           <span className="label">{t.client}</span>
           <select name="client" required defaultValue={clientId ?? ""} className="field">
             {!clientId && <option value="" disabled />}
-            {clients.map((c: { id: string; name: string }) => (
+            {clients.map((c: { id: string; name: string; cadence: string }) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {c.cadence === "quarterly" ? `${c.name} · ${d.common.cadence.quarterly}` : c.name}
               </option>
             ))}
           </select>
@@ -72,6 +72,9 @@ export default async function NovoPedido({
           <label className="block">
             <span className="label">{t.period}</span>
             <input name="period" type="month" required defaultValue={period} className="field" />
+            {clients.some((c: { cadence: string }) => c.cadence === "quarterly") && (
+              <span className="mt-1.5 block text-xs text-muted">{t.periodHint}</span>
+            )}
           </label>
           <label className="block">
             <span className="label">
