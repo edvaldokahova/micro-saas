@@ -232,6 +232,58 @@ body {
   }
 }
 
+/* Movimento da página inicial: discreto, ligado ao scroll, sem JavaScript.
+   - títulos sobem por trás de uma máscara (como uma linha impressa a aparecer)
+   - réguas desenham-se da esquerda para a direita
+   - colunas e linhas entram em cascata (--i = posição)
+   Navegadores sem "animation-timeline" mostram tudo de imediato. */
+.word {
+  display: inline-block;
+  animation: word-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--w, 0) * 55ms + 80ms);
+}
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.38em);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  .reveal-title {
+    animation: title-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 24%;
+  }
+  .stagger > * {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry calc(var(--i, 0) * 7%) cover calc(20% + var(--i, 0) * 7%);
+  }
+  .count-in {
+    animation: fade linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+}
+@keyframes title-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-20% 0 -25% 0);
+    transform: none;
+  }
+}
+
 /* Revelação ao fazer scroll, sem JavaScript (navegadores sem suporte mostram tudo de imediato) */
 @supports (animation-timeline: view()) {
   .reveal {

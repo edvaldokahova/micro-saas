@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, LayoutDashboard, Settings, Users } from "lucide-react";
+import { IconBilling, IconClients, IconLedger, IconSettings } from "@/components/icons";
 
 const items = [
-  { href: "/app", key: "dashboard", icon: LayoutDashboard },
-  { href: "/app/clientes", key: "clients", icon: Users },
-  { href: "/app/definicoes", key: "settings", icon: Settings },
-  { href: "/app/assinatura", key: "billing", icon: CreditCard },
+  { href: "/app", key: "dashboard", icon: IconLedger },
+  { href: "/app/clientes", key: "clients", icon: IconClients },
+  { href: "/app/definicoes", key: "settings", icon: IconSettings },
+  { href: "/app/assinatura", key: "billing", icon: IconBilling },
 ] as const;
 
 type Labels = Record<(typeof items)[number]["key"], string>;
@@ -23,12 +23,13 @@ export function AppNav({ labels }: { labels: Labels }) {
   const path = usePathname();
   return (
     <nav className="hidden items-stretch gap-6 md:flex">
-        {items.map(({ href, key }) => (
+        {items.map(({ href, key, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className={`-mb-px flex items-center border-b-2 text-sm transition ${isActive(path, href) ? "border-ivory text-ivory" : "border-transparent text-muted hover:text-ivory"}`}
+            className={`-mb-px flex items-center gap-2 border-b-2 text-sm transition ${isActive(path, href) ? "border-ivory text-ivory" : "border-transparent text-muted hover:text-ivory"}`}
           >
+            <Icon className="h-4 w-4" />
             {labels[key]}
           </Link>
         ))}
@@ -47,7 +48,7 @@ export function AppTabBar({ labels }: { labels: Labels }) {
             return (
               <li key={href}>
                 <Link href={href} className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition ${active ? "text-ivory" : "text-muted"}`}>
-                  <Icon className="h-5 w-5" aria-hidden />
+                  <Icon className="h-[22px] w-[22px]" />
                   {labels[key]}
                 </Link>
               </li>

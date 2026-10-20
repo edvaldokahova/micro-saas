@@ -357,7 +357,7 @@ const dict: Dictionary = {
     closed: "Esta solicitud está cerrada. Ya no se puede modificar.",
     notFoundTitle: "Enlace no válido o caducado",
     notFoundText: "Pide a tu asesoría un enlace nuevo.",
-    footer: (office: string) => `Página privada de ${office}, creada con`,
+    footer: (office: string) => `Página privada de ${office}, creada con Bilonai Entrega.`,
     error: "No se ha podido guardar. Revisa la conexión e inténtalo de nuevo.",
   },
   support: {

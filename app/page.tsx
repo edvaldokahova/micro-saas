@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { IconSeal, IconTick } from "@/components/icons";
 import { Flag } from "@/components/flags";
 import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
 import { MessagePreview } from "@/components/message-preview";
@@ -113,9 +114,19 @@ export default async function Home() {
               <Flag locale={locale} className="h-2.5 w-4" />
               {h.badge}
             </p>
-            <h1 className="mt-7 animate-rise font-display text-[2.9rem] leading-[1.02] [animation-delay:60ms] sm:text-[4.1rem]">
-              {h.titleA} <em className="italic text-gold">{h.titleHighlight}</em>
-              {h.titleB}
+            {/* Título palavra a palavra (só ao carregar; respeita "reduzir movimento") */}
+            <h1 className="mt-7 font-display text-[2.9rem] leading-[1.02] sm:text-[4.1rem]" aria-label={`${h.titleA} ${h.titleHighlight}${h.titleB}`}>
+              {h.titleA.split(" ").map((w, i) => (
+                <span key={i} className="word" style={{ "--w": i } as React.CSSProperties} aria-hidden>
+                  {w}&nbsp;
+                </span>
+              ))}
+              {h.titleHighlight.split(" ").map((w, i, all) => (
+                <em key={`h${i}`} className="word italic text-gold" style={{ "--w": h.titleA.split(" ").length + i } as React.CSSProperties} aria-hidden>
+                  {w}
+                  {i < all.length - 1 ? "\u00a0" : h.titleB}
+                </em>
+              ))}
             </h1>
             <p className="mt-7 max-w-xl animate-rise text-[17.5px] leading-[1.7] text-ivory/80 [animation-delay:120ms]">{h.lead}</p>
             <div className="mt-9 flex animate-rise flex-wrap items-center gap-x-5 gap-y-3 [animation-delay:180ms]">
@@ -146,18 +157,19 @@ export default async function Home() {
           <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
             <span className="mono-label pt-3 !text-gold">01</span>
             <div>
-              <h2 className="reveal max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{h.stepsTitle}</h2>
-              <ol className="reveal double-rule mt-12 grid border-t border-ivory md:grid-cols-3">
+              <h2 className="reveal-title max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{h.stepsTitle}</h2>
+              <div className="draw-line mt-12 h-px bg-ivory" aria-hidden />
+              <ol className="stagger double-rule grid md:grid-cols-3">
                 {h.steps.map((s, i) => (
-                  <li key={s.title} className={`py-6 md:pr-8 ${i > 0 ? "border-t border-line md:border-l md:border-t-0 md:pl-8" : ""}`}>
+                  <li key={s.title} style={{ "--i": i } as React.CSSProperties} className={`py-6 md:pr-8 ${i > 0 ? "border-t border-line md:border-l md:border-t-0 md:pl-8" : ""}`}>
                     <span className="mono-label">0{i + 1}</span>
                     <h3 className="mt-3 font-display text-[23px] leading-tight">{s.title}</h3>
                     <p className="mt-2.5 text-[15px] leading-7 text-ivory/75">{s.text}</p>
                   </li>
                 ))}
               </ol>
-              <p className="reveal mt-8 flex items-start gap-2.5 text-sm text-muted">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden />
+              <p className="reveal mt-8 flex items-center gap-3 text-sm text-muted">
+                <IconSeal className="h-5 w-5 shrink-0 text-gold" />
                 {h.safety}
               </p>
             </div>
@@ -188,15 +200,16 @@ export default async function Home() {
           <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
             <span className="mono-label pt-3 !text-gold">04</span>
             <div>
-              <h2 className="reveal font-display text-4xl leading-[1.08] sm:text-[46px]">{h.pricingTitle}</h2>
+              <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.pricingTitle}</h2>
               <p className="reveal mt-4 max-w-2xl text-muted">{h.pricingLead(site.trialDays)}</p>
               <IntervalToggle className="reveal mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
-                <div className="mt-8 grid border-t border-ivory md:grid-cols-2">
+                <div className="draw-line mt-8 h-px bg-ivory" aria-hidden />
+                <div className="stagger grid md:grid-cols-2">
                   {plans.map((key, idx) => {
                     const p = site.plans[key];
                     const featured = key === "office";
                     return (
-                      <div key={key} className={`reveal flex flex-col py-8 md:px-8 ${idx === 0 ? "md:pl-0" : "border-t border-line md:border-l md:border-t-0"}`}>
+                      <div key={key} style={{ "--i": idx } as React.CSSProperties} className={`flex flex-col py-8 md:px-8 ${idx === 0 ? "md:pl-0" : "border-t border-line md:border-l md:border-t-0"}`}>
                         <div className="flex items-baseline justify-between gap-3">
                           <h3 className="font-display text-[28px] leading-none">{d.common.planNames[key]}</h3>
                           {featured && <span className="mono-label !text-gold">{h.popular}</span>}
@@ -235,7 +248,7 @@ export default async function Home() {
                         <ul className="mt-6 space-y-2.5 text-[15px]">
                           {h.features.map((f) => (
                             <li key={f} className="flex items-start gap-3">
-                              <Check className="mt-1 h-4 w-4 shrink-0 text-gold" aria-hidden /> {f}
+                              <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {f}
                             </li>
                           ))}
                         </ul>
@@ -256,10 +269,11 @@ export default async function Home() {
           <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
             <span className="mono-label pt-3 !text-gold">05</span>
             <div className="max-w-3xl">
-              <h2 className="reveal font-display text-4xl leading-[1.08] sm:text-[46px]">{h.faqTitle}</h2>
-              <div className="mt-10 divide-y divide-line border-y border-ivory">
-                {h.faq(site.trialDays).map((f) => (
-                  <details key={f.q} className="group py-5">
+              <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.faqTitle}</h2>
+              <div className="draw-line mt-10 h-px bg-ivory" aria-hidden />
+              <div className="stagger divide-y divide-line border-b border-ivory">
+                {h.faq(site.trialDays).map((f, i) => (
+                  <details key={f.q} style={{ "--i": i } as React.CSSProperties} className="group py-5">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
                       {f.q}
                       <span className="font-mono text-lg text-muted transition duration-200 group-open:rotate-45" aria-hidden>
@@ -285,7 +299,7 @@ export default async function Home() {
         <section className="border-t border-ivory">
           <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-5 py-20 md:flex-row md:items-end">
             <div>
-              <h2 className="reveal max-w-2xl font-display text-4xl leading-[1.08] sm:text-[52px]">{h.finalTitle}</h2>
+              <h2 className="reveal-title max-w-2xl font-display text-4xl leading-[1.08] sm:text-[52px]">{h.finalTitle}</h2>
               <p className="reveal mt-4 text-muted">{h.finalText(site.trialDays)}</p>
             </div>
             <Link href="/registar" className="btn btn-primary reveal min-h-[3.1rem] shrink-0 px-7">

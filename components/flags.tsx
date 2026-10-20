@@ -35,7 +35,7 @@ function Brazil() {
 
 export function Flag({ locale, className = "h-4 w-6" }: { locale: Locale; className?: string }) {
   return (
-    <svg viewBox="0 0 24 16" className={`${className} shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/10`} aria-hidden="true">
+    <svg viewBox="0 0 24 16" className={`${className} shrink-0 outline outline-[0.5px] -outline-offset-[0.5px] outline-black/25`} aria-hidden="true">
       {locale === "pt-PT" ? <Portugal /> : locale === "es-ES" ? <Spain /> : <Brazil />}
     </svg>
   );

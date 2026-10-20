@@ -34,23 +34,23 @@ export function ValueEquation({ t, index = "03" }: { t: ValueTexts; index?: stri
         <span className="mono-label pt-3 !text-gold">{index}</span>
         <div>
           <p className="eyebrow reveal">{t.eyebrow}</p>
-          <h2 className="reveal mt-3 max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{t.title}</h2>
+          <h2 className="reveal-title mt-3 max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{t.title}</h2>
           <p className="reveal mt-4 max-w-2xl text-muted">{t.lead}</p>
 
-          <div className="reveal mt-14 grid items-center gap-8 lg:grid-cols-[auto_1fr]">
-            <p className="font-display text-5xl italic text-gold sm:text-6xl">
+          <div className="mt-14 grid items-center gap-8 lg:grid-cols-[auto_1fr]">
+            <p className="reveal-title font-display text-5xl italic text-gold sm:text-6xl">
               {t.equals} <span className="not-italic text-muted">=</span>
             </p>
             <div>
-              <div className="grid gap-x-10 sm:grid-cols-2">
-                <Term part={t.dream} up />
-                <Term part={t.likelihood} up />
+              <div className="stagger grid gap-x-10 sm:grid-cols-2">
+                <div style={{ "--i": 0 } as React.CSSProperties}><Term part={t.dream} up /></div>
+                <div style={{ "--i": 1 } as React.CSSProperties}><Term part={t.likelihood} up /></div>
               </div>
               {/* O traço da fração */}
               <div className="draw-line h-px bg-ivory" aria-hidden />
-              <div className="grid gap-x-10 sm:grid-cols-2">
-                <Term part={t.time} up={false} />
-                <Term part={t.effort} up={false} />
+              <div className="stagger grid gap-x-10 sm:grid-cols-2">
+                <div style={{ "--i": 1 } as React.CSSProperties}><Term part={t.time} up={false} /></div>
+                <div style={{ "--i": 2 } as React.CSSProperties}><Term part={t.effort} up={false} /></div>
               </div>
             </div>
           </div>

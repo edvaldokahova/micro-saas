@@ -1,4 +1,5 @@
-import { Check, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import { IconTick } from "@/components/icons";
 
 export type MessagePreviewTexts = {
   eyebrow: string;
@@ -21,14 +22,15 @@ export function MessagePreview({ t, index = "02" }: { t: MessagePreviewTexts; in
     <section className="border-t border-line">
       <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr_1.05fr] lg:gap-x-10">
         <span className="mono-label pt-3 !text-gold">{index}</span>
-        <div className="reveal">
-          <p className="eyebrow">{t.eyebrow}</p>
-          <h2 className="mt-3 font-display text-4xl leading-[1.08] sm:text-[46px]">{t.title}</h2>
+        <div>
+          <p className="eyebrow reveal">{t.eyebrow}</p>
+          <h2 className="reveal-title mt-3 font-display text-4xl leading-[1.08] sm:text-[46px]">{t.title}</h2>
           <p className="mt-4 max-w-md text-[15px] leading-7 text-ivory/75">{t.lead}</p>
-          <ul className="mt-8 border-t border-ivory text-[15px]">
-            {t.points.map((p) => (
-              <li key={p} className="flex items-start gap-3 border-b border-line py-3">
-                <Check className="mt-1 h-4 w-4 shrink-0 text-gold" aria-hidden /> {p}
+          <div className="draw-line mt-8 h-px bg-ivory" aria-hidden />
+          <ul className="stagger text-[15px]">
+            {t.points.map((p, i) => (
+              <li key={p} style={{ "--i": i } as React.CSSProperties} className="flex items-start gap-3 border-b border-line py-3">
+                <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {p}
               </li>
             ))}
           </ul>

@@ -354,7 +354,7 @@ const dict = {
     closed: "Este pedido está fechado. Já não é possível alterar.",
     notFoundTitle: "Link inválido ou expirado",
     notFoundText: "Peça ao seu escritório de contabilidade um link novo.",
-    footer: (office: string) => `Página privada de ${office}, criada com`,
+    footer: (office: string) => `Página privada de ${office}, criada com Bilonai Entrega.`,
     error: "Não foi possível guardar. Verifique a ligação e tente de novo.",
   },
   support: {
