@@ -48,7 +48,7 @@ export function Logo({ className = "" }: { className?: string }) {
   );
 }
 
-// Nome do produto: serifa editorial em itálico, como uma assinatura
+// Nome do produto: serifa editorial, direita
 export function ProductMark({ className = "" }: { className?: string }) {
-  return <span className={`font-display text-[21px] italic leading-none tracking-[-0.01em] text-ivory ${className}`}>Entrega</span>;
+  return <span className={`font-display text-[21px] leading-none tracking-[-0.01em] text-ivory ${className}`}>Entrega</span>;
 }
