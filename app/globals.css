@@ -304,6 +304,42 @@ body {
   }
 }
 
+/* Esqueletos de carregamento: brilho que desliza */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-ink-3) 0%,
+    color-mix(in oklab, var(--color-ink-3) 55%, var(--color-ivory) 8%) 45%,
+    var(--color-ink-3) 90%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+
+/* Barra de navegação no topo: avança depressa até ~70% e depois devagar; completa ao chegar */
+.nav-progress {
+  width: 0;
+  background: linear-gradient(90deg, #a67c1a, #f3d77a, #d4a936);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-gold) 70%, transparent);
+  animation: nav-load 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+.nav-progress-done {
+  width: 100%;
+  opacity: 0;
+  animation: none;
+  transition: width 0.2s ease, opacity 0.3s ease 0.15s;
+}
+@keyframes nav-load {
+  0% { width: 0; }
+  10% { width: 45%; }
+  40% { width: 72%; }
+  100% { width: 92%; }
+}
+
 @keyframes pop {
   0% {
     transform: scale(0.6);

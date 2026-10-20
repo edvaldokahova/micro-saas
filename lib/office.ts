@@ -27,11 +27,14 @@ const columns =
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Utilizador e escritório em paralelo (a RLS já limita a consulta ao escritório da sessão)
+  const [
+    {
+      data: { user },
+    },
+    { data },
+  ] = await Promise.all([supabase.auth.getUser(), supabase.from("offices").select(columns).maybeSingle()]);
   if (!user) redirect("/entrar");
-  const { data } = await supabase.from("offices").select(columns).maybeSingle();
   if (!data) redirect("/entrar");
   const office = data as Office;
   const locale: Locale = isLocale(office.locale) ? office.locale : "pt-PT";

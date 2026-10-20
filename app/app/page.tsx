@@ -37,14 +37,22 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const ym = period.slice(0, 7);
   const canWrite = officeAccess(office).canWrite;
 
-  const [{ data: reqData }, { data: clientData }] = await Promise.all([
+  // Quatro consultas em paralelo (antes eram sequenciais)
+  const [{ data: reqData }, { data: clientData }, { data: teamData }, { data: items }] = await Promise.all([
     supabase
       .from("requests_overview")
       .select("id, client_id, client_name, client_phone, client_email, assignee_id, assignee_name, period, due_date, token, reminder_count, total_items, received_items, sent_items")
       .eq("period", period),
     supabase.from("clients").select("id").is("archived_at", null),
+    supabase.from("team_members").select("id, name").order("name"),
+    // Documentos em falta ou enviados deste mês (para a mensagem de WhatsApp e os canais)
+    supabase
+      .from("request_items")
+      .select("request_id, label, status, sent_via, position, requests!inner(period)")
+      .eq("requests.period", period)
+      .in("status", ["pending", "sent"])
+      .order("position"),
   ]);
-  const { data: teamData } = await supabase.from("team_members").select("id, name").order("name");
   const team = (teamData ?? []) as { id: string; name: string }[];
   const resp = team.some((m) => m.id === sp.resp) ? sp.resp : undefined;
   const allRows = (reqData ?? []) as Row[];
@@ -53,21 +61,11 @@ export default async function Painel({ searchParams }: { searchParams: Promise<{
   const withRequest = new Set(allRows.map((r) => r.client_id));
   const withoutRequest = (clientData ?? []).filter((c: { id: string }) => !withRequest.has(c.id)).length;
 
-  // Documentos ainda não recebidos de cada pedido (para a mensagem de WhatsApp)
-  // e por onde o cliente enviou os que já assinalou
   const pendingByRequest = new Map<string, string[]>();
   const viasByRequest = new Map<string, Channel[]>();
-  if (rows.length) {
-    const { data: items } = await supabase
-      .from("request_items")
-      .select("request_id, label, status, sent_via, position")
-      .in("request_id", rows.map((r) => r.id))
-      .in("status", ["pending", "sent"])
-      .order("position");
-    for (const i of (items ?? []) as { request_id: string; label: string; status: string; sent_via: string | null }[]) {
-      if (i.status === "pending") pendingByRequest.set(i.request_id, [...(pendingByRequest.get(i.request_id) ?? []), i.label]);
-      else if (isChannel(i.sent_via)) viasByRequest.set(i.request_id, [...(viasByRequest.get(i.request_id) ?? []), i.sent_via]);
-    }
+  for (const i of (items ?? []) as { request_id: string; label: string; status: string; sent_via: string | null }[]) {
+    if (i.status === "pending") pendingByRequest.set(i.request_id, [...(pendingByRequest.get(i.request_id) ?? []), i.label]);
+    else if (isChannel(i.sent_via)) viasByRequest.set(i.request_id, [...(viasByRequest.get(i.request_id) ?? []), i.sent_via]);
   }
 
   const isComplete = (r: Row) => r.total_items > 0 && r.received_items === r.total_items;

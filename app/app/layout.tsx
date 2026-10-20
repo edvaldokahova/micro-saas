@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
+import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
+import { NavProgress } from "@/components/nav-progress";
 import { Logo } from "@/components/logo";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getSession, officeAccess } from "@/lib/office";
@@ -28,6 +30,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-dvh pb-24 md:pb-10">
+      <Suspense fallback={null}>
+        <NavProgress />
+      </Suspense>
       <header className="sticky top-0 z-30 border-b border-line/60 bg-ink/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
           <div className="flex items-center gap-6">

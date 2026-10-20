@@ -22,9 +22,10 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims valida o token localmente (sem ida ao servidor de autenticação quando as chaves são assimétricas)
+  // e renova a sessão quando é preciso. Mais rápido em cada navegação dentro do painel.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? data.claims : null;
 
   if (!user && request.nextUrl.pathname.startsWith("/app")) {
     const url = request.nextUrl.clone();
