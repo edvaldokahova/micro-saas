@@ -12,14 +12,15 @@ const base = {
   "aria-hidden": true,
 };
 
-// Painel: uma folha de registo com cabeçalho, duplo traço e linhas
+// Painel: quatro mostradores quadrados, um já completo (o estado de tudo, num relance)
 export function IconLedger({ className = "h-5 w-5" }: P) {
   return (
     <svg {...base} className={className}>
-      <rect x="3.5" y="2.5" width="13" height="15" />
-      <path d="M6 6h5" />
-      <path d="M3.5 8.6h13M3.5 10.2h13" />
-      <path d="M6 13h8M6 15.2h5" />
+      <rect x="2.5" y="2.5" width="6.3" height="6.3" />
+      <rect x="11.2" y="2.5" width="6.3" height="6.3" fill="currentColor" />
+      <path d="M12.9 5.8l1.3 1.3 2-2.2" stroke="var(--color-ink)" strokeWidth="1.2" />
+      <rect x="2.5" y="11.2" width="6.3" height="6.3" />
+      <rect x="11.2" y="11.2" width="6.3" height="6.3" />
     </svg>
   );
 }
