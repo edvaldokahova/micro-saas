@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Circle, Send } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { DocMark, DocStrip, orderStates } from "@/components/marks";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { ChannelIcon, isChannel } from "@/components/channel-icon";
 import { formatDate, formatPeriod } from "@/lib/i18n";
 import { dashboardMonth, getSession } from "@/lib/office";
-import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
+import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
 import { publicLink, reminderUrl } from "@/lib/reminder";
 import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
 
@@ -57,9 +58,9 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const backMonth = dashboardMonth(req.period, req.months);
 
   const chip = {
-    pending: "bg-warn/15 text-warn",
-    sent: "bg-gold/15 text-gold",
-    received: "bg-ok/15 text-ok",
+    pending: "text-muted",
+    sent: "text-gold",
+    received: "text-ok",
   };
 
   return (
@@ -71,8 +72,8 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{periodLabel}</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">
-            <Link href={`/app/clientes/${req.client_id}`} className="hover:text-gold">
+          <h1 className="mt-2 font-display text-[2.4rem] leading-none">
+            <Link href={`/app/clientes/${req.client_id}`} className="underline-offset-4 hover:underline">
               {req.client_name}
             </Link>
           </h1>
@@ -82,22 +83,21 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
           </p>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <span className={`inline-flex animate-pop items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${deadlineTone[st.kind]}`}>
-            {done && <CheckCircle2 className="h-4 w-4" aria-hidden />} {dl.chip}
-          </span>
-          {dl.detail && <span className={`text-xs ${st.kind === "late" ? "text-bad" : "text-warn"}`}>{dl.detail}</span>}
+          <span className={`${statusText} ${deadlineTone[st.kind]}`}>{dl.chip}</span>
+          {dl.detail && <span className={`font-mono text-[11px] ${st.kind === "late" ? "text-bad" : "text-warn"}`}>{dl.detail}</span>}
         </div>
       </div>
 
-      <div className="mt-5 h-2 overflow-hidden rounded-full bg-ink-3">
-        <div className={`bar-grow h-full rounded-full ${done ? "bg-ok" : st.kind === "late" ? "bg-bad" : "bg-gold"}`} style={{ width: `${pct}%` }} />
+      <div className="double-rule mt-6 flex items-center gap-3 border-t border-ivory py-3">
+        <DocStrip states={orderStates(items.map((i) => i.status))} label={d.app.dashboard.docsOf(req.received_items, req.total_items)} />
+        <span className="font-mono text-[11px] text-muted tabular-nums">{pct}%</span>
       </div>
 
       {/* Link e lembrete */}
       <section className="card mt-6 p-5">
-        <p className="text-sm font-medium">{t.link}</p>
+        <p className="mono-label">{t.link}</p>
         <p className="mt-1 text-xs text-muted">{t.linkHint}</p>
-        <code className="mt-3 block truncate rounded-lg border border-line bg-ink-3 px-3 py-2.5 text-xs text-muted">{link}</code>
+        <code className="mt-3 block truncate border-y border-line py-2.5 font-mono text-[13px]">{link.replace(/^https:\/\//, "")}</code>
         <div className="mt-4 flex flex-wrap gap-2">
           {wa ? (
             <ReminderButton requestId={req.id} href={wa} label={d.app.remind} />
@@ -124,26 +124,20 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       )}
 
       {/* Documentos */}
-      <ul className="card mt-6 divide-y divide-line overflow-hidden">
+      <ul className="mt-8 border-t border-ivory">
         {items.map((i) => (
-          <li key={i.id} className="flex flex-wrap items-center gap-3 px-4 py-3.5 sm:px-5">
-            {i.status === "received" ? (
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-ok" aria-hidden />
-            ) : i.status === "sent" ? (
-              <Send className="h-5 w-5 shrink-0 text-gold" aria-hidden />
-            ) : (
-              <Circle className="h-5 w-5 shrink-0 text-muted" aria-hidden />
-            )}
+          <li key={i.id} className="flex flex-wrap items-center gap-3 border-b border-line py-3.5">
+            <DocMark state={i.status} className="h-4 w-4" />
             <span className="min-w-0 flex-1">
               <span className="block">{i.label}</span>
               {i.status !== "pending" && isChannel(i.sent_via) && (
-                <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted">
+                <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[10.5px] text-muted">
                   <ChannelIcon via={i.sent_via} /> {d.common.sentVia(d.common.via[i.sent_via])}
                   {i.client_marked_at && <> · {formatDate(i.client_marked_at, locale)}</>}
                 </span>
               )}
             </span>
-            <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${chip[i.status]}`}>{t.status[i.status]}</span>
+            <span className={`${statusText} ${chip[i.status]}`}>{t.status[i.status]}</span>
             <form action={setItemStatus}>
               <input type="hidden" name="item" value={i.id} />
               <input type="hidden" name="request" value={req.id} />

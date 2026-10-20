@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BellRing, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Circle, Inbox, Mail, Phone, Plus, Send, Sparkles, UserPlus } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Plus, UserPlus } from "lucide-react";
+import { DocMark, DocStrip, orderStates } from "@/components/marks";
 import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
 import { formatDate, formatPeriod, periodOf } from "@/lib/i18n";
 import { getSession, isQuarterEnd, officeAccess, quarterStart, resolvePeriod, shiftPeriod } from "@/lib/office";
-import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, suggestedDue, type Deadline } from "@/lib/deadline";
+import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, suggestedDue, type Deadline } from "@/lib/deadline";
 import { publicLink, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests, setItemStatus } from "./actions";
 
@@ -138,22 +139,22 @@ export default async function Painel({
     <div>
       <Flash d={d} error={sp.erro} success={sp.criados ? t.created(Number(sp.criados) || 0) : null} />
 
-      {/* Cabeçalho com navegação entre meses */}
+      {/* Cabeçalho do período, como o topo de uma folha de registo */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{t.title}</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{formatPeriod(period, locale)}</h1>
-          {hasQuarterly && <p className="mt-1.5 text-sm text-muted">{t.quarterlyIncluded(periodOf(qStart, locale, 3))}</p>}
+          <h1 className="mt-2 font-display text-[2.4rem] leading-none sm:text-5xl">{formatPeriod(period, locale)}</h1>
+          {hasQuarterly && <p className="mt-2.5 text-sm text-muted">{t.quarterlyIncluded(periodOf(qStart, locale, 3))}</p>}
         </div>
         <div className="flex items-center gap-2">
-          <Link href={`/app?mes=${shiftPeriod(period, -1)}`} className="btn btn-secondary btn-sm" aria-label={t.prev} title={t.prev}>
+          <Link href={`/app?mes=${shiftPeriod(period, -1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.prev} title={t.prev}>
             <ChevronLeft className="h-4 w-4" aria-hidden />
           </Link>
-          <Link href={`/app?mes=${shiftPeriod(period, 1)}`} className="btn btn-secondary btn-sm" aria-label={t.next} title={t.next}>
+          <Link href={`/app?mes=${shiftPeriod(period, 1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.next} title={t.next}>
             <ChevronRight className="h-4 w-4" aria-hidden />
           </Link>
           {canWrite && activeClients > 0 && (
-            <Link href={`/app/pedidos/novo?mes=${ym}`} className="btn btn-primary btn-sm">
+            <Link href={`/app/pedidos/novo?mes=${ym}`} className="btn btn-primary btn-sm ml-1">
               <Plus className="h-4 w-4" aria-hidden /> {d.app.request.newTitle}
             </Link>
           )}
@@ -161,27 +162,25 @@ export default async function Painel({
       </div>
 
       {activeClients === 0 && rows.length === 0 ? (
-        <div className="card mt-10 animate-rise p-10 text-center">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-line bg-ink-3">
-            <UserPlus className="h-6 w-6 text-gold" aria-hidden />
-          </span>
-          <h2 className="mt-5 font-display text-xl font-semibold">{t.noClientsTitle}</h2>
+        <div className="mt-10 animate-rise border-t border-ivory py-14 text-center">
+          <DocStrip states={["pending", "pending", "pending"]} className="justify-center" />
+          <h2 className="mt-5 font-display text-2xl">{t.noClientsTitle}</h2>
           <p className="mx-auto mt-2 max-w-sm text-muted">{t.noClientsText}</p>
           <Link href="/app/clientes" className="btn btn-primary mt-6">
-            {t.addClients}
+            <UserPlus className="h-4 w-4" aria-hidden /> {t.addClients}
           </Link>
         </div>
       ) : (
         <>
           {team.length > 0 && (
-            <nav className="mt-6 flex flex-wrap gap-2 text-sm" aria-label={d.app.team.assignee}>
+            <nav className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label={d.app.team.assignee}>
               {[{ id: "", name: d.app.team.all }, ...team].map((m) => {
                 const active = (resp ?? "") === m.id;
                 return (
                   <Link
                     key={m.id || "all"}
                     href={`/app?mes=${ym}${m.id ? `&resp=${m.id}` : ""}`}
-                    className={`rounded-full border px-3.5 py-1.5 transition ${active ? "border-gold bg-gold/10 text-ivory" : "border-line text-muted hover:text-ivory"}`}
+                    className={`border-b pb-0.5 transition ${active ? "border-ivory text-ivory" : "border-transparent text-muted hover:text-ivory"}`}
                   >
                     {m.name}
                   </Link>
@@ -190,19 +189,19 @@ export default async function Painel({
             </nav>
           )}
 
-          <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {/* Totais: régua de tinta em cima, duplo traço em baixo (os números também são filtros) */}
+          <dl className="double-rule mt-8 grid grid-cols-2 border-t border-ivory lg:grid-cols-4">
             {stats.map((s, i) => {
-              const active = s.f ? filter === s.f : !filter;
+              const active = Boolean(s.f && filter === s.f);
               return (
                 <Link
                   key={s.label}
                   href={href(s.f)}
                   aria-current={active ? "true" : undefined}
-                  className={`card animate-rise p-5 transition hover:border-gold/40 ${active && filter ? "border-gold/60 ring-1 ring-gold/20" : ""}`}
-                  style={{ animationDelay: `${i * 60}ms` }}
+                  className={`group block py-4 pr-4 transition ${i % 2 === 1 ? "border-l border-line pl-4" : ""} ${i === 2 ? "lg:border-l lg:pl-4" : ""} ${i >= 2 ? "border-t border-line lg:border-t-0" : ""} ${active ? "bg-ink-3/70" : "hover:bg-ink-3/40"}`}
                 >
-                  <dt className="text-xs leading-5 text-muted">{s.label}</dt>
-                  <dd className={`mt-2 font-display text-3xl font-semibold tabular-nums ${s.tone ?? ""}`}>{s.value}</dd>
+                  <dt className="mono-label group-hover:text-ivory">{s.label}</dt>
+                  <dd className={`figure mt-2 text-[44px] ${s.tone ?? ""}`}>{s.value}</dd>
                 </Link>
               );
             })}
@@ -210,47 +209,47 @@ export default async function Painel({
 
           {/* Próximas ações: o que o escritório tem de fazer hoje, sem procurar */}
           {byPerson.length > 0 && (
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5">
               {toRemind > 0 || toConfirm > 0 ? (
-                <>
+                <div className="card grid sm:grid-cols-2">
                   {toRemind > 0 && (
                     <Link
                       href={href("remind")}
-                      className={`card flex items-start gap-3 p-4 transition hover:border-gold/40 ${filter === "remind" ? "border-gold/60 ring-1 ring-gold/20" : ""}`}
+                      className={`flex items-start gap-3 p-4 transition hover:bg-ink-3/40 ${filter === "remind" ? "bg-ink-3/70" : ""}`}
                     >
-                      <BellRing className="mt-0.5 h-5 w-5 shrink-0 text-bad" aria-hidden />
+                      <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-bad" aria-hidden />
                       <span>
                         <span className="block font-medium">{t.nextRemind(toRemind)}</span>
-                        <span className="mt-0.5 block text-xs leading-5 text-muted">{t.nextRemindHint}</span>
+                        <span className="mt-0.5 block text-[13px] leading-5 text-muted">{t.nextRemindHint}</span>
                       </span>
                     </Link>
                   )}
                   {toConfirm > 0 && (
                     <Link
                       href={href("awaiting")}
-                      className={`card flex items-start gap-3 p-4 transition hover:border-gold/40 ${filter === "awaiting" ? "border-gold/60 ring-1 ring-gold/20" : ""}`}
+                      className={`flex items-start gap-3 p-4 transition hover:bg-ink-3/40 ${toRemind > 0 ? "border-t border-line sm:border-l sm:border-t-0" : ""} ${filter === "awaiting" ? "bg-ink-3/70" : ""}`}
                     >
-                      <Inbox className="mt-0.5 h-5 w-5 shrink-0 text-gold" aria-hidden />
+                      <DocMark state="sent" className="mt-[3px] h-3.5 w-3.5" />
                       <span>
                         <span className="block font-medium">{t.nextConfirm(toConfirm)}</span>
-                        <span className="mt-0.5 block text-xs leading-5 text-muted">{t.nextConfirmHint}</span>
+                        <span className="mt-0.5 block text-[13px] leading-5 text-muted">{t.nextConfirmHint}</span>
                       </span>
                     </Link>
                   )}
-                </>
+                </div>
               ) : (
-                <p className="flex items-center gap-2 text-sm text-muted sm:col-span-2">
-                  <CheckCircle2 className="h-4 w-4 text-ok" aria-hidden /> {t.allClear}
+                <p className="flex items-center gap-2.5 text-sm text-muted">
+                  <DocMark state="received" /> {t.allClear}
                 </p>
               )}
             </div>
           )}
 
           {canWrite && withoutRequest > 0 && (
-            <form action={createMonthRequests} className="card mt-5 flex animate-rise flex-wrap items-center justify-between gap-4 border-gold/30 p-5">
+            <form action={createMonthRequests} className="card mt-5 flex animate-rise flex-wrap items-center justify-between gap-4 border-ivory/40 p-5">
               <input type="hidden" name="period" value={ym} />
               <div className="flex items-start gap-3">
-                <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-gold" aria-hidden />
+                <DocMark state="pending" className="mt-1 h-3.5 w-3.5" />
                 <div>
                   <p className="font-medium">{t.createAll(withoutRequest)}</p>
                   <p className="mt-1 text-sm text-muted">{t.createAllHint}</p>
@@ -267,11 +266,11 @@ export default async function Painel({
           )}
 
           {rows.length === 0 ? (
-            <p className="mt-10 text-center text-muted">
+            <p className="mt-12 border-t border-line pt-10 text-center text-muted">
               {filter ? (
                 <>
                   {t.filterEmpty}{" "}
-                  <Link href={href()} className="text-gold hover:underline">
+                  <Link href={href()} className="text-ivory underline decoration-line-strong underline-offset-4">
                     {t.filters.all}
                   </Link>
                 </>
@@ -280,67 +279,72 @@ export default async function Painel({
               )}
             </p>
           ) : (
-            <ul className="card mt-6 divide-y divide-line overflow-hidden">
+            <ul className="mt-8 border-t border-ivory">
               {rows.map((r, i) => {
                 const done = isComplete(r);
                 const st = state.get(r.id)!;
                 const dl = deadlineLabel(st, d);
-                const pct = r.total_items ? Math.round((r.received_items / r.total_items) * 100) : 0;
                 const pending = pendingByRequest.get(r.id) ?? [];
                 const wa = done ? null : reminderUrl(office, locale, d, r, pending);
                 const docs = docsByRequest.get(r.id) ?? [];
+                const states = orderStates(docs.map((x) => x.status));
                 return (
-                  <li key={r.id} className="animate-rise px-4 py-4 sm:px-5" style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-                      <div className="min-w-0 flex-1 basis-56">
-                        <div className="flex items-center gap-2.5">
-                          <Link href={`/app/pedidos/${r.id}`} className="truncate font-medium hover:text-gold">
+                  <li key={r.id} className="animate-rise border-b border-line py-4" style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}>
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2.5 lg:grid-cols-[minmax(0,1fr)_150px_200px_300px]">
+                      {/* Cliente */}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Link href={`/app/pedidos/${r.id}`} className="truncate font-medium underline-offset-4 hover:underline">
                             {r.client_name}
                           </Link>
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${deadlineTone[st.kind]}`}>{dl.chip}</span>
-                          {r.months === 3 && (
-                            <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[11px] text-muted">{d.common.cadence.quarterly}</span>
-                          )}
-                          {r.assignee_name && !resp && (
-                            <span className="hidden shrink-0 rounded-full border border-line px-2 py-0.5 text-[11px] text-muted sm:inline">{r.assignee_name}</span>
-                          )}
+                          {r.months === 3 && <span className="mono-label hidden shrink-0 border border-line px-1.5 py-px !text-[9.5px] sm:inline">{d.common.cadence.quarterly}</span>}
+                          {r.assignee_name && !resp && <span className="hidden shrink-0 text-xs text-muted sm:inline">· {r.assignee_name}</span>}
                         </div>
                         {(r.client_phone || r.client_email) && (
-                          <p className="mt-1 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
+                          <p className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-3 font-mono text-[11px] text-muted">
                             {r.client_phone && (
-                              <a href={`tel:${r.client_phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-ivory">
-                                <Phone className="h-3 w-3" aria-hidden /> {r.client_phone}
+                              <a href={`tel:${r.client_phone.replace(/\s/g, "")}`} className="hover:text-ivory">
+                                {r.client_phone}
                               </a>
                             )}
                             {r.client_email && (
-                              <a href={`mailto:${r.client_email}`} className="inline-flex min-w-0 items-center gap-1.5 hover:text-ivory">
-                                <Mail className="h-3 w-3 shrink-0" aria-hidden /> <span className="truncate">{r.client_email}</span>
+                              <a href={`mailto:${r.client_email}`} className="min-w-0 truncate hover:text-ivory">
+                                {r.client_email}
                               </a>
                             )}
                           </p>
                         )}
-                        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ink-3">
-                          <div
-                            className={`bar-grow h-full rounded-full ${done ? "bg-ok" : st.kind === "late" ? "bg-bad" : "bg-gold"}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                        <p className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-muted">
-                          <span>{t.docsOf(r.received_items, r.total_items)}</span>
-                          {dl.detail && <span className={st.kind === "late" ? "text-bad" : "text-warn"}>{dl.detail}</span>}
-                          {r.sent_items > 0 && (
-                            <span className="inline-flex items-center gap-1.5 text-gold">
+                      </div>
+
+                      {/* Documentos: as marcas lêem-se num relance */}
+                      <div className="order-3 flex items-center gap-2.5 lg:order-none">
+                        <DocStrip states={states} label={t.docsOf(r.received_items, r.total_items)} />
+                        <span className="font-mono text-[11px] text-muted tabular-nums">
+                          {r.received_items}/{r.total_items}
+                        </span>
+                      </div>
+
+                      {/* Estado */}
+                      <div className="order-4 text-right lg:order-none lg:text-left">
+                        <span className={`${statusText} ${deadlineTone[st.kind]}`}>{dl.detail ?? dl.chip}</span>
+                        <span className="block font-mono text-[10.5px] text-muted">
+                          {r.sent_items > 0 ? (
+                            <span className="inline-flex items-center gap-1 text-gold">
                               {t.awaiting(r.sent_items)}
                               {(viasByRequest.get(r.id) ?? []).map((v, k) => (
                                 <ChannelIcon key={k} via={v} className="h-3 w-3" />
                               ))}
                             </span>
-                          )}
-                          {r.due_date && !dl.detail && !done && <span>{t.dueOn(formatDate(r.due_date, locale, false))}</span>}
-                          {r.reminder_count > 0 && <span>{t.reminders(r.reminder_count)}</span>}
-                        </p>
+                          ) : r.due_date && !done ? (
+                            t.dueOn(formatDate(r.due_date, locale, false))
+                          ) : r.reminder_count > 0 ? (
+                            t.reminders(r.reminder_count)
+                          ) : null}
+                        </span>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
+
+                      {/* Ações */}
+                      <div className="order-2 flex shrink-0 items-center justify-end gap-2 lg:order-none">
                         {wa && <ReminderButton requestId={r.id} href={wa} label={d.app.remind} compact />}
                         <CopyButton value={publicLink(r.token)} label={d.common.copy} done={d.common.copied} compact />
                       </div>
@@ -349,29 +353,23 @@ export default async function Painel({
                     {/* Documento a documento: estado, por onde chegou e quando */}
                     {docs.length > 0 && (
                       <details className="group/docs mt-2" open={filter === "awaiting" && r.sent_items > 0}>
-                        <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-muted transition hover:text-ivory [&::-webkit-details-marker]:hidden">
+                        <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs text-muted transition hover:text-ivory [&::-webkit-details-marker]:hidden">
                           {t.showDocs}
                           <ChevronDown className="h-3.5 w-3.5 transition group-open/docs:rotate-180" aria-hidden />
                         </summary>
-                        <ul className="mt-2.5 grid animate-fade gap-1.5 sm:grid-cols-2">
+                        <ul className="mt-2 grid animate-fade border-t border-line sm:grid-cols-2 sm:gap-x-8">
                           {docs.map((doc) => (
-                            <li key={doc.id} className="flex items-center gap-2.5 rounded-lg border border-line bg-ink/40 px-3 py-2 text-[13px]">
-                              {doc.status === "received" ? (
-                                <CheckCircle2 className="h-4 w-4 shrink-0 text-ok" aria-hidden />
-                              ) : doc.status === "sent" ? (
-                                <Send className="h-4 w-4 shrink-0 text-gold" aria-hidden />
-                              ) : (
-                                <Circle className="h-4 w-4 shrink-0 text-muted" aria-hidden />
-                              )}
+                            <li key={doc.id} className="flex items-center gap-2.5 border-b border-line py-2 text-[13px]">
+                              <DocMark state={doc.status} />
                               <span className="min-w-0 flex-1 truncate">{doc.label}</span>
                               {doc.status !== "pending" && isChannel(doc.sent_via) ? (
-                                <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-muted" title={doc.client_marked_at ? formatDate(doc.client_marked_at, locale) : undefined}>
-                                  <ChannelIcon via={doc.sent_via} className="h-3.5 w-3.5" />
+                                <span className="inline-flex shrink-0 items-center gap-1 font-mono text-[10.5px] text-muted" title={doc.client_marked_at ? formatDate(doc.client_marked_at, locale) : undefined}>
+                                  <ChannelIcon via={doc.sent_via} className="h-3 w-3" />
                                   {d.common.via[doc.sent_via]}
                                   {doc.client_marked_at && <span className="hidden sm:inline">· {formatDate(doc.client_marked_at, locale, false)}</span>}
                                 </span>
                               ) : (
-                                <span className="shrink-0 text-[11px] text-muted">{d.app.request.status[doc.status]}</span>
+                                <span className="shrink-0 font-mono text-[10.5px] text-muted">{d.app.request.status[doc.status]}</span>
                               )}
                               {/* Confirmar aqui mesmo o que o cliente diz ter enviado */}
                               {doc.status === "sent" && canWrite && (
@@ -379,7 +377,7 @@ export default async function Painel({
                                   <input type="hidden" name="item" value={doc.id} />
                                   <input type="hidden" name="request" value={r.id} />
                                   <input type="hidden" name="status" value="received" />
-                                  <SubmitButton className="btn btn-primary btn-sm px-2.5 py-1 text-[11px]" pendingText="…">
+                                  <SubmitButton className="btn btn-primary btn-sm min-h-0 px-2.5 py-1 text-[11px]" pendingText="…">
                                     {t.confirm}
                                   </SubmitButton>
                                 </form>

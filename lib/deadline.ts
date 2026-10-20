@@ -33,12 +33,15 @@ export function deadlineLabel(s: Deadline, d: Dictionary): { chip: string; detai
   }
 }
 
+// Estados escritos como anotações de livro de registo: só a cor da tinta muda, sem fundos
 export const deadlineTone: Record<Deadline["kind"], string> = {
-  delivered: "bg-ok/15 text-ok",
-  late: "bg-bad/15 text-bad",
-  soon: "bg-warn/15 text-warn",
-  pending: "bg-ink-3 text-muted",
+  delivered: "text-ok",
+  late: "text-bad",
+  soon: "text-warn",
+  pending: "text-muted",
 };
+// Classe tipográfica comum a todas as etiquetas de estado
+export const statusText = "font-mono text-[10.5px] uppercase tracking-[0.08em]";
 
 // Ordem no painel: atrasados primeiro, depois os que estão a terminar, pendentes e, por fim, entregues
 export const deadlineOrder: Record<Deadline["kind"], number> = { late: 0, soon: 1, pending: 2, delivered: 3 };

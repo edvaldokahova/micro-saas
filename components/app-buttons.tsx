@@ -25,7 +25,7 @@ export function ReminderButton({
       onClick={() => {
         bumpReminder(requestId).catch(() => {});
       }}
-      className={`btn btn-whatsapp ${compact ? "btn-sm" : ""}`}
+      className={`btn ${compact ? "btn-secondary btn-sm" : "btn-whatsapp"}`}
       aria-label={label}
       title={label}
     >

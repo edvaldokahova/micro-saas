@@ -56,7 +56,7 @@ export default async function Cliente({
         <Flash d={d} error={sp.erro} success={sp.ok ? d.common.saved : null} />
       </div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">{client.name}</h1>
+        <h1 className="font-display text-3xl">{client.name}</h1>
         {canWrite && !client.archived_at && (
           <Link href={`/app/pedidos/novo?cliente=${client.id}`} className="btn btn-primary btn-sm">
             <Plus className="h-4 w-4" aria-hidden /> {t.newRequest}
@@ -66,7 +66,7 @@ export default async function Cliente({
 
       <form action={updateClient} className="card mt-6 grid gap-4 p-5 sm:grid-cols-2">
         <input type="hidden" name="id" value={client.id} />
-        <h2 className="font-display text-lg font-semibold sm:col-span-2">{t.editTitle}</h2>
+        <h2 className="font-display text-lg sm:col-span-2">{t.editTitle}</h2>
         <label className="block sm:col-span-2">
           <span className="label">{t.name}</span>
           <input name="name" required maxLength={160} defaultValue={client.name} className="field" />
@@ -113,7 +113,7 @@ export default async function Cliente({
       </form>
 
       <section className="mt-8">
-        <h2 className="font-display text-lg font-semibold">{t.history}</h2>
+        <h2 className="font-display text-lg">{t.history}</h2>
         {history.length === 0 ? (
           <p className="mt-3 text-sm text-muted">{t.noHistory}</p>
         ) : (

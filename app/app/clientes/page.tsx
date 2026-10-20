@@ -33,7 +33,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{t.title}</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.title}</h1>
+          <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
           <p className="mt-2 text-sm text-muted">{t.count(active.length, limit)}</p>
         </div>
       </div>
@@ -48,7 +48,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               {active.map((c, i) => (
                 <li key={c.id} className="animate-rise" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
                   <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink-3 font-display text-sm font-semibold text-gold">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
                       {c.name.charAt(0).toUpperCase()}
                     </span>
                     <Link href={`/app/clientes/${c.id}`} className="min-w-0 flex-1">
@@ -57,10 +57,10 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                         {c.phone && <Phone className="h-3 w-3" aria-hidden />}
                         {c.phone ?? c.email ?? "—"}
                         {c.cadence === "quarterly" && (
-                          <span className="ml-1 rounded-full border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>
+                          <span className="ml-1 rounded-[3px] border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>
                         )}
                         {c.assignee_id && teamName.get(c.assignee_id) && (
-                          <span className="ml-1 rounded-full bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
+                          <span className="ml-1 rounded-[3px] bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
                         )}
                       </span>
                     </Link>
@@ -101,7 +101,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
         {/* Adicionar */}
         <div className="order-1 lg:order-2">
           <form action={addClient} className="card space-y-4 p-5 lg:sticky lg:top-24">
-            <h2 className="font-display text-lg font-semibold">{t.add}</h2>
+            <h2 className="font-display text-lg">{t.add}</h2>
             <label className="block">
               <span className="label">{t.name}</span>
               <input name="name" required maxLength={160} className="field" disabled={!canAdd} autoComplete="off" />

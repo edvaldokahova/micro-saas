@@ -5,7 +5,7 @@ import { CalendarClock, FolderUp, Lock, Mail, MessageCircle, UserRound } from "l
 import { ProductMark, Wordmark } from "@/components/logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, whatsappNumber, type Locale } from "@/lib/i18n";
-import { deadlineLabel, deadlineState, deadlineTone } from "@/lib/deadline";
+import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
 import { getLocale } from "@/lib/prefs";
 import { createClient } from "@/lib/supabase/server";
 import { Checklist, type ChecklistTexts } from "./checklist";
@@ -69,7 +69,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-5 text-center">
         <Lock className="h-8 w-8 text-gold" aria-hidden />
-        <h1 className="mt-5 font-display text-2xl font-semibold">{t.notFoundTitle}</h1>
+        <h1 className="mt-5 font-display text-2xl">{t.notFoundTitle}</h1>
         <p className="mt-2 text-muted">{t.notFoundText}</p>
       </main>
     );
@@ -101,34 +101,34 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
 
   return (
     <div className="relative min-h-dvh overflow-x-clip">
-      <div className="hero-glow opacity-70" aria-hidden />
       <main className="relative mx-auto max-w-xl px-5 pb-16 pt-8">
         {/* Remetente bem identificado: é a primeira coisa que o cliente procura num link que recebeu */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-gold/40 bg-gold/10 font-display text-sm font-semibold text-gold" aria-hidden>
+            <span className="grid h-10 w-10 shrink-0 place-items-center border border-ivory font-display text-[15px]" aria-hidden>
               {initials}
             </span>
             <div className="min-w-0">
-              <p className="truncate font-display text-[15px] font-semibold leading-tight">{req.office_name}</p>
-              <p className="text-xs text-muted">{t.requestFrom}</p>
+              <p className="truncate text-[15px] font-medium leading-tight">{req.office_name}</p>
+              <p className="mono-label mt-0.5 !text-[10px]">{t.requestFrom}</p>
             </div>
           </div>
           <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
         </div>
 
-        <header className="mt-9 animate-rise">
+        <header className="mt-8 animate-rise">
           <p className="eyebrow">{period}</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{t.hello(req.client_name)}</h1>
+          <h1 className="mt-3 font-display text-[2.3rem] leading-[1.08] sm:text-[2.7rem]">{t.hello(req.client_name)}</h1>
           <p className="mt-3 text-[15px] leading-7 text-muted">{t.intro(req.office_name, ofPeriod)}</p>
           {req.due_date && (
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <p className="inline-flex items-center gap-2 rounded-full border border-line bg-ink-2 px-3.5 py-1.5 text-sm">
-                <CalendarClock className="h-4 w-4 text-gold" aria-hidden /> {t.due(formatDate(req.due_date, locale))}
-              </p>
-              {st.kind !== "pending" && (
-                <span className={`rounded-full px-3 py-1.5 text-sm font-medium ${deadlineTone[st.kind]}`}>{dl.detail ?? dl.chip}</span>
-              )}
+            <div className="double-rule mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-line py-3">
+              <span className="mono-label inline-flex items-center gap-2">
+                <CalendarClock className="h-3.5 w-3.5" aria-hidden /> {t.dueLabel}
+              </span>
+              <span className="text-right text-[15px] font-medium">
+                {formatDate(req.due_date, locale)}
+                {st.kind !== "pending" && <span className={`${statusText} block ${deadlineTone[st.kind]}`}>{dl.detail ?? dl.chip}</span>}
+              </span>
             </div>
           )}
         </header>
@@ -138,15 +138,15 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
         {/* Passo 1: enviar os ficheiros (os botões já levam o destinatário e a identificação) */}
         {canSend && (
           <section className="mt-8 animate-rise [animation-delay:120ms]">
-            <h2 className="flex items-center gap-2.5 font-display text-base font-semibold">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-accent text-xs text-on-accent">1</span> {t.step1}
+            <h2 className="flex items-baseline gap-2.5 font-display text-[22px]">
+              <span className="font-mono text-[12px] text-gold">01</span> {t.step1}
             </h2>
             {req.contact_name && (
-              <p className="mt-1.5 flex items-center gap-1.5 pl-[34px] text-sm text-muted">
+              <p className="mt-1 flex items-center gap-1.5 pl-[30px] text-sm text-muted">
                 <UserRound className="h-4 w-4 text-gold" aria-hidden /> {t.yourContact(req.contact_name)}
               </p>
             )}
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 [&_.btn]:min-h-[3.1rem]">
               {waHref && (
                 <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
                   <MessageCircle className="h-4 w-4" aria-hidden /> {t.sendWhatsapp}
@@ -172,8 +172,8 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
         {/* Passo 2: assinalar o que já foi enviado */}
         <section className={`${canSend ? "mt-10" : "mt-8"} animate-rise [animation-delay:180ms]`}>
           {canSend ? (
-            <h2 className="mb-4 flex items-center gap-2.5 font-display text-base font-semibold">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-accent text-xs text-on-accent">2</span> {t.step2}
+            <h2 className="mb-4 flex items-baseline gap-2.5 font-display text-[22px]">
+              <span className="font-mono text-[12px] text-gold">02</span> {t.step2}
             </h2>
           ) : (
             <p className="mb-4 text-sm text-muted">{req.closed ? t.closed : t.instruction}</p>
@@ -181,14 +181,14 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
           <Checklist token={token} initial={req.items} closed={req.closed} t={texts} />
         </section>
 
-        <p className="mt-10 flex items-center justify-center gap-2 text-xs text-muted">
-          <Lock className="h-3.5 w-3.5 text-gold" aria-hidden /> {t.privateLink}
+        <p className="mono-label mt-10 flex items-center justify-center gap-2 !text-[10px]">
+          <Lock className="h-3 w-3" aria-hidden /> {t.privateLink}
         </p>
 
         <footer className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-muted">
           {t.footer(req.office_name)}
           <Link href="/" className="inline-flex items-center gap-1.5 text-ivory/80 hover:text-ivory">
-            <Wordmark className="h-[11px] w-auto" /> <ProductMark className="scale-90" />
+            <Wordmark className="h-[10px] w-auto" /> <ProductMark className="!text-[15px]" />
           </Link>
         </footer>
       </main>

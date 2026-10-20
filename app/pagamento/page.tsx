@@ -12,7 +12,7 @@ export default function Pagamento() {
     <>
       <SiteHeader />
       <main className="mx-auto max-w-md space-y-4 px-5 py-20 text-center">
-        <h1 className="font-display text-2xl font-semibold">Pagamento seguro</h1>
+        <h1 className="font-display text-2xl">Pagamento seguro</h1>
         <p className="text-muted">
           Se veio de um e-mail da Paddle, o pagamento abre automaticamente nesta página.
         </p>

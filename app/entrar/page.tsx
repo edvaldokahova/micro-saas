@@ -16,7 +16,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
     <>
       <SiteHeader />
       <main className="mx-auto max-w-md px-5 py-16">
-        <h1 className="animate-rise font-display text-3xl font-semibold tracking-tight">{d.auth.signInTitle}</h1>
+        <h1 className="animate-rise font-display text-3xl">{d.auth.signInTitle}</h1>
         <p className="mt-2 animate-rise text-muted [animation-delay:80ms]">{d.auth.signInLead}</p>
         {erro === "link" && (
           <p className="mt-5 rounded-xl border border-bad/40 bg-bad/10 px-4 py-3 text-sm text-bad">{d.auth.linkError}</p>

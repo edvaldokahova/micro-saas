@@ -328,6 +328,7 @@ const dict: Dictionary = {
   public: {
     metaTitle: (period: string, office: string) => `Documentación ${period} · ${office}`,
     metaDescription: (office: string) => `Lista privada de los documentos que te pide ${office}. Se abre en el móvil, sin cuenta.`,
+    dueLabel: "Plazo de entrega",
     requestFrom: "Solicitud de documentación",
     step1: "Envía los archivos al despacho",
     step2: "Marca lo que ya has enviado",

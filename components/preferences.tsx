@@ -84,8 +84,8 @@ export function ThemeToggle({ labels }: { labels: { light: string; dark: string 
 
   useEffect(() => {
     const attr = document.documentElement.dataset.theme;
-    if (attr === "light" || attr === "dark") setTheme(attr);
-    else setTheme(window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    // O papel (claro) é a identidade do produto; o escuro só por escolha explícita
+    setTheme(attr === "dark" ? "dark" : "light");
   }, []);
 
   function toggle() {
@@ -93,7 +93,7 @@ export function ThemeToggle({ labels }: { labels: { light: string; dark: string 
     document.documentElement.dataset.theme = next;
     document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", next === "light" ? "#faf8f4" : "#0a0b0d");
+    if (meta) meta.setAttribute("content", next === "light" ? "#f3f0e8" : "#0f1012");
     setTheme(next);
   }
 
@@ -104,7 +104,7 @@ export function ThemeToggle({ labels }: { labels: { light: string; dark: string 
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-gold/60 hover:text-ivory"
+      className="grid h-9 w-9 place-items-center rounded-[3px] border border-line text-muted transition hover:border-line-strong hover:text-ivory"
     >
       {theme === "light" ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
     </button>

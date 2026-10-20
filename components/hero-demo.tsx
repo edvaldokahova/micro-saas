@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CheckCircle2, Circle, Mail, MessageCircle, Phone, Send } from "lucide-react";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
+import { DocMark, DocStrip, type DocState } from "@/components/marks";
 
 // Demonstração animada (dados fictícios): o cliente assinala documentos no telemóvel,
-// o painel do escritório atualiza-se, sai um lembrete por WhatsApp e o pedido fica entregue.
+// a folha do escritório atualiza-se, sai um lembrete e o pedido fica entregue.
 // Repete-se em ciclo; pára fora do ecrã e respeita "reduzir movimento".
 
 export type DemoTexts = {
@@ -41,19 +41,18 @@ export type DemoTexts = {
 
 // Linha do tempo (um passo a cada 1,3 s):
 // 1-3 toca no 1.º documento, escolhe WhatsApp · 4-6 o 2.º por e-mail · 7-8 o 3.º por WhatsApp
-// 9 lembrete por WhatsApp ao cliente atrasado · 10 o escritório confirma: entregue · 11-12 pausa
+// 9 lembrete ao cliente atrasado · 10 o escritório confirma: entregue · 11-12 pausa
 const STEPS = 13;
 const STEP_MS = 1300;
 const VIAS: Channel[] = ["whatsapp", "email", "whatsapp"];
 
 type Kind = "delivered" | "pending" | "soon" | "late";
-const tone: Record<Kind, string> = {
-  delivered: "bg-ok/15 text-ok",
-  pending: "bg-ink-3 text-muted",
-  soon: "bg-warn/15 text-warn",
-  late: "bg-bad/15 text-bad",
-};
-const bar: Record<Kind, string> = { delivered: "bg-ok", pending: "bg-gold", soon: "bg-gold", late: "bg-bad" };
+const tone: Record<Kind, string> = { delivered: "text-ok", pending: "text-muted", soon: "text-warn", late: "text-bad" };
+const label = "font-mono text-[10px] uppercase tracking-[0.08em]";
+
+function strip(got: number, sent: number, total: number): DocState[] {
+  return Array.from({ length: total }, (_, i) => (i < got ? "received" : i < got + sent ? "sent" : "pending"));
+}
 
 export function HeroDemo({ t }: { t: DemoTexts }) {
   const [step, setStep] = useState(0);
@@ -83,177 +82,145 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
   const reminded = step >= 9;
   const confirmed = step >= 10;
 
-  const rows: { i: number; got: number; total: number; kind: Kind; detail?: string; awaiting?: number; remind?: boolean }[] = [
-    { i: 2, got: 2, total: 8, kind: "late", detail: t.lateBy3, remind: true },
-    confirmed ? { i: 1, got: 8, total: 8, kind: "delivered" } : { i: 1, got: 5, total: 8, kind: "soon", detail: t.dueIn2, awaiting: sentCount },
-    { i: 3, got: 6, total: 8, kind: "pending" },
-    { i: 0, got: 8, total: 8, kind: "delivered" },
+  const rows: { i: number; got: number; sent: number; total: number; kind: Kind; detail?: string; remind?: boolean }[] = [
+    { i: 2, got: 2, sent: 0, total: 6, kind: "late", detail: t.lateBy3, remind: true },
+    confirmed ? { i: 1, got: 6, sent: 0, total: 6, kind: "delivered" } : { i: 1, got: 3, sent: sentCount, total: 6, kind: "soon", detail: t.dueIn2 },
+    { i: 3, got: 4, sent: 0, total: 6, kind: "pending" },
+    { i: 0, got: 6, sent: 0, total: 6, kind: "delivered" },
   ];
   const delivered = rows.filter((r) => r.kind === "delivered").length;
   const stats = [
-    { label: t.statDelivered, value: delivered, cls: "text-ok" },
-    { label: t.statPending, value: rows.length - delivered - 1, cls: "text-warn" },
+    { label: t.statDelivered, value: delivered, cls: "" },
+    { label: t.statPending, value: rows.length - delivered - 1, cls: "" },
     { label: t.statLate, value: 1, cls: "text-bad" },
   ];
   const chip = (k: Kind) => (k === "delivered" ? t.chipDelivered : k === "late" ? t.chipLate : t.chipPending);
 
   return (
     <div ref={ref} className="relative">
-      {/* Painel do escritório */}
-      <div className="card relative overflow-hidden pb-14">
-        <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm">
-          <span className="font-medium">{t.month}</span>
-          <span className="inline-flex items-center gap-2 text-xs text-muted">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-ok" />
-            </span>
-            {t.officeView} · {t.live}
+      {/* Folha do escritório */}
+      <div className="card sheet-shadow relative overflow-hidden">
+        <div className="flex items-baseline justify-between gap-3 px-5 pb-3 pt-5">
+          <span className="font-display text-[26px] leading-none">{t.month}</span>
+          <span className={`${label} inline-flex items-center gap-2 text-muted`}>
+            <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden />
+            {t.live}
           </span>
         </div>
-        <dl className="grid grid-cols-3 divide-x divide-line border-b border-line">
-          {stats.map((s) => (
-            <div key={s.label} className="px-4 py-3">
-              <dt className="truncate text-[11px] text-muted">{s.label}</dt>
-              <dd key={s.value} className={`mt-0.5 animate-pop font-display text-xl font-semibold ${s.cls}`}>
+        <dl className="double-rule mx-5 grid grid-cols-3 border-t border-line">
+          {stats.map((s, k) => (
+            <div key={s.label} className={`py-3 ${k > 0 ? "border-l border-line pl-4" : ""}`}>
+              <dt className={`${label} truncate text-muted`}>{s.label}</dt>
+              <dd key={s.value} className={`figure mt-1 animate-pop text-[32px] ${s.cls}`}>
                 {s.value}
               </dd>
             </div>
           ))}
         </dl>
-        <ul className="divide-y divide-line">
+        <ul>
           {rows.map((r) => {
-            const pct = (r.got / r.total) * 100;
-            const highlight = r.i === 1 && (sentCount > 0 || confirmed);
             const contact = t.contacts[r.i];
             return (
-              <li key={r.i} className={`px-5 py-3 transition-colors duration-500 ${highlight ? "bg-gold/[0.06]" : ""}`}>
-                <div className="flex items-center gap-2.5">
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.clients[r.i]}</span>
-                  {r.remind && (
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-all duration-500 ${
-                        reminded ? "bg-[#1f9d55] text-white shadow-[0_0_0_4px_rgba(31,157,85,.18)]" : "bg-[#1f9d55]/15 text-[#1f9d55]"
-                      }`}
-                    >
-                      <MessageCircle className="h-3 w-3" aria-hidden /> {t.remind}
-                    </span>
-                  )}
-                  <span key={r.kind} className={`animate-pop rounded-full px-2 py-0.5 text-[11px] font-medium ${tone[r.kind]}`}>
-                    {r.kind === "delivered" && <Check className="-mt-px mr-0.5 inline h-3 w-3" aria-hidden />}
-                    {chip(r.kind)}
+              <li key={r.i} className="flex items-center gap-4 border-b border-line px-5 py-3 last:border-b-0">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium">{t.clients[r.i]}</span>
+                  {contact && <span className="block truncate font-mono text-[10.5px] text-muted">{contact.phone}</span>}
+                </span>
+                <DocStrip states={strip(r.got, r.sent, r.total)} className="hidden sm:inline-flex" />
+                <span className="w-[118px] shrink-0 text-right">
+                  <span key={r.kind + (r.detail ?? "")} className={`${label} block animate-fade ${tone[r.kind]}`}>
+                    {r.detail ?? chip(r.kind)}
                   </span>
-                </div>
-                {contact && (
-                  <p className="mt-0.5 flex min-w-0 items-center gap-x-2.5 text-[10.5px] text-muted">
-                    <span className="inline-flex shrink-0 items-center gap-1">
-                      <Phone className="h-2.5 w-2.5" aria-hidden /> {contact.phone}
-                    </span>
-                    <span className="inline-flex min-w-0 items-center gap-1">
-                      <Mail className="h-2.5 w-2.5 shrink-0" aria-hidden /> <span className="truncate">{contact.email}</span>
-                    </span>
-                  </p>
-                )}
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-3">
-                  <div className={`h-full rounded-full transition-all duration-700 ease-out ${bar[r.kind]}`} style={{ width: `${pct}%` }} />
-                </div>
-                <p className="mt-1.5 flex flex-wrap gap-x-3 text-[11px] text-muted">
-                  <span>{t.docsOf.replace("{a}", String(r.got)).replace("{b}", String(r.total))}</span>
-                  {r.detail && <span className={r.kind === "late" ? "text-bad" : "text-warn"}>{r.detail}</span>}
-                  {!!r.awaiting && (
-                    <span key={r.awaiting} className="inline-flex animate-fade items-center gap-1 font-medium text-gold">
-                      {t.awaiting[r.awaiting - 1]}
-                      {VIAS.slice(0, r.awaiting).map((v, k) => (
-                        <ChannelIcon key={k} via={v} className="h-3 w-3 animate-pop" />
-                      ))}
+                  {r.remind && (
+                    <span className={`${label} mt-0.5 block transition-colors duration-500 ${reminded ? "text-gold" : "text-muted"}`}>
+                      {reminded ? `✓ ${t.remind}` : t.remind}
                     </span>
                   )}
-                </p>
+                </span>
               </li>
             );
           })}
         </ul>
 
-        {/* Notificações */}
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 flex justify-end">
+        {/* Nota de rodapé: o que acabou de acontecer */}
+        <div className="flex min-h-[42px] items-center border-t border-line bg-ink-3/50 px-5 text-xs">
           {reminded && !confirmed && (
-            <Toast key="wa" icon={<MessageCircle className="h-4 w-4" aria-hidden />} text={`${t.toast} · ${t.clients[2]}`} color="bg-[#1f9d55]" />
+            <span key="wa" className="animate-fade text-muted">
+              <span className="text-gold">●</span> {t.toast} · {t.clients[2]}
+            </span>
           )}
-          {confirmed && <Toast key="ok" icon={<CheckCircle2 className="h-4 w-4" aria-hidden />} text={`${t.confirmed} · ${t.clients[1]}`} color="bg-ok" />}
+          {confirmed && (
+            <span key="ok" className="animate-fade text-muted">
+              <span className="text-ok">●</span> {t.confirmed} · {t.clients[1]}
+            </span>
+          )}
+          {!reminded && !confirmed && <span className="mono-label">{t.officeView}</span>}
         </div>
       </div>
 
-      {/* O que o cliente vê: mesmo tamanho e estilo do painel */}
+      {/* O que o cliente vê */}
       <div className="card relative mt-5 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-line px-5 py-3 text-sm">
-          <span className="truncate font-medium">{t.office}</span>
-          <span className="text-xs text-muted">{t.clientView}</span>
+        <div className="flex items-center gap-3 border-b border-line px-5 py-3">
+          <span className="grid h-8 w-8 shrink-0 place-items-center border border-ivory font-display text-[13px]" aria-hidden>
+            {t.office
+              .split(/\s+/)
+              .slice(0, 2)
+              .map((w) => w[0])
+              .join("")}
+          </span>
+          <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.office}</span>
+          <span className={`${label} text-muted`}>{t.clientView}</span>
         </div>
-        <div className="px-5 pb-5 pt-4">
+        <div className="px-5 pb-4 pt-4">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <p className="font-display text-lg font-semibold leading-tight">{t.hello}</p>
-            <span key={confirmed ? "d" : "s"} className={`animate-pop rounded-full px-2 py-0.5 text-[11px] font-medium ${confirmed ? tone.delivered : tone.soon}`}>
+            <p className="font-display text-[22px] leading-tight">{t.hello}</p>
+            <span key={confirmed ? "d" : "s"} className={`${label} animate-fade ${confirmed ? tone.delivered : tone.soon}`}>
               {confirmed ? t.chipDelivered : t.dueIn2}
             </span>
           </div>
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-3 border-t border-ivory">
             {t.docs.map((doc, i) => {
-              const isReceived = confirmed;
-              const isSent = !confirmed && i < sentCount;
+              const state: DocState = confirmed ? "received" : i < sentCount ? "sent" : "pending";
               const open = menuFor === i;
-              const tapping = open && pressed === null;
               return (
-                <li
-                  key={doc}
-                  className={`overflow-hidden rounded-xl border transition-all duration-300 ${
-                    isReceived ? "border-ok/40" : isSent ? "border-gold/50 bg-gold/[0.05]" : open ? "border-gold/60" : "border-line"
-                  }`}
-                >
-                  <div className="relative flex items-center gap-3 px-3.5 py-2.5 text-sm">
-                    {isReceived ? (
-                      <CheckCircle2 className="h-5 w-5 shrink-0 animate-pop text-ok" aria-hidden />
-                    ) : isSent ? (
-                      <Send className="h-5 w-5 shrink-0 animate-pop text-gold" aria-hidden />
-                    ) : (
-                      <Circle className="h-5 w-5 shrink-0 text-muted" aria-hidden />
-                    )}
+                <li key={doc} className="border-b border-line last:border-b-0">
+                  <div className="flex items-center gap-3 py-2.5 text-sm">
+                    <DocMark key={state} state={state} className="h-4 w-4" animate />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{doc}</span>
-                      {(isSent || isReceived) && (
-                        <span className="flex animate-fade items-center gap-1.5 text-[11px] text-muted">
+                      {state !== "pending" && (
+                        <span className="flex animate-fade items-center gap-1.5 font-mono text-[10.5px] text-muted">
                           <ChannelIcon via={VIAS[i]} className="h-3 w-3" /> {t.sentVia.replace("{canal}", t.via[VIAS[i]])}
                         </span>
                       )}
                     </span>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        isReceived ? "bg-ok/15 text-ok" : isSent ? "bg-gold/15 text-gold" : "bg-accent text-on-accent"
-                      }`}
-                    >
-                      {isReceived ? t.received : isSent ? t.sent : t.markSent}
-                    </span>
-                    {tapping && (
-                      <span className="absolute right-8 top-1/2 h-7 w-7 -translate-y-1/2" aria-hidden>
-                        <span className="absolute inset-0 animate-ping rounded-full bg-gold/40" />
-                        <span className="absolute inset-2 rounded-full bg-gold/70" />
+                    {state === "pending" ? (
+                      <span
+                        className={`shrink-0 rounded-[3px] border px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
+                          open ? "border-ivory bg-ivory text-ink" : "border-ivory"
+                        }`}
+                      >
+                        {t.markSent}
                       </span>
+                    ) : (
+                      <span className={`${label} shrink-0 ${state === "received" ? "text-ok" : "text-gold"}`}>{state === "received" ? t.received : t.sent}</span>
                     )}
                   </div>
 
                   {/* Mini-menu "Por onde enviou?", como na página real */}
                   <div className={`grid transition-all duration-300 ease-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                     <div className="overflow-hidden">
-                      <div className="border-t border-line bg-ink-3/40 px-3.5 py-3">
-                        <p className="text-xs font-semibold">{t.howSent}</p>
-                        <div className="mt-2 grid grid-cols-3 gap-2">
+                      <div className="mb-2.5 border border-line bg-ink-3/50 px-3 py-2.5">
+                        <p className={`${label} text-muted`}>{t.howSent}</p>
+                        <div className="mt-2 grid grid-cols-3 gap-1.5">
                           {(["whatsapp", "email", "other"] as Channel[]).map((c) => (
                             <span
                               key={c}
-                              className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-2 text-[11px] font-medium transition-all duration-200 ${
-                                pressed === c ? "scale-95 border-gold bg-gold/15" : "border-line bg-ink-2"
+                              className={`flex items-center justify-center gap-1.5 rounded-[3px] border px-1 py-1.5 text-[11px] font-medium transition-colors duration-200 ${
+                                pressed === c ? "border-ivory bg-ivory text-ink" : "border-line bg-ink-2"
                               }`}
                             >
-                              <ChannelIcon via={c} className="h-4 w-4" />
+                              <ChannelIcon via={c} className="h-3.5 w-3.5" />
                               {t.via[c]}
                             </span>
                           ))}
@@ -267,15 +234,6 @@ export function HeroDemo({ t }: { t: DemoTexts }) {
           </ul>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Toast({ icon, text, color }: { icon: React.ReactNode; text: string; color: string }) {
-  return (
-    <div className={`flex max-w-[85%] animate-rise items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-white shadow-lg ${color}`}>
-      {icon}
-      <span className="truncate">{text}</span>
     </div>
   );
 }

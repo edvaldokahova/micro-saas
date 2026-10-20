@@ -50,7 +50,7 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
   return (
     <div className="mx-auto max-w-3xl">
       <p className="eyebrow">{office.name}</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.title}</h1>
+      <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
 
       {ok && !live && <p className="mt-6 rounded-xl border border-line bg-ink-2 px-4 py-3 text-sm">{t.received}</p>}
       {erro === "portal" && (
@@ -70,18 +70,18 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
             const p = site.plans[key];
             return (
               <div key={key} className="card p-6">
-                <h2 className="font-display text-lg font-semibold">{plans[key]}</h2>
+                <h2 className="font-display text-lg">{plans[key]}</h2>
                 {intervals.map((iv) => {
                   const isCurrent = currentPlan === key && currentInterval === iv;
                   const label = iv === "year" ? `${plans[key]} ${d.common.intervalName.year}` : plans[key];
                   return (
                     <div key={iv} className={iv === "year" ? "hidden group-data-[interval=year]:block" : "group-data-[interval=year]:hidden"}>
                       <p className="mt-3 flex flex-wrap items-baseline gap-x-2">
-                        <span className="font-display text-3xl font-semibold">
+                        <span className="font-display text-3xl">
                           {iv === "year" ? formatYearlyPerMonth(locale, key) : formatPrice(locale, key)}
                         </span>
                         <span className="text-muted">{d.common.perMonth}</span>
-                        {isCurrent && <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
+                        {isCurrent && <span className="rounded-[3px] bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
                       </p>
                       <p className="mt-1 h-5 text-xs text-muted">{iv === "year" ? d.common.billedYearly(formatPrice(locale, key, "year")) : ""}</p>
                       <p className="mt-2 flex items-center gap-2 text-sm text-muted">

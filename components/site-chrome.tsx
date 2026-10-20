@@ -16,20 +16,20 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line/60 bg-ink/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
+    <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
+      <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
         <Link href="/" aria-label={site.name} className="shrink-0">
           <Logo />
         </Link>
         <nav className="flex items-center gap-2 text-sm sm:gap-3">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="hidden px-2 text-muted transition hover:text-ivory lg:block">
+            <Link key={l.href} href={l.href} className="hidden px-2.5 text-ivory/75 transition hover:text-ivory lg:block">
               {l.label}
             </Link>
           ))}
           <LocaleSwitcher locale={locale} label={d.common.language} />
           <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
-          <Link href="/entrar" className="hidden px-2 text-muted transition hover:text-ivory sm:block">
+          <Link href="/entrar" className="btn btn-secondary btn-sm hidden sm:inline-flex">
             {d.nav.signIn}
           </Link>
           <Link href="/registar" className="btn btn-primary btn-sm hidden sm:inline-flex">
@@ -64,26 +64,26 @@ export async function SiteHeader() {
 export async function SiteFooter() {
   const d = getDictionary(await getLocale());
   return (
-    <footer className="border-t border-line/60">
+    <footer className="border-t border-ivory">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />
           <p className="max-w-xs leading-6 text-muted">{d.nav.footerTagline(site.owner)}</p>
         </div>
         <ul className="space-y-2.5 text-muted">
-          <li className="font-medium text-ivory">{d.nav.product}</li>
+          <li className="mono-label">{d.nav.product}</li>
           <li><Link className="transition hover:text-ivory" href="/#como-funciona">{d.nav.how}</Link></li>
           <li><Link className="transition hover:text-ivory" href="/#precos">{d.nav.pricing}</Link></li>
           <li><Link className="transition hover:text-ivory" href="/suporte">{d.nav.support}</Link></li>
         </ul>
         <ul className="space-y-2.5 text-muted">
-          <li className="font-medium text-ivory">{d.nav.legal}</li>
+          <li className="mono-label">{d.nav.legal}</li>
           <li><Link className="transition hover:text-ivory" href="/termos">{d.nav.terms}</Link></li>
           <li><Link className="transition hover:text-ivory" href="/privacidade">{d.nav.privacy}</Link></li>
           <li><Link className="transition hover:text-ivory" href="/reembolsos">{d.nav.refunds}</Link></li>
         </ul>
       </div>
-      <div className="border-t border-line/60 py-5 text-center text-xs text-muted">
+      <div className="mx-auto max-w-6xl border-t border-line px-5 py-5 font-mono text-[11px] text-muted">
         © {new Date().getFullYear()} {site.owner} ·{" "}
         <a className="transition hover:text-ivory" href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
       </div>

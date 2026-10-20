@@ -325,6 +325,7 @@ const dict = {
   public: {
     metaTitle: (period: string, office: string) => `Documentos ${period} · ${office}`,
     metaDescription: (office: string) => `Lista privada dos documentos que ${office} lhe pede. Abre no telemóvel, sem conta.`,
+    dueLabel: "Prazo de entrega",
     requestFrom: "Pedido de documentos",
     step1: "Envie os ficheiros ao escritório",
     step2: "Assinale o que já enviou",

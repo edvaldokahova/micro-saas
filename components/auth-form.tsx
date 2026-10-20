@@ -60,7 +60,7 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
         <span className="mx-auto grid h-14 w-14 animate-pop place-items-center rounded-2xl border border-line bg-ink-3">
           <MailCheck className="h-7 w-7 text-gold" aria-hidden />
         </span>
-        <h2 className="mt-5 font-display text-xl font-semibold">{t.checkTitle}</h2>
+        <h2 className="mt-5 font-display text-xl">{t.checkTitle}</h2>
         <p className="mt-2 text-[15px] leading-7 text-muted">
           {t.checkTextA} <strong className="text-ivory">{email}</strong> {t.checkTextB}
         </p>

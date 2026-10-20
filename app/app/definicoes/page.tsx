@@ -26,7 +26,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
   return (
     <div className="mx-auto max-w-3xl">
       <p className="eyebrow">{t.office}</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">{t.title}</h1>
+      <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
       <div className="mt-6">
         <Flash d={d} error={sp.erro} success={sp.ok ? d.common.saved : null} />
       </div>
@@ -86,7 +86,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       </form>
 
       <section id="equipa" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-semibold">{tm.title}</h2>
+        <h2 className="font-display text-lg">{tm.title}</h2>
         <p className="mt-1 text-sm text-muted">{tm.hint}</p>
         {team.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-line px-4 py-3 text-sm text-muted">{tm.none}</p>
@@ -94,7 +94,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
           <ul className="mt-4 divide-y divide-line rounded-xl border border-line">
             {team.map((m) => (
               <li key={m.id} className="flex items-center gap-3 px-4 py-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink-3 text-gold">
+                <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
                   <UserRound className="h-4 w-4" aria-hidden />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -134,11 +134,11 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       </section>
 
       <section id="tipos" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-semibold">{t.docTypes}</h2>
+        <h2 className="font-display text-lg">{t.docTypes}</h2>
         <p className="mt-1 text-sm text-muted">{t.docTypesHint}</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {types.map((x) => (
-            <li key={x.id} className="flex items-center gap-1 rounded-full border border-line bg-ink-3 py-1 pl-3.5 pr-1 text-sm">
+            <li key={x.id} className="flex items-center gap-1 rounded-[3px] border border-line bg-ink-3 py-1 pl-3.5 pr-1 text-sm">
               {x.label}
               <form action={removeDocType}>
                 <input type="hidden" name="id" value={x.id} />

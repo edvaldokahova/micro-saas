@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { getDictionary, localeMeta, locales } from "@/lib/i18n";
 import { getLocale, getTheme } from "@/lib/prefs";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-grotesk", display: "swap" });
+// Identidade "livro-razão": serifa editorial nos títulos e números, Plex no texto, Plex Mono nas etiquetas
+const sans = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex", display: "swap" });
+const display = Newsreader({ subsets: ["latin"], weight: ["400", "500"], style: ["normal", "italic"], variable: "--font-news", display: "swap" });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -27,15 +29,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0b0d" },
-    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#f3f0e8" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f0e8" },
   ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [locale, theme] = await Promise.all([getLocale(), getTheme()]);
   return (
-    <html lang={locale} data-theme={theme} className={`${inter.variable} ${display.variable}`} suppressHydrationWarning>
+    <html lang={locale} data-theme={theme} className={`${sans.variable} ${display.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );

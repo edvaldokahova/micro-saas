@@ -51,7 +51,7 @@ export default async function NovoPedido({
       <Link href="/app" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
         <ArrowLeft className="h-4 w-4" aria-hidden /> {d.app.nav.dashboard}
       </Link>
-      <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight">{t.newTitle}</h1>
+      <h1 className="mt-4 font-display text-3xl">{t.newTitle}</h1>
       <div className="mt-6">
         <Flash d={d} error={sp.erro} />
       </div>
