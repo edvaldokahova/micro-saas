@@ -90,7 +90,7 @@ const dict = {
       { value: "1 clique", label: "para lembrar por WhatsApp" },
     ],
     value: {
-      eyebrow: "Porque vale a pena",
+      eyebrow: "Porquê?",
       title: "A conta do valor, aplicada ao seu mês",
       lead: "O valor de qualquer solução sobe com o resultado e a confiança, e desce com a espera e o esforço. Trabalhámos as quatro partes.",
       dream: { label: "Resultado que quer", text: "Mês fechado com todos os documentos de todos os clientes." },

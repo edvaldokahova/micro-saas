@@ -92,7 +92,7 @@ const dict: Dictionary = {
       { value: "1 clique", label: "para cobrar pelo WhatsApp" },
     ],
     value: {
-      eyebrow: "Por que vale a pena",
+      eyebrow: "Por quê?",
       title: "A equação do valor, aplicada ao seu mês",
       lead: "O valor de qualquer solução sobe com o resultado e a confiança, e cai com a espera e o esforço. Trabalhamos as quatro partes.",
       dream: { label: "Resultado que você quer", text: "Mês fechado com todos os documentos de todos os clientes." },
