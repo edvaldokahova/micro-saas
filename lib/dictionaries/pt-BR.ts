@@ -65,12 +65,12 @@ const dict: Dictionary = {
   home: {
     metaTitle: "Documentos pendentes dos clientes, sob controle",
     metaDescription: (d: number) =>
-      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e cobre pelo WhatsApp. ${d} dias grátis, sem cartão.`,
+      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e cobre pelo WhatsApp ou por e-mail. ${d} dias grátis, sem cartão.`,
     badge: "Para escritórios de contabilidade no Brasil",
     titleA: "Pare de correr atrás de",
     titleHighlight: "documentos pendentes",
     titleB: ".",
-    lead: "Peça os documentos do mês por link, veja num só painel quem já entregou e quem não, e mande a cobrança pelo WhatsApp sem reescrever a lista toda vez.",
+    lead: "Peça os documentos do mês por link, veja num só painel quem já entregou e quem não, e mande a cobrança pelo WhatsApp ou por e-mail sem reescrever a lista toda vez.",
     mock: {
       month: "Setembro de 2026",
       summary: "2 de 4 clientes completos",
@@ -93,7 +93,7 @@ const dict: Dictionary = {
     stats: [
       { value: "1 link", label: "por cliente e por competência" },
       { value: "0 cadastros", label: "para os seus clientes fazerem" },
-      { value: "1 clique", label: "para cobrar pelo WhatsApp" },
+      { value: "1 clique", label: "para cobrar pelo WhatsApp ou e-mail" },
     ],
     value: {
       eyebrow: "Por quê?",
@@ -110,19 +110,19 @@ const dict: Dictionary = {
     steps: [
       { title: "Crie as solicitações do mês", text: "Um clique cria a solicitação de todos os clientes, com a lista de documentos de cada um. Mensal ou trimestral, a lista se repete na competência seguinte." },
       { title: "O cliente abre um link", text: "Sem cadastro, sem aplicativo, sem senha. Vê no celular o que falta e marca o que já enviou." },
-      { title: "Cobre pelo WhatsApp", text: "A mensagem sai pronta, com o que ainda falta e o link. Você envia do seu próprio WhatsApp." },
+      { title: "Cobre com um clique", text: "A mensagem sai pronta, com o que ainda falta e o link. Você envia do seu próprio WhatsApp ou e-mail." },
     ],
     safety: "Não substitui o seu sistema contábil nem recebe arquivos: organiza e acompanha a coleta.",
     message: {
       eyebrow: "O que o seu cliente recebe",
       title: "Uma mensagem clara, um link curto.",
-      lead: "A cobrança sai do seu próprio WhatsApp, com o nome do escritório, a lista do que falta e um link que abre em qualquer celular.",
+      lead: "A cobrança sai do seu próprio WhatsApp ou e-mail, com o nome do escritório, a lista do que falta e um link que abre em qualquer celular.",
       points: ["Sem cadastro, sem aplicativo, sem senha", "A prévia do link mostra o nome do seu escritório", "O link só dá acesso àquela solicitação"],
     },
     pricingTitle: "Preço simples, por escritório",
     pricingLead: (d: number) =>
       `Comece com ${d} dias grátis. Mensal ou anual; os impostos aplicáveis são calculados no checkout.`,
-    features: ["Solicitações ilimitadas, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que está pendente e de quem está atrasado", "Cobrança pelo WhatsApp com a lista pronta"],
+    features: ["Solicitações ilimitadas, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que está pendente e de quem está atrasado", "Cobrança pelo WhatsApp ou e-mail com a lista pronta"],
     popular: "Mais escolhido",
     planFor: { starter: "Para quem trabalha sozinho ou com uma equipe pequena.", office: "Para escritórios com mais clientes e vários responsáveis." },
     faqTitle: "Perguntas frequentes",

@@ -63,12 +63,12 @@ const dict = {
   home: {
     metaTitle: "Documentos em falta dos clientes, sob controlo",
     metaDescription: (d: number) =>
-      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e lembre por WhatsApp. ${d} dias grátis, sem cartão.`,
+      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e lembre por e-mail ou WhatsApp. ${d} dias grátis, sem cartão.`,
     badge: "Para escritórios de contabilidade em Portugal",
     titleA: "Deixe de perseguir",
     titleHighlight: "documentos em falta",
     titleB: ".",
-    lead: "Peça os documentos do mês por link, veja num só painel quem já entregou e quem não, e envie o lembrete por WhatsApp sem reescrever a lista de cada vez.",
+    lead: "Peça os documentos do mês por link, veja num só painel quem já entregou e quem não, e envie o lembrete por e-mail ou WhatsApp sem reescrever a lista de cada vez.",
     mock: {
       month: "Setembro de 2026",
       summary: "2 de 4 clientes completos",
@@ -91,7 +91,7 @@ const dict = {
     stats: [
       { value: "1 link", label: "por cliente e por período" },
       { value: "0 contas", label: "para os seus clientes criarem" },
-      { value: "1 clique", label: "para lembrar por WhatsApp" },
+      { value: "1 clique", label: "para lembrar por e-mail ou WhatsApp" },
     ],
     value: {
       eyebrow: "Porquê?",
@@ -108,19 +108,19 @@ const dict = {
     steps: [
       { title: "Crie os pedidos do mês", text: "Um clique cria o pedido de todos os clientes, com a lista de documentos de cada um. Mensal ou trimestral, a lista repete-se no período seguinte." },
       { title: "O cliente abre um link", text: "Sem conta, sem aplicação, sem palavra-passe. Vê o que falta no telemóvel e assinala o que já enviou." },
-      { title: "Lembre por WhatsApp", text: "A mensagem sai pronta, com a lista do que ainda falta e o link. Envia do seu próprio WhatsApp." },
+      { title: "Lembre com um clique", text: "A mensagem sai pronta, com a lista do que ainda falta e o link. Envia do seu próprio e-mail ou WhatsApp." },
     ],
     safety: "Não substitui o seu programa de contabilidade nem recebe ficheiros: organiza e acompanha a recolha.",
     message: {
       eyebrow: "O que o seu cliente recebe",
       title: "Uma mensagem clara, um link curto.",
-      lead: "O lembrete sai do seu próprio WhatsApp, com o nome do escritório, a lista do que falta e um link que abre em qualquer telemóvel.",
+      lead: "O lembrete sai do seu próprio e-mail ou WhatsApp, com o nome do escritório, a lista do que falta e um link que abre em qualquer telemóvel.",
       points: ["Sem conta, sem aplicação, sem palavra-passe", "A pré-visualização mostra o nome do seu escritório", "O link só dá acesso àquele pedido"],
     },
     pricingTitle: "Preço simples, por escritório",
     pricingLead: (d: number) =>
       `Comece com ${d} dias grátis. Mensal ou anual; os impostos aplicáveis são calculados no checkout, consoante o país.`,
-    features: ["Pedidos ilimitados, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que falta e de quem está atrasado", "Lembretes por WhatsApp com a lista pronta"],
+    features: ["Pedidos ilimitados, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que falta e de quem está atrasado", "Lembretes por e-mail ou WhatsApp com a lista pronta"],
     popular: "Mais escolhido",
     planFor: { starter: "Para quem trabalha sozinho ou com uma pequena equipa.", office: "Para escritórios com mais clientes e vários responsáveis." },
     faqTitle: "Perguntas frequentes",

@@ -66,12 +66,12 @@ const dict: Dictionary = {
   home: {
     metaTitle: "La documentación pendiente de tus clientes, bajo control",
     metaDescription: (d: number) =>
-      `Para asesorías y gestorías: pide la documentación del trimestre o del mes con un enlace, mira quién no la ha entregado y recuérdaselo por WhatsApp. ${d} días gratis, sin tarjeta.`,
+      `Para asesorías y gestorías: pide la documentación del trimestre o del mes con un enlace, mira quién no la ha entregado y recuérdaselo por correo o WhatsApp. ${d} días gratis, sin tarjeta.`,
     badge: "Para asesorías y gestorías en España",
     titleA: "Deja de perseguir",
     titleHighlight: "documentación pendiente",
     titleB: ".",
-    lead: "Pide la documentación de cada trimestre (o de cada mes) con un enlace, mira en un solo panel quién la ha entregado y quién no, y envía el recordatorio por WhatsApp sin reescribir la lista cada vez.",
+    lead: "Pide la documentación de cada trimestre (o de cada mes) con un enlace, mira en un solo panel quién la ha entregado y quién no, y envía el recordatorio por correo o WhatsApp sin reescribir la lista cada vez.",
     mock: {
       month: "3.er trimestre de 2026",
       summary: "2 de 4 clientes completos",
@@ -94,7 +94,7 @@ const dict: Dictionary = {
     stats: [
       { value: "1 enlace", label: "por cliente y periodo" },
       { value: "0 cuentas", label: "que tus clientes tengan que crear" },
-      { value: "1 clic", label: "para recordar por WhatsApp" },
+      { value: "1 clic", label: "para recordar por correo o WhatsApp" },
     ],
     value: {
       eyebrow: "¿Por qué?",
@@ -111,19 +111,19 @@ const dict: Dictionary = {
     steps: [
       { title: "Crea las solicitudes del periodo", text: "Un clic crea la solicitud de todos tus clientes, trimestral o mensual, con la lista de documentos de cada uno. La lista se repite en el siguiente periodo." },
       { title: "El cliente abre un enlace", text: "Sin cuenta, sin app, sin contraseña. Ve en el móvil lo que falta y marca lo que ya ha enviado." },
-      { title: "Recuerda por WhatsApp", text: "El mensaje sale listo, con lo que aún falta y el enlace. Lo envías desde tu propio WhatsApp." },
+      { title: "Recuerda con un clic", text: "El mensaje sale listo, con lo que aún falta y el enlace. Lo envías desde tu propio correo o WhatsApp." },
     ],
     safety: "No sustituye tu programa de contabilidad ni recibe archivos: organiza y sigue la recogida.",
     message: {
       eyebrow: "Lo que recibe tu cliente",
       title: "Un mensaje claro, un enlace corto.",
-      lead: "El recordatorio sale de tu propio WhatsApp, con el nombre del despacho, la lista de lo que falta y un enlace que se abre en cualquier móvil.",
+      lead: "El recordatorio sale de tu propio correo o WhatsApp, con el nombre del despacho, la lista de lo que falta y un enlace que se abre en cualquier móvil.",
       points: ["Sin cuenta, sin app, sin contraseña", "La vista previa muestra el nombre de tu despacho", "El enlace solo da acceso a esa solicitud"],
     },
     pricingTitle: "Precio sencillo, por despacho",
     pricingLead: (d: number) =>
       `Empieza con ${d} días gratis. Pago mensual o anual; los impuestos aplicables se calculan en el pago, según el país.`,
-    features: ["Solicitudes ilimitadas, trimestrales o mensuales", "Enlace corto y privado para cada cliente", "Panel de lo que falta y de quién va con retraso", "Recordatorios por WhatsApp con la lista ya preparada"],
+    features: ["Solicitudes ilimitadas, trimestrales o mensuales", "Enlace corto y privado para cada cliente", "Panel de lo que falta y de quién va con retraso", "Recordatorios por correo o WhatsApp con la lista ya preparada"],
     popular: "El más elegido",
     planFor: { starter: "Para quien trabaja solo o con un equipo pequeño.", office: "Para despachos con más clientes y varios responsables." },
     faqTitle: "Preguntas frecuentes",
