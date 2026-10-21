@@ -2,34 +2,39 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Check, Copy, MessageCircle } from "lucide-react";
+import { Check, Copy, Mail, MessageCircle } from "lucide-react";
 import { bumpReminder } from "@/app/app/actions";
 
-// Abre o WhatsApp com a mensagem pronta e regista o lembrete
+// Abre o WhatsApp (ou o programa de e-mail) com a mensagem pronta e regista o lembrete
 export function ReminderButton({
   requestId,
   href,
   label,
   compact = false,
+  channel = "whatsapp",
+  secondary = false,
 }: {
   requestId: string;
   href: string;
   label: string;
   compact?: boolean;
+  channel?: "whatsapp" | "email";
+  secondary?: boolean;
 }) {
+  const Icon = channel === "email" ? Mail : MessageCircle;
+  const look = compact || secondary ? "btn-secondary" : channel === "email" ? "btn-primary" : "btn-whatsapp";
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(channel === "whatsapp" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       onClick={() => {
         bumpReminder(requestId).catch(() => {});
       }}
-      className={`btn ${compact ? "btn-secondary btn-sm" : "btn-whatsapp"}`}
+      className={`btn ${look} ${compact ? "btn-sm" : ""}`}
       aria-label={label}
       title={label}
     >
-      <MessageCircle className="h-4 w-4" aria-hidden />
+      <Icon className="h-4 w-4" aria-hidden />
       <span className={compact ? "hidden sm:inline" : ""}>{label}</span>
     </a>
   );

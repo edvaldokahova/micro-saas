@@ -226,7 +226,8 @@ const dict: Dictionary = {
       removeConfirm: "Remover esta pessoa? Ela perde o acesso na hora e os clientes atribuídos passam a mostrar os contatos gerais.",
     },
     remind: "Cobrar no WhatsApp",
-    remindNoPhone: "Sem celular: copie o link e envie por e-mail.",
+    remindEmail: "Cobrar por e-mail",
+    remindNoPhone: "Sem celular nem e-mail: copie o link e envie para o cliente.",
     status: {
       all: "Todas",
       delivered: "Entregue",
@@ -340,6 +341,7 @@ const dict: Dictionary = {
     whatsappTemplate:
       "Olá, {cliente}! Para fecharmos a contabilidade {periodo}, ainda faltam estes documentos:\n{lista}\n\nVocê pode ver a lista e marcar o que já enviou aqui: {link}\n\nObrigado,\n{escritorio}",
     whatsappAllSent: "Olá, {cliente}! Você pode conferir os documentos {periodo} aqui: {link}\n\nObrigado,\n{escritorio}",
+    emailSubject: "Documentos pendentes {periodo} · {escritorio}",
   },
   public: {
     metaTitle: (period: string, office: string) => `Documentos ${period} · ${office}`,

@@ -8,7 +8,7 @@ import { ChannelIcon, isChannel } from "@/components/channel-icon";
 import { formatDate, formatPeriod } from "@/lib/i18n";
 import { dashboardMonth, getSession } from "@/lib/office";
 import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
-import { publicLink, reminderUrl } from "@/lib/reminder";
+import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
 
 export const metadata: Metadata = { title: "Pedido" };
@@ -18,6 +18,7 @@ type Req = {
   client_id: string;
   client_name: string;
   client_phone: string | null;
+  client_email: string | null;
   period: string;
   months: number;
   due_date: string | null;
@@ -38,7 +39,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const [{ data: r }, { data: it }, { data: noteRow }] = await Promise.all([
     supabase
       .from("requests_overview")
-      .select("id, client_id, client_name, client_phone, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
+      .select("id, client_id, client_name, client_phone, client_email, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("request_items").select("id, label, status, client_marked_at, sent_via").eq("request_id", id).order("position").order("created_at"),
@@ -50,7 +51,9 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const note = (noteRow as { note: string | null } | null)?.note;
   const done = req.total_items > 0 && req.received_items === req.total_items;
   const pct = req.total_items ? Math.round((req.received_items / req.total_items) * 100) : 0;
-  const wa = done ? null : reminderUrl(office, locale, d, req, items.filter((i) => i.status === "pending").map((i) => i.label));
+  const pendingLabels = items.filter((i) => i.status === "pending").map((i) => i.label);
+  const wa = done ? null : reminderUrl(office, locale, d, req, pendingLabels);
+  const mail = done ? null : reminderMailto(office, locale, d, req, pendingLabels);
   const link = publicLink(req.token);
   const st = deadlineState(req.due_date, done);
   const dl = deadlineLabel(st, d);
@@ -99,11 +102,9 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
         <p className="mt-1 text-xs text-muted">{t.linkHint}</p>
         <code className="mt-3 block truncate border-y border-line py-2.5 font-mono text-[13px]">{link.replace(/^https:\/\//, "")}</code>
         <div className="mt-4 flex flex-wrap gap-2">
-          {wa ? (
-            <ReminderButton requestId={req.id} href={wa} label={d.app.remind} />
-          ) : (
-            !done && <p className="w-full text-sm text-muted">{d.app.remindNoPhone}</p>
-          )}
+          {wa && <ReminderButton requestId={req.id} href={wa} label={d.app.remind} />}
+          {mail && <ReminderButton requestId={req.id} href={mail} label={d.app.remindEmail} channel="email" secondary={Boolean(wa)} />}
+          {!done && !wa && !mail && <p className="w-full text-sm text-muted">{d.app.remindNoPhone}</p>}
           <CopyButton value={link} label={d.common.copy} done={d.common.copied} />
           <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
             {d.common.open}

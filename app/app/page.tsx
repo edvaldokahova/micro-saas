@@ -8,7 +8,7 @@ import { Flash } from "@/components/flash";
 import { formatDate, formatPeriod, periodOf } from "@/lib/i18n";
 import { getSession, isQuarterEnd, officeAccess, quarterStart, resolvePeriod, shiftPeriod } from "@/lib/office";
 import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, suggestedDue, type Deadline } from "@/lib/deadline";
-import { publicLink, reminderUrl } from "@/lib/reminder";
+import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests, setItemStatus } from "./actions";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -98,11 +98,11 @@ export default async function Painel({
   const isComplete = (r: Row) => r.total_items > 0 && r.received_items === r.total_items;
   const state = new Map<string, Deadline>(byPerson.map((r) => [r.id, deadlineState(r.due_date, isComplete(r))]));
   const kindOf = (r: Row) => state.get(r.id)!.kind;
-  // Por lembrar: atrasado ou com o prazo a terminar, com telemóvel, sem lembrete nos últimos dias
+  // Por lembrar: atrasado ou com o prazo a terminar, com telemóvel ou e-mail, sem lembrete nos últimos dias
   const remindCutoff = Date.now() - REMIND_GAP_DAYS * 86_400_000;
   const needsReminder = (r: Row) =>
     (kindOf(r) === "late" || kindOf(r) === "soon") &&
-    Boolean(r.client_phone) &&
+    Boolean(r.client_phone || r.client_email) &&
     (!r.last_reminder_at || Date.parse(r.last_reminder_at) < remindCutoff);
   const matches: Record<Filter, (r: Row) => boolean> = {
     remind: needsReminder,
@@ -286,6 +286,7 @@ export default async function Painel({
                 const dl = deadlineLabel(st, d);
                 const pending = pendingByRequest.get(r.id) ?? [];
                 const wa = done ? null : reminderUrl(office, locale, d, r, pending);
+                const mail = done || wa ? null : reminderMailto(office, locale, d, r, pending);
                 const docs = docsByRequest.get(r.id) ?? [];
                 const states = orderStates(docs.map((x) => x.status));
                 return (
@@ -346,6 +347,7 @@ export default async function Painel({
                       {/* Ações */}
                       <div className="order-2 flex shrink-0 items-center justify-end gap-2 lg:order-none">
                         {wa && <ReminderButton requestId={r.id} href={wa} label={d.app.remind} compact />}
+                        {mail && <ReminderButton requestId={r.id} href={mail} label={d.app.remindEmail} channel="email" compact />}
                         <CopyButton value={publicLink(r.token)} label={d.common.copy} done={d.common.copied} compact />
                       </div>
                     </div>
