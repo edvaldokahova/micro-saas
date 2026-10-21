@@ -25,6 +25,10 @@ const dict: Dictionary = {
     themeLight: "Modo claro",
     themeDark: "Modo oscuro",
     signOut: "Salir",
+    choose: "Elegir…",
+    searchClient: "Buscar cliente…",
+    search: "Buscar…",
+    noResults: "Ningún cliente encontrado.",
     optional: "opcional",
     deadline: {
       delivered: "Entregado",

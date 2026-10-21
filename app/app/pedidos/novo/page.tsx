@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
+import { Select } from "@/components/select";
+import { formatPeriod } from "@/lib/i18n";
 import { suggestedDue } from "@/lib/deadline";
-import { getSession, officeAccess, resolvePeriod } from "@/lib/office";
+import { getSession, officeAccess, resolvePeriod, shiftPeriod } from "@/lib/office";
 import { createRequest } from "../../actions";
 
 export const metadata: Metadata = { title: "Novo pedido" };
@@ -16,7 +18,7 @@ export default async function NovoPedido({
   searchParams: Promise<{ cliente?: string; mes?: string; erro?: string }>;
 }) {
   const sp = await searchParams;
-  const { supabase, office, d } = await getSession();
+  const { supabase, office, d, locale } = await getSession();
   if (!officeAccess(office).canWrite) redirect("/app/assinatura");
   const t = d.app.request;
   const clientId = sp.cliente && /^[0-9a-f-]{36}$/i.test(sp.cliente) ? sp.cliente : null;
@@ -45,6 +47,10 @@ export default async function NovoPedido({
   }
 
   const period = resolvePeriod(sp.mes).slice(0, 7);
+  // Meses à escolha: do ano passado até ao próximo mês (e o do pedido, se estiver fora disso)
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const months = Array.from({ length: 15 }, (_, i) => shiftPeriod(`${thisMonth}-01`, 1 - i));
+  if (!months.includes(period)) months.push(period);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -57,25 +63,38 @@ export default async function NovoPedido({
       </div>
 
       <form action={createRequest} className="card space-y-5 p-5 sm:p-6">
-        <label className="block">
-          <span className="label">{t.client}</span>
-          <select name="client" required defaultValue={clientId ?? ""} className="field">
-            {!clientId && <option value="" disabled />}
-            {clients.map((c: { id: string; name: string; cadence: string }) => (
-              <option key={c.id} value={c.id}>
-                {c.cadence === "quarterly" ? `${c.name} · ${d.common.cadence.quarterly}` : c.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div>
+          <label htmlFor="f-client" className="label">{t.client}</label>
+          <Select
+            id="f-client"
+            name="client"
+            required
+            defaultValue={clientId ?? ""}
+            placeholder={d.common.choose}
+            searchPlaceholder={d.common.searchClient}
+            emptyText={d.common.noResults}
+            options={clients.map((c: { id: string; name: string; cadence: string }) => ({
+              value: c.id,
+              label: c.name,
+              hint: c.cadence === "quarterly" ? d.common.cadence.quarterly : undefined,
+            }))}
+          />
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block">
-            <span className="label">{t.period}</span>
-            <input name="period" type="month" required defaultValue={period} className="field" />
+          <div>
+            <label htmlFor="f-period" className="label">{t.period}</label>
+            <Select
+              id="f-period"
+              name="period"
+              required
+              defaultValue={period}
+              searchFrom={99}
+              options={months.map((m) => ({ value: m, label: formatPeriod(`${m}-01`, locale) }))}
+            />
             {clients.some((c: { cadence: string }) => c.cadence === "quarterly") && (
               <span className="mt-1.5 block text-xs text-muted">{t.periodHint}</span>
             )}
-          </label>
+          </div>
           <label className="block">
             <span className="label">
               {t.due} <span className="opacity-70">({d.common.optional})</span>

@@ -4,6 +4,8 @@ import { ChevronRight, Phone, Plus } from "lucide-react";
 import { CadenceField } from "@/components/cadence-field";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
+import { Select } from "@/components/select";
+import { ListSearch } from "@/components/list-search";
 import { clientLimit, getSession, officeAccess } from "@/lib/office";
 import { addClient } from "../actions";
 
@@ -44,9 +46,15 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
           {active.length === 0 ? (
             <p className="card p-8 text-center text-muted">{t.empty}</p>
           ) : (
-            <ul className="card divide-y divide-line overflow-hidden">
+            <>
+            {active.length >= 8 && (
+              <div className="mb-3">
+                <ListSearch listId="lista-clientes" placeholder={d.common.searchClient} emptyText={d.common.noResults} />
+              </div>
+            )}
+            <ul id="lista-clientes" className="card divide-y divide-line overflow-hidden">
               {active.map((c, i) => (
-                <li key={c.id} className="animate-rise" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
+                <li key={c.id} data-search={`${c.name} ${c.phone ?? ""} ${c.email ?? ""}`} className="animate-rise" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
                   <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
                     <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
                       {c.name.charAt(0).toUpperCase()}
@@ -77,6 +85,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                 </li>
               ))}
             </ul>
+            </>
           )}
 
           {archived.length > 0 && (
@@ -127,17 +136,15 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               disabled={!canAdd}
             />
             {team.length > 0 && (
-            <label className="block">
-              <span className="label">{d.app.team.assignee}</span>
-              <select name="assignee" defaultValue={""} className="field" disabled={!canAdd}>
-                <option value="">{d.app.team.general}</option>
-                {team.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div>
+              <label htmlFor="f-assignee" className="label">{d.app.team.assignee}</label>
+              <Select
+                id="f-assignee"
+                name="assignee"
+                defaultValue={""} disabled={!canAdd}
+                options={[{ value: "", label: d.app.team.general }, ...team.map((m) => ({ value: m.id, label: m.name }))]}
+              />
+            </div>
             )}
             {canAdd ? (
               <SubmitButton pendingText={d.common.saving} className="btn btn-primary w-full">

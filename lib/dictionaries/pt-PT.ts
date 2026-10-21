@@ -23,6 +23,10 @@ const dict = {
     themeLight: "Modo claro",
     themeDark: "Modo escuro",
     signOut: "Sair",
+    choose: "Escolher…",
+    searchClient: "Pesquisar cliente…",
+    search: "Pesquisar…",
+    noResults: "Nenhum cliente encontrado.",
     optional: "opcional",
     deadline: {
       delivered: "Entregue",

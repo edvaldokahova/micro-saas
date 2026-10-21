@@ -5,6 +5,7 @@ import { ArrowLeft, Plus } from "lucide-react";
 import { CadenceField } from "@/components/cadence-field";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
+import { Select } from "@/components/select";
 import { formatPeriod } from "@/lib/i18n";
 import { getSession, officeAccess } from "@/lib/office";
 import { setClientArchived, updateClient } from "../../actions";
@@ -92,17 +93,15 @@ export default async function Cliente({
         </div>
         {team.length > 0 && (
           <div className="sm:col-span-2">
-            <label className="block">
-              <span className="label">{d.app.team.assignee}</span>
-              <select name="assignee" defaultValue={client.assignee_id ?? ""} className="field">
-                <option value="">{d.app.team.general}</option>
-                {team.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div>
+              <label htmlFor="f-assignee" className="label">{d.app.team.assignee}</label>
+              <Select
+                id="f-assignee"
+                name="assignee"
+                defaultValue={client.assignee_id ?? ""}
+                options={[{ value: "", label: d.app.team.general }, ...team.map((m) => ({ value: m.id, label: m.name }))]}
+              />
+            </div>
           </div>
         )}
         <label className="block sm:col-span-2">

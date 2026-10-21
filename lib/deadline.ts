@@ -46,8 +46,12 @@ export const statusText = "font-mono text-[10.5px] uppercase tracking-[0.08em]";
 // Ordem no painel: atrasados primeiro, depois os que estão a terminar, pendentes e, por fim, entregues
 export const deadlineOrder: Record<Deadline["kind"], number> = { late: 0, soon: 1, pending: 2, delivered: 3 };
 
-// Prazo sugerido: dia 10 do mês seguinte ao período dos documentos
+// Prazo sugerido: dia 10 do mês seguinte ao período dos documentos,
+// mas nunca no passado nem em cima da hora (no mínimo daqui a 5 dias)
 export function suggestedDue(period: string): string {
   const [y, m] = period.split("-").map(Number);
-  return new Date(Date.UTC(y, m, 10)).toISOString().slice(0, 10);
+  const tenth = new Date(Date.UTC(y, m, 10));
+  const now = new Date();
+  const soonest = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 5));
+  return (tenth < soonest ? soonest : tenth).toISOString().slice(0, 10);
 }

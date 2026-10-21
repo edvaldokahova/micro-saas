@@ -4,6 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, Plus, UserPlus } from "lucide-r
 import { DocMark, DocStrip, orderStates } from "@/components/marks";
 import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
+import { ListSearch } from "@/components/list-search";
 import { Flash } from "@/components/flash";
 import { formatDate, formatPeriod, periodOf } from "@/lib/i18n";
 import { getSession, isQuarterEnd, officeAccess, quarterStart, resolvePeriod, shiftPeriod } from "@/lib/office";
@@ -279,7 +280,13 @@ export default async function Painel({
               )}
             </p>
           ) : (
-            <ul className="mt-8 border-t border-ivory">
+            <>
+            {rows.length >= 8 && (
+              <div className="mt-8 sm:max-w-xs">
+                <ListSearch listId="lista-pedidos" placeholder={d.common.searchClient} emptyText={d.common.noResults} />
+              </div>
+            )}
+            <ul id="lista-pedidos" className={`border-t border-ivory ${rows.length >= 8 ? "mt-4" : "mt-8"}`}>
               {rows.map((r, i) => {
                 const done = isComplete(r);
                 const st = state.get(r.id)!;
@@ -290,7 +297,7 @@ export default async function Painel({
                 const docs = docsByRequest.get(r.id) ?? [];
                 const states = orderStates(docs.map((x) => x.status));
                 return (
-                  <li key={r.id} className="animate-rise border-b border-line py-4" style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}>
+                  <li key={r.id} data-search={`${r.client_name} ${r.assignee_name ?? ""}`} className="animate-rise border-b border-line py-4" style={{ animationDelay: `${Math.min(i, 10) * 30}ms` }}>
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2.5 lg:grid-cols-[minmax(0,1fr)_150px_200px_300px]">
                       {/* Cliente */}
                       <div className="min-w-0">
@@ -393,6 +400,7 @@ export default async function Painel({
                 );
               })}
             </ul>
+            </>
           )}
         </>
       )}
