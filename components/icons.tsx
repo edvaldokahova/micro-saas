@@ -25,13 +25,14 @@ export function IconLedger({ className = "h-5 w-5" }: P) {
   );
 }
 
-// Clientes: duas fichas quadradas sobrepostas, a da frente com o nome
+// Clientes: duas pessoas, com a base reta (a mesma geometria de cantos retos do resto do sistema)
 export function IconClients({ className = "h-5 w-5" }: P) {
   return (
     <svg {...base} className={className}>
-      <path d="M7 4.5V2.5h10.5V13h-2" />
-      <rect x="2.5" y="6.5" width="11" height="11" />
-      <path d="M5 10.5h6M5 13.5h3.5" />
+      <circle cx="7.5" cy="6.5" r="2.8" />
+      <path d="M2.5 17.5v-1.8c0-2.3 1.8-4 4-4h2c2.2 0 4 1.7 4 4v1.8z" />
+      <circle cx="13.8" cy="5.4" r="2.2" />
+      <path d="M14.5 10.2h.3c1.5 0 2.7 1.3 2.7 2.8v1.6" />
     </svg>
   );
 }
