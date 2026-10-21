@@ -143,9 +143,13 @@ export default async function Painel({
       {/* Cabeçalho do período, como o topo de uma folha de registo */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">{t.title}</p>
+          <p className="eyebrow">{t.periodEyebrow}</p>
           <h1 className="mt-2 font-display text-[2.4rem] leading-none sm:text-5xl">{formatPeriod(period, locale)}</h1>
-          {hasQuarterly && <p className="mt-2.5 text-sm text-muted">{t.quarterlyIncluded(periodOf(qStart, locale, 3))}</p>}
+          {/* Em outubro recolhem-se os documentos de setembro: dizê-lo evita a dúvida "porque não está no mês atual?" */}
+          <p className="mt-2.5 text-sm text-muted">
+            {t.collectedIn(formatPeriod(`${shiftPeriod(period, 1)}-01`, locale).toLowerCase())}
+            {hasQuarterly && <> · {t.quarterlyIncluded(periodOf(qStart, locale, 3))}</>}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href={`/app?mes=${shiftPeriod(period, -1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.prev} title={t.prev}>

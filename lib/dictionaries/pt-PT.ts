@@ -170,6 +170,8 @@ const dict = {
     },
     dashboard: {
       title: "Painel",
+      periodEyebrow: "Painel · documentos de",
+      collectedIn: (m: string) => `Recolha em ${m}`,
       prev: "Mês anterior",
       next: "Mês seguinte",
       statRequests: "Pedidos",

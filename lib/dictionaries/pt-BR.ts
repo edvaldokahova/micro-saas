@@ -172,6 +172,8 @@ const dict: Dictionary = {
     },
     dashboard: {
       title: "Painel",
+      periodEyebrow: "Painel · documentos de",
+      collectedIn: (m: string) => `Coleta em ${m}`,
       prev: "Mês anterior",
       next: "Próximo mês",
       statRequests: "Solicitações",
