@@ -43,7 +43,7 @@ export default async function Painel({
   searchParams: Promise<{ mes?: string; criados?: string; erro?: string; resp?: string; f?: string }>;
 }) {
   const sp = await searchParams;
-  const { supabase, office, locale, d } = await getSession();
+  const { supabase, office, locale, d, isManager } = await getSession();
   const t = d.app.dashboard;
   const period = resolvePeriod(sp.mes);
   const ym = period.slice(0, 7);
@@ -172,7 +172,7 @@ export default async function Painel({
         </div>
       ) : (
         <>
-          {team.length > 0 && (
+          {isManager && team.length > 0 && (
             <nav className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label={d.app.team.assignee}>
               {[{ id: "", name: d.app.team.all }, ...team].map((m) => {
                 const active = (resp ?? "") === m.id;

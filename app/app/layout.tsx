@@ -13,12 +13,17 @@ export const metadata: Metadata = { robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { office, locale, d } = await getSession();
+  const { office, locale, d, role } = await getSession();
+  // Colaboradores: só Painel e Clientes. Administradores: também Definições. Assinatura: só o dono da conta.
+  type NavKey = "dashboard" | "clients" | "settings" | "billing";
+  const show: NavKey[] = ["dashboard", "clients"];
+  if (role !== "member") show.push("settings");
+  if (role === "owner") show.push("billing");
   const access = officeAccess(office);
   const b = d.app.banner;
 
   const banner =
-    access.state === "trial"
+    access.state === "trial" && role === "owner"
       ? { tone: "border-line bg-ink-2 text-ivory", text: b.trialLeft(access.daysLeft) }
       : access.state === "trial_ended"
         ? { tone: "border-bad/30 bg-bad/10 text-bad", text: b.trialEnded }
@@ -39,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/app" aria-label={d.app.nav.dashboard} className="flex shrink-0 items-center">
               <Logo />
             </Link>
-            <AppNav labels={d.app.nav} />
+            <AppNav labels={d.app.nav} show={show} />
           </div>
           <div className="flex items-center gap-2 self-center">
             <LocaleSwitcher locale={locale} label={d.common.language} />
@@ -61,15 +66,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className={`border-b ${banner.tone}`}>
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-5 py-2 font-mono text-[11.5px] uppercase tracking-[0.06em]">
             <span>{banner.text}</span>
-            <Link href="/app/assinatura" className="underline decoration-line-strong underline-offset-4 hover:decoration-current">
-              {b.choosePlan} →
-            </Link>
+            {role === "owner" && (
+              <Link href="/app/assinatura" className="underline decoration-line-strong underline-offset-4 hover:decoration-current">
+                {b.choosePlan} →
+              </Link>
+            )}
           </div>
         </div>
       )}
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">{children}</main>
-      <AppTabBar labels={d.app.nav} />
+      <AppTabBar labels={d.app.nav} show={show} />
     </div>
   );
 }

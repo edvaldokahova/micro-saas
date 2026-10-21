@@ -19,11 +19,13 @@ function isActive(path: string, href: string) {
 }
 
 // Navegação do painel no topo (ecrãs grandes)
-export function AppNav({ labels }: { labels: Labels }) {
+type Key = (typeof items)[number]["key"];
+
+export function AppNav({ labels, show }: { labels: Labels; show: Key[] }) {
   const path = usePathname();
   return (
     <nav className="hidden items-stretch gap-6 md:flex">
-        {items.map(({ href, key, icon: Icon }) => (
+        {items.filter((x) => show.includes(x.key)).map(({ href, key, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -38,12 +40,12 @@ export function AppNav({ labels }: { labels: Labels }) {
 }
 
 // Barra inferior no telemóvel (fora do cabeçalho: o desfoque do cabeçalho prenderia o "fixed")
-export function AppTabBar({ labels }: { labels: Labels }) {
+export function AppTabBar({ labels, show }: { labels: Labels; show: Key[] }) {
   const path = usePathname();
   return (
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ivory/80 bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <ul className="mx-auto grid max-w-md grid-cols-4">
-          {items.map(({ href, key, icon: Icon }) => {
+        <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${show.length}, minmax(0, 1fr))` }}>
+          {items.filter((x) => show.includes(x.key)).map(({ href, key, icon: Icon }) => {
             const active = isActive(path, href);
             return (
               <li key={href}>

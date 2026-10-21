@@ -1,25 +1,32 @@
 import type { Metadata } from "next";
-import { Mail, MessageCircle, UserRound, X } from "lucide-react";
+import { redirect } from "next/navigation";
+import { Mail, MessageCircle, X } from "lucide-react";
+import { AccessFields } from "@/components/access-fields";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flag } from "@/components/flags";
 import { Flash } from "@/components/flash";
 import { localeMeta, locales } from "@/lib/i18n";
 import { getSession } from "@/lib/office";
-import { addDocType, addTeamMember, removeDocType, removeTeamMember, updateSettings } from "../actions";
+import { addDocType, addTeamMember, removeDocType, removeTeamMember, resendInvite, updateSettings, updateTeamAccess } from "../actions";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Definições" };
 
-export default async function Definicoes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string }> }) {
+export default async function Definicoes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string; convite?: string }> }) {
   const sp = await searchParams;
-  const { supabase, office, locale, d } = await getSession();
+  const { supabase, office, locale, d, isManager } = await getSession();
+  if (!isManager) redirect("/app");
   const t = d.app.settings;
   const [{ data }, { data: teamData }] = await Promise.all([
     supabase.from("document_types").select("id, label").order("position"),
-    supabase.from("team_members").select("id, name, phone, email").order("created_at"),
+    supabase.from("team_members").select("id, name, phone, email, access, see_all, user_id, joined_at").order("created_at"),
   ]);
   const types = (data ?? []) as { id: string; label: string }[];
-  const team = (teamData ?? []) as { id: string; name: string; phone: string | null; email: string | null }[];
+  type Member = {
+    id: string; name: string; phone: string | null; email: string | null;
+    access: "none" | "member" | "admin"; see_all: boolean; user_id: string | null; joined_at: string | null;
+  };
+  const team = (teamData ?? []) as Member[];
   const tm = d.app.team;
   const teamLimit = office.plan === "office" ? site.plans.office.teamLimit : site.plans.starter.teamLimit;
 
@@ -28,7 +35,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       <p className="eyebrow">{t.office}</p>
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
       <div className="mt-6">
-        <Flash d={d} error={sp.erro} success={sp.ok ? d.common.saved : null} />
+        <Flash d={d} error={sp.erro} success={sp.convite ? d.app.team.invited(sp.convite) : sp.ok ? d.common.saved : null} />
       </div>
 
       <form action={updateSettings} className="card space-y-5 p-5 sm:p-6">
@@ -89,45 +96,82 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         <h2 className="font-display text-lg">{tm.title}</h2>
         <p className="mt-1 text-sm text-muted">{tm.hint}</p>
         {team.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-dashed border-line px-4 py-3 text-sm text-muted">{tm.none}</p>
+          <p className="mt-4 border border-dashed border-line px-4 py-3 text-sm text-muted">{tm.none}</p>
         ) : (
-          <ul className="mt-4 divide-y divide-line rounded-xl border border-line">
-            {team.map((m) => (
-              <li key={m.id} className="flex items-center gap-3 px-4 py-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
-                  <UserRound className="h-4 w-4" aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{m.name}</p>
-                  <p className="flex flex-wrap gap-x-3 text-xs text-muted">
-                    {m.phone && (
-                      <span className="inline-flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" aria-hidden /> {m.phone}
+          <ul className="mt-5 border-t border-ivory">
+            {team.map((m) => {
+              const status = m.access === "none" ? tm.status.contact : m.joined_at ? tm.status.active : tm.status.invited;
+              return (
+                <li key={m.id} className="border-b border-line py-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]" aria-hidden>
+                      {m.name.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{m.name}</p>
+                      <p className="flex flex-wrap gap-x-3 font-mono text-[11px] text-muted">
+                        {m.phone && (
+                          <span className="inline-flex items-center gap-1">
+                            <MessageCircle className="h-3 w-3" aria-hidden /> {m.phone}
+                          </span>
+                        )}
+                        {m.email && (
+                          <span className="inline-flex items-center gap-1">
+                            <Mail className="h-3 w-3" aria-hidden /> {m.email}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <span className="text-right">
+                      <span className="block text-sm">{tm.access[m.access]}</span>
+                      <span className={`block font-mono text-[10.5px] uppercase tracking-[0.08em] ${m.access === "none" ? "text-muted" : m.joined_at ? "text-ok" : "text-gold"}`}>
+                        {status}
                       </span>
-                    )}
-                    {m.email && (
-                      <span className="inline-flex items-center gap-1">
-                        <Mail className="h-3 w-3" aria-hidden /> {m.email}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <form action={removeTeamMember}>
-                  <input type="hidden" name="id" value={m.id} />
-                  <button className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-bad/15 hover:text-bad" aria-label={`${d.common.remove}: ${m.name}`}>
-                    <X className="h-4 w-4" aria-hidden />
-                  </button>
-                </form>
-              </li>
-            ))}
+                    </span>
+                  </div>
+
+                  {/* Acesso: alterar, reenviar convite, remover */}
+                  <details className="group/m mt-2 pl-12">
+                    <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs text-muted hover:text-ivory [&::-webkit-details-marker]:hidden">
+                      {tm.accessLabel} <span className="transition group-open/m:rotate-180">▾</span>
+                    </summary>
+                    <form action={updateTeamAccess} className="mt-3 space-y-3">
+                      <input type="hidden" name="id" value={m.id} />
+                      <AccessFields idPrefix={`m-${m.id}`} defaultAccess={m.access} defaultSeeAll={m.see_all} t={tm} />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <SubmitButton className="btn btn-primary btn-sm" pendingText={d.common.saving}>
+                          {d.common.save}
+                        </SubmitButton>
+                        {m.access !== "none" && !m.joined_at && (
+                          <button formAction={resendInvite} className="btn btn-secondary btn-sm">
+                            {tm.resend}
+                          </button>
+                        )}
+                      </div>
+                    </form>
+                    <form action={removeTeamMember} className="mt-3">
+                      <input type="hidden" name="id" value={m.id} />
+                      <SubmitButton className="btn btn-sm min-h-0 px-0 text-bad hover:underline" confirm={tm.removeConfirm} pendingText="…">
+                        {d.common.remove}
+                      </SubmitButton>
+                    </form>
+                  </details>
+                </li>
+              );
+            })}
           </ul>
         )}
         {team.length < teamLimit ? (
-          <form action={addTeamMember} className="mt-4 grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
-            <input name="name" required maxLength={120} placeholder={tm.name} className="field" />
-            <input name="phone" type="tel" inputMode="tel" maxLength={24} placeholder={tm.phone} className="field" />
-            <input name="email" type="email" maxLength={254} placeholder={tm.email} className="field" />
-            <SubmitButton className="btn btn-secondary">{tm.add}</SubmitButton>
+          <form action={addTeamMember} className="mt-6 space-y-4 border-t border-line pt-5">
+            <p className="font-medium">{tm.add}</p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <input name="name" required maxLength={120} placeholder={tm.name} className="field" />
+              <input name="phone" type="tel" inputMode="tel" maxLength={24} placeholder={tm.phone} className="field" />
+              <input name="email" type="email" maxLength={254} placeholder={tm.email} className="field" />
+            </div>
+            <AccessFields idPrefix="novo" t={tm} />
+            <p className="text-xs text-muted">{tm.inviteHint}</p>
+            <SubmitButton className="btn btn-primary">{tm.add}</SubmitButton>
           </form>
         ) : null}
         <p className="mt-3 text-xs text-muted">{tm.limit(teamLimit)}</p>

@@ -33,7 +33,7 @@ export default async function Cliente({
   const { id } = await params;
   const sp = await searchParams;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const { supabase, office, locale, d } = await getSession();
+  const { supabase, office, locale, d, isManager } = await getSession();
   const t = d.app.clients;
 
   const [{ data: c }, { data: reqs }, { data: teamData }] = await Promise.all([
@@ -65,6 +65,8 @@ export default async function Cliente({
       </div>
 
       <form action={updateClient} className="card mt-6 grid gap-4 p-5 sm:grid-cols-2">
+        {/* Colaboradores consultam; editar é do dono e dos administradores */}
+        <fieldset disabled={!isManager} className="contents">
         <input type="hidden" name="id" value={client.id} />
         <h2 className="font-display text-lg sm:col-span-2">{t.editTitle}</h2>
         <label className="block sm:col-span-2">
@@ -108,8 +110,9 @@ export default async function Cliente({
           <textarea name="notes" rows={3} maxLength={2000} defaultValue={client.notes ?? ""} className="field" />
         </label>
         <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
-          <SubmitButton pendingText={d.common.saving}>{d.common.save}</SubmitButton>
+          {isManager && <SubmitButton pendingText={d.common.saving}>{d.common.save}</SubmitButton>}
         </div>
+        </fieldset>
       </form>
 
       <section className="mt-8">
@@ -133,12 +136,14 @@ export default async function Cliente({
         )}
       </section>
 
+{isManager && (
       <form action={setClientArchived} className="mt-10 border-t border-line pt-6">
         <input type="hidden" name="id" value={client.id} />
         <input type="hidden" name="archive" value={client.archived_at ? "0" : "1"} />
         <p className="mb-3 text-xs text-muted">{t.archiveHint}</p>
         <SubmitButton className="btn btn-secondary btn-sm">{client.archived_at ? t.unarchive : t.archive}</SubmitButton>
       </form>
+      )}
     </div>
   );
 }

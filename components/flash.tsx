@@ -12,6 +12,9 @@ export function errorText(d: Dictionary, code: string): string {
     items: d.app.request.noItems,
     teamLimit: e.teamLimit,
     url: e.url,
+    emailRequired: e.emailRequired,
+    emailTaken: e.emailTaken,
+    invite: e.invite,
   };
   return map[code] ?? d.common.errorGeneric;
 }

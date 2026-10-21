@@ -19,10 +19,14 @@ export type Office = {
   upload_url: string | null;
   billing_interval: string | null;
   reminder_template: string | null;
+  owner_id: string;
 };
 
+// Papel de quem está na sessão: dono da conta (paga a assinatura), administrador ou colaborador
+export type Role = "owner" | "admin" | "member";
+
 const columns =
-  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template";
+  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id";
 
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {
@@ -35,10 +39,22 @@ export const getSession = cache(async () => {
     { data },
   ] = await Promise.all([supabase.auth.getUser(), supabase.from("offices").select(columns).maybeSingle()]);
   if (!user) redirect("/entrar");
-  if (!data) redirect("/entrar");
+  if (!data) redirect("/entrar?erro=acesso");
   const office = data as Office;
   const locale: Locale = isLocale(office.locale) ? office.locale : "pt-PT";
-  return { supabase, user, office, locale, d: getDictionary(locale) };
+  // Dono: sem consulta extra. Responsáveis: o acesso vem da equipa (a RLS aplica o mesmo na base de dados)
+  let role: Role = "owner";
+  let memberId: string | null = null;
+  if (office.owner_id !== user.id) {
+    const { data: m } = await supabase.from("team_members").select("id, access, joined_at").eq("user_id", user.id).maybeSingle();
+    const member = m as { id: string; access: string; joined_at: string | null } | null;
+    if (!member || (member.access !== "admin" && member.access !== "member")) redirect("/entrar?erro=acesso");
+    role = member.access as Role;
+    memberId = member.id;
+    // Primeiro acesso depois do convite: o estado passa de "Convite enviado" a "Ativo"
+    if (!member.joined_at) await supabase.rpc("mark_member_joined");
+  }
+  return { supabase, user, office, locale, role, memberId, isManager: role !== "member", d: getDictionary(locale) };
 });
 
 export type Access = { state: "trial" | "active" | "past_due" | "trial_ended" | "canceled"; daysLeft: number; canWrite: boolean };

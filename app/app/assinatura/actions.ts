@@ -33,8 +33,9 @@ async function currentOffice(): Promise<Office> {
   const { data } = await supabase
     .from("offices")
     .select("id, plan, plan_status, billing_interval, paddle_subscription_id, paddle_customer_id")
+    .eq("owner_id", user.id) // a assinatura é só do dono da conta (responsáveis não pagam nem mudam o plano)
     .maybeSingle();
-  if (!data) redirect("/entrar");
+  if (!data) redirect("/app");
   return data as Office;
 }
 

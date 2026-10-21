@@ -13,7 +13,7 @@ type Client = { id: string; name: string; phone: string | null; email: string | 
 
 export default async function Clientes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string }> }) {
   const sp = await searchParams;
-  const { supabase, office, d } = await getSession();
+  const { supabase, office, d, isManager } = await getSession();
   const t = d.app.clients;
   const [{ data }, { data: teamData }] = await Promise.all([
     supabase.from("clients").select("id, name, phone, email, archived_at, assignee_id, cadence").order("name"),
@@ -25,7 +25,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
   const active = all.filter((c) => !c.archived_at);
   const archived = all.filter((c) => c.archived_at);
   const limit = clientLimit(office);
-  const canAdd = officeAccess(office).canWrite && active.length < limit;
+  const canAdd = isManager && officeAccess(office).canWrite && active.length < limit;
 
   return (
     <div>
@@ -34,11 +34,11 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
         <div>
           <p className="eyebrow">{t.title}</p>
           <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
-          <p className="mt-2 text-sm text-muted">{t.count(active.length, limit)}</p>
+          {isManager && <p className="mt-2 text-sm text-muted">{t.count(active.length, limit)}</p>}
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className={`mt-8 grid gap-6 ${isManager ? "lg:grid-cols-[1fr_380px]" : ""}`}>
         {/* Lista */}
         <div className="order-2 lg:order-1">
           {active.length === 0 ? (
@@ -98,7 +98,8 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
           )}
         </div>
 
-        {/* Adicionar */}
+        {/* Adicionar (só dono e administradores) */}
+        {isManager && (
         <div className="order-1 lg:order-2">
           <form action={addClient} className="card space-y-4 p-5 lg:sticky lg:top-24">
             <h2 className="font-display text-lg">{t.add}</h2>
@@ -147,6 +148,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
             )}
           </form>
         </div>
+        )}
       </div>
     </div>
   );

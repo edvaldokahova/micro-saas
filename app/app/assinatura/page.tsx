@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { IconTick } from "@/components/icons";
 import { ChangePlanButton, SubscribeButton, type BillingTexts } from "@/components/billing-buttons";
 import { formatDate, formatPrice, formatYearlyPerMonth, localeMeta } from "@/lib/i18n";
@@ -13,7 +14,8 @@ export const metadata: Metadata = { title: "Assinatura" };
 
 export default async function Assinatura({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string }> }) {
   const { ok, erro } = await searchParams;
-  const { office, locale, d } = await getSession();
+  const { office, locale, d, role } = await getSession();
+  if (role !== "owner") redirect("/app");
   const t = d.app.billing;
   const plans = d.common.planNames;
 
