@@ -31,7 +31,7 @@ export function AppNav({ labels, show }: { labels: Labels; show: Key[] }) {
             href={href}
             className={`-mb-px flex items-center gap-2 border-b-2 text-sm transition ${isActive(path, href) ? "border-ivory text-ivory" : "border-transparent text-muted hover:text-ivory"}`}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-4 w-4" active={isActive(path, href)} />
             {labels[key]}
           </Link>
         ))}
@@ -49,8 +49,12 @@ export function AppTabBar({ labels, show }: { labels: Labels; show: Key[] }) {
             const active = isActive(path, href);
             return (
               <li key={href}>
-                <Link href={href} className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition ${active ? "text-ivory" : "text-muted"}`}>
-                  <Icon className="h-[22px] w-[22px]" />
+                <Link
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition ${active ? "font-medium text-ivory" : "text-muted"}`}
+                >
+                  <Icon className="h-[22px] w-[22px]" active={active} />
                   {labels[key]}
                 </Link>
               </li>
