@@ -11,7 +11,7 @@ export async function SiteHeader() {
   const d = getDictionary(locale);
   const links = [
     { href: "/#como-funciona", label: d.nav.how },
-    { href: "/#precos", label: d.nav.pricing },
+    { href: "/precos", label: d.nav.pricing },
     { href: "/suporte", label: d.nav.support },
   ];
 
@@ -73,7 +73,7 @@ export async function SiteFooter() {
         <ul className="space-y-2.5 text-muted">
           <li className="mono-label">{d.nav.product}</li>
           <li><Link className="transition hover:text-ivory" href="/#como-funciona">{d.nav.how}</Link></li>
-          <li><Link className="transition hover:text-ivory" href="/#precos">{d.nav.pricing}</Link></li>
+          <li><Link className="transition hover:text-ivory" href="/precos">{d.nav.pricing}</Link></li>
           <li><Link className="transition hover:text-ivory" href="/suporte">{d.nav.support}</Link></li>
         </ul>
         <ul className="space-y-2.5 text-muted">

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { IconTick } from "@/components/icons";
 import { HeroIntro } from "@/components/hero-intro";
 import { PageMotion } from "@/components/page-motion";
-import { LaptopStory, type LaptopTexts } from "@/components/story/laptop-story";
+import { WindowStory, type WindowTexts } from "@/components/story/window-story";
+import { DocsArt, MessageArt, MonthArt } from "@/components/art";
 import { PhoneStory, type PhoneStoryTexts } from "@/components/story/phone-story";
-import { IntervalToggle } from "@/components/interval-toggle";
+import { PricingPlans } from "@/components/pricing";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { fill, formatDate, formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
+import { fill, formatDate, getDictionary, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
-import { site, type PlanKey } from "@/lib/site";
+import { site } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const d = getDictionary(await getLocale());
@@ -53,21 +53,20 @@ export default async function Home() {
   const locale = await getLocale();
   const d = getDictionary(locale);
   const h = d.home;
-  const plans = Object.keys(site.plans) as PlanKey[];
   const dl = d.common.deadline;
-  const brl = localeMeta[locale].currency === "BRL";
 
   // "Como funciona": o painel no portátil e a página do cliente no iPhone (dados fictícios)
   const clients = [...h.mock.clients, ...h.story.extraClients];
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
-  const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
+  const link = "bilonai.com/p/q4hfp7k2mx9a";
   const message = (cliente: string, docs: string[]) =>
     fill(d.app.whatsappTemplate, { cliente, periodo: period, lista: docs.map((l) => `• ${l}`).join("\n"), link, escritorio: h.demo.office });
-  const laptop: LaptopTexts = {
+  const laptop: WindowTexts = {
     title: h.story.title,
     lead: h.story.lead,
     note: h.mockNote,
     chapters: h.story.chapters,
+    art: <MonthArt month={h.mock.month} due={10} />,
     desk: {
       office: h.demo.office,
       clients,
@@ -124,6 +123,7 @@ export default async function Home() {
     title: h.story.phone.title,
     lead: h.story.phone.lead,
     chapters: h.story.phone.chapters,
+    art: <MessageArt office={h.demo.office} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="bilonai.com/p/q4hf…" reply={d.public.markSent} />,
     phone: {
       office: h.demo.office,
       client: clients[1],
@@ -131,7 +131,7 @@ export default async function Home() {
       via: d.common.via.whatsapp,
       now: h.story.phone.now,
       date: h.story.phone.date,
-      link: "entrega.bilonai.com",
+      link: "bilonai.com",
       hello: d.public.hello(clients[1]),
       intro: d.public.intro(h.demo.office, period),
       due: d.public.due(formatDate("2026-10-30", locale, false)),
@@ -154,8 +154,11 @@ export default async function Home() {
         {/* Abertura: o título é a imagem */}
         <section>
           <HeroIntro>
-            <div className="mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
-              <h1 data-hero-title data-parallax="0.35" className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] leading-[0.93] tracking-[-0.045em]">
+            <div className="relative mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
+              <div className="absolute right-5 top-24 hidden lg:block" data-hero-rest>
+                <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
+              </div>
+              <h1 data-hero-title data-parallax="0.35" className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] lg:max-w-[10.5ch] leading-[0.93] tracking-[-0.045em]">
                 {h.title}
               </h1>
               <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
@@ -182,7 +185,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <LaptopStory t={laptop} />
+        <WindowStory t={laptop} />
         <PhoneStory t={phone} />
 
         {/* Preços */}
@@ -190,55 +193,7 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">
             <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
             <p data-split="lines" className="mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
-            <IntervalToggle className="mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
-              <div className="mt-8 grid gap-4 md:grid-cols-2">
-                {plans.map((key) => {
-                  const p = site.plans[key];
-                  const featured = key === "office";
-                  const monthly = brl ? p.priceBrl : p.priceEur;
-                  return (
-                    <div key={key} className={`flex flex-col rounded-3xl bg-ink-2 p-7 sm:p-9 ${featured ? "border-2 border-ivory" : "border border-line"}`}>
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-[22px] font-semibold tracking-[-0.015em]">{d.common.planNames[key]}</h3>
-                        {featured && <span className="rounded-full bg-ivory px-3 py-1 text-[12px] font-medium text-ink">{h.popular}</span>}
-                      </div>
-                      <p className="mt-1.5 text-[15px] text-muted">{h.planFor[key]}</p>
-                      <div className="group-data-[interval=year]:hidden">
-                        <p className="mt-8 flex items-baseline gap-1.5">
-                          <span className="figure text-[64px]">{formatPrice(locale, key)}</span>
-                          <span className="text-muted">{d.common.perMonth}</span>
-                        </p>
-                        <p className="mt-1 text-[14px] text-muted">{h.perDay(formatMoney(locale, Math.round((monthly / 30) * 100) / 100))}</p>
-                      </div>
-                      <div className="hidden animate-fade group-data-[interval=year]:block">
-                        <p className="mt-8 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                          <span className="figure text-[64px]">{formatYearlyPerMonth(locale, key)}</span>
-                          <span className="text-muted">{d.common.perMonth}</span>
-                        </p>
-                        <p className="mt-1 text-[14px] text-muted">
-                          <span className="line-through opacity-70">{formatMoney(locale, monthly * 12)}</span> {d.common.billedYearly(formatPrice(locale, key, "year"))}
-                        </p>
-                      </div>
-                      <p className="mt-7 text-[15px] leading-7">
-                        {d.common.upToClients(p.clientLimit)}
-                        <br />
-                        <span className="text-muted">{d.common.upToTeam(p.teamLimit)}</span>
-                      </p>
-                      <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[15px]">
-                        {h.features.map((f) => (
-                          <li key={f} className="flex items-start gap-3">
-                            <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {f}
-                          </li>
-                        ))}
-                      </ul>
-                      <Link href="/registar" className={`btn mt-9 w-full min-h-[3rem] ${featured ? "btn-primary" : "btn-secondary"}`}>
-                        {d.common.trialFree(site.trialDays)}
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
-            </IntervalToggle>
+            <PricingPlans locale={locale} />
           </div>
         </section>
 

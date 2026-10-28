@@ -2,7 +2,9 @@
 // Páginas de vendas, suporte e políticas leem tudo daqui: muda-se num só sítio.
 export const site = {
   name: "Bilonai",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://entrega.bilonai.com",
+  // Página pública (e links dos clientes) em bilonai.com; o painel em app.bilonai.com
+  url: "https://bilonai.com",
+  appUrl: "https://app.bilonai.com",
   owner: "A Bilonai Group",
   supportEmail: "suporte@bilonai.com",
   trialDays: 5,

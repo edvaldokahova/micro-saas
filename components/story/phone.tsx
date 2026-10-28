@@ -41,41 +41,58 @@ export function phoneScript(): { start: PhoneState; steps: Step<PhoneState>[] }[
 export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
   return (
     <div className="relative h-full overflow-hidden bg-ink-2 text-ivory">
-      {/* Barra de estado */}
-      <div className="absolute inset-x-0 top-0 z-30 flex h-[54px] items-center justify-between px-[34px] pt-1 text-[15px] font-semibold">
-        <span className={s.stage === "lock" ? "text-white" : ""}>9:41</span>
-        <span className={`flex items-center gap-1.5 ${s.stage === "lock" ? "text-white" : ""}`}>
-          <svg width="18" height="11" viewBox="0 0 18 11" fill="currentColor" aria-hidden><rect x="0" y="7" width="3" height="4" rx="1" /><rect x="5" y="5" width="3" height="6" rx="1" /><rect x="10" y="2.5" width="3" height="8.5" rx="1" /><rect x="15" y="0" width="3" height="11" rx="1" /></svg>
-          <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden><rect x="0.5" y="0.5" width="22" height="11" rx="3.5" stroke="currentColor" opacity=".45" /><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor" /><path d="M24 4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity=".45" /></svg>
+      {/* Barra de estado (branca no ecrã bloqueado, escura no navegador) */}
+      <div className={`absolute inset-x-0 top-0 z-30 flex h-[54px] items-center justify-between px-[30px] pt-[6px] text-[16px] font-semibold ${s.stage === "lock" ? "text-white" : "text-ivory"}`}>
+        <span className="w-[54px] text-center">{s.stage === "lock" ? "" : "9:41"}</span>
+        <span className="flex items-center gap-[6px]">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor" aria-hidden><path d="M8.5 2.3c2.4 0 4.6.9 6.3 2.5l1.2-1.2C14 1.6 11.4.6 8.5.6S3 1.6 1 3.6l1.2 1.2C3.9 3.2 6.1 2.3 8.5 2.3zm0 3.3c1.5 0 2.9.6 3.9 1.6l1.2-1.2c-1.4-1.4-3.2-2.1-5.1-2.1s-3.7.7-5.1 2.1l1.2 1.2c1-1 2.4-1.6 3.9-1.6zm0 3.3c.6 0 1.2.2 1.6.7L8.5 11.2 6.9 9.6c.4-.5 1-.7 1.6-.7z" /></svg>
+          <span className="relative ml-[2px] grid h-[13px] w-[27px] place-items-center rounded-[4.5px] text-[10px] font-bold">
+            <span className="absolute inset-0 rounded-[4.5px] bg-current opacity-35" />
+            <span className="absolute inset-y-0 left-0 w-[84%] rounded-[4.5px] bg-current" />
+            <span className={`relative ${s.stage === "lock" ? "text-black" : "text-ink"}`}>84</span>
+          </span>
         </span>
       </div>
 
-      {/* Ecrã bloqueado com a notificação */}
+      {/* Ecrã bloqueado, como no iOS: fundo, data, relógio grande, notificação, lanterna e câmara */}
       <div className={`absolute inset-0 transition-opacity duration-500 ${s.stage === "lock" ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_20%_0%,#3a4a6b_0%,#1b2131_45%,#0d1017_100%)]" />
-        <div className="relative pt-[96px] text-center text-white">
-          <p className="text-[17px] font-medium opacity-80">{t.date}</p>
-          <p className="mt-1 text-[88px] font-semibold leading-none tracking-[-0.04em] [font-variation-settings:'wdth'_84]">9:41</p>
+        <img src="/story/wallpaper.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="relative pt-[72px] text-center text-white">
+          <p className="text-[19px] font-semibold tracking-[-0.01em] opacity-90">{t.date}</p>
+          <p
+            className="mt-[-4px] text-[118px] font-medium leading-[1.02] tracking-[-0.015em] [font-variation-settings:'wdth'_75]"
+            style={{ color: "rgba(255,255,255,0.88)", textShadow: "0 1px 2px rgba(0,0,0,0.18)" }}
+          >
+            9:41
+          </p>
         </div>
         <div
           data-t="banner"
-          className={`absolute inset-x-3 top-[300px] rounded-[26px] bg-white/80 p-3.5 text-[#121316] shadow-[0_20px_40px_-20px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${s.banner ? "translate-y-0 opacity-100" : "-translate-y-6 opacity-0"}`}
+          className={`absolute inset-x-[10px] bottom-[150px] rounded-[24px] border border-white/10 bg-[rgba(40,42,48,0.55)] px-3.5 py-3 text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${s.banner ? "translate-y-0 scale-100 opacity-100" : "translate-y-8 scale-95 opacity-0"}`}
         >
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[11px] bg-[#25d366] text-white">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z" />
+            <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[10px] bg-gradient-to-b from-[#5ef08a] to-[#1fbf56] text-white">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M12 3.2c-4.9 0-8.8 3.6-8.8 8.1 0 2.5 1.2 4.7 3.1 6.2l-.6 2.9c-.1.4.4.7.7.5l3.2-1.8c.8.2 1.6.3 2.4.3 4.9 0 8.8-3.6 8.8-8.1S16.9 3.2 12 3.2z" />
               </svg>
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
                 <p className="truncate text-[15px] font-semibold">{t.office}</p>
-                <span className="shrink-0 text-[12.5px] text-[#121316]/55">{t.now}</span>
+                <span className="shrink-0 text-[13px] text-white/60">{t.now}</span>
               </div>
-              <p className="mt-0.5 line-clamp-3 text-[14px] leading-[1.35] text-[#121316]/85">{t.preview}</p>
+              <p className="mt-0.5 line-clamp-3 text-[14.5px] leading-[1.32] text-white/90">{t.preview}</p>
             </div>
           </div>
         </div>
+        <span className="absolute bottom-[46px] left-[46px] grid h-[50px] w-[50px] place-items-center rounded-full bg-black/25 text-white backdrop-blur-xl">
+          <svg width="16" height="24" viewBox="0 0 16 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden><path d="M3 2h10v4l-2 3v12H5V9L3 6z" /><circle cx="8" cy="13" r="1.2" fill="currentColor" /></svg>
+        </span>
+        <span className="absolute bottom-[46px] right-[46px] grid h-[50px] w-[50px] place-items-center rounded-full bg-black/25 text-white backdrop-blur-xl">
+          <svg width="24" height="20" viewBox="0 0 24 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden><path d="M2 6.5c0-1.1.9-2 2-2h3l1.6-2.5h6.8L17 4.5h3c1.1 0 2 .9 2 2V16c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2z" /><circle cx="12" cy="11" r="3.8" /></svg>
+        </span>
+        <span className="absolute bottom-[9px] left-1/2 h-[5px] w-[136px] -translate-x-1/2 rounded-full bg-white" />
       </div>
 
       {/* Página do cliente (o link) */}
@@ -129,9 +146,19 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
           </ul>
           {s.step === 2 && <p className="mt-5 animate-fade text-center text-[14px] text-ok">{t.thanks}</p>}
         </div>
-        {/* Barra do navegador */}
-        <div className="absolute inset-x-0 bottom-0 flex h-[86px] items-start justify-center border-t border-line bg-ink-2/90 pt-3 backdrop-blur">
-          <span className="rounded-full bg-ink-3 px-5 py-2 text-[13.5px] text-muted">{t.link}</span>
+        {/* Barra do Safari (em baixo, como no iOS) */}
+        <div className="absolute inset-x-0 bottom-0 h-[92px] bg-gradient-to-t from-ink-2 via-ink-2/95 to-ink-2/0 px-4 pt-3">
+          <div className="flex h-[48px] items-center justify-between rounded-full bg-ink-3/90 px-4 text-ivory shadow-[0_4px_18px_-8px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+            <span className="text-[15px] font-semibold">
+              <span className="text-[11px]">a</span>A
+            </span>
+            <span className="flex items-center gap-1.5 text-[15px]">
+              <svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><rect x="1" y="5" width="8" height="6" rx="1.5" /><path d="M2.8 5V3.6a2.2 2.2 0 0 1 4.4 0V5" /></svg>
+              {t.link}
+            </span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden><path d="M13.5 8a5.5 5.5 0 1 1-1.7-4M13.5 2v3h-3" /></svg>
+          </div>
+          <span className="mx-auto mt-[22px] block h-[5px] w-[136px] rounded-full bg-ivory" />
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { DocMark, DocStrip, type DocState } from "@/components/marks";
 import type { Step } from "./engine";
 
 export const DW = 1280;
-export const DH = 800;
+export const DH = 720;
 
 export type DeskTexts = {
   office: string;

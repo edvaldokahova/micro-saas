@@ -243,7 +243,7 @@ async function sendInvite(member: { id: string; email: string | null }, office: 
   const admin = createAdminClient();
   const { data, error } = await admin.auth.admin.inviteUserByEmail(member.email, {
     data: { team_member: member.id, locale: office.locale, inviter: office.name },
-    redirectTo: `${site.url}/auth/confirm?next=/app`,
+    redirectTo: `${site.appUrl}/auth/confirm?next=/app`,
   });
   if (error) {
     const taken = error.code === "email_exists" || /already been registered/i.test(error.message);

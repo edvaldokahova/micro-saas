@@ -5,12 +5,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import gsap from "gsap";
-import { Captions } from "./captions";
+import { Orbit } from "./orbit";
 import { chapterAt, clamp01, compile, ease, measure, PAD_OUT, pointerAt, stateAt, type Pt } from "./engine";
 import { IPhone, PH, PhoneScreen, phoneScript, PW, type PhoneState, type PhoneTexts } from "./phone";
 import { useScrub } from "./use-scrub";
 
-export type PhoneStoryTexts = { title: string; lead: string; chapters: { title: string; text: string }[]; phone: PhoneTexts };
+export type PhoneStoryTexts = { title: string; lead: string; chapters: { title: string; text: string }[]; phone: PhoneTexts; art?: React.ReactNode };
 
 const FW = PW + 24;
 const FH = PH + 24;
@@ -27,7 +27,7 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
   const device = useRef<HTMLDivElement>(null);
   const screen = useRef<HTMLDivElement>(null);
   const finger = useRef<HTMLDivElement>(null);
-  const bars = useRef<(HTMLSpanElement | null)[]>([]);
+  const orbit = useRef<((p: number) => void) | null>(null);
   const cache = useRef(new Map<string, Pt>());
   const last = useRef({ key: "", ch: -1 });
 
@@ -61,11 +61,9 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
       last.current.ch = idx;
       setCh(idx);
     }
-    film.chapters.forEach((cc, i) => {
-      const p = i < idx ? 1 : i > idx ? 0 : clamp01((time - cc.t0) / (cc.t1 - cc.t0 - PAD_OUT * 0.5));
-      const b = bars.current[i];
-      if (b) b.style.transform = `scaleX(${p})`;
-    });
+    const local = clamp01((time - c.t0) / (c.t1 - c.t0 - PAD_OUT * 0.5));
+    const k = clamp01((local - 0.82) / 0.18);
+    orbit.current?.(Math.min(film.chapters.length - 1, idx + k * k * (3 - 2 * k)));
     // Dedo: aparece só perto de cada toque
     const f = finger.current;
     if (!f) return;
@@ -91,7 +89,7 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
     if (!reduced) return;
     const c = film.chapters[ch];
     setS(stateAt(c, c.t1));
-    bars.current.forEach((b, i) => b && (b.style.transform = `scaleX(${i <= ch ? 1 : 0})`));
+    orbit.current?.(ch);
   }, [reduced, ch, film]);
 
   const pick = (i: number) => (reduced ? setCh(i) : seek(film.chapters[i].t0 + 0.02));
@@ -99,15 +97,16 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
   return (
     <section id="lado-do-cliente" className="border-t border-line">
       <div ref={pin} className={`relative ${reduced ? "py-20" : "h-[100svh] pt-[76px]"}`}>
-        <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-4 px-5 pb-5 pt-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:grid-rows-[1fr_1fr] lg:gap-x-16 lg:gap-y-8">
-          <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
-            <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(1.7rem,4.4vw,3.6rem)] leading-[1.02]">{t.title}</h2>
+        <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-5 pb-4 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:grid-rows-[1fr_auto_auto] lg:gap-x-16 lg:gap-y-6">
+          <div className="hidden lg:col-start-1 lg:row-start-1 lg:flex lg:items-end">{t.art}</div>
+          <div className="lg:col-start-1 lg:row-start-2">
+            <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(1.6rem,4.4vw,3.6rem)] leading-[1.02]">{t.title}</h2>
             <p data-split="lines" className="mt-4 hidden max-w-[44ch] text-[17px] leading-[1.6] text-muted lg:block">{t.lead}</p>
           </div>
-          <div className="order-3 lg:order-none lg:col-start-1 lg:row-start-2 lg:self-start">
-            <Captions chapters={t.chapters} active={ch} onPick={pick} bars={bars} align="left" />
+          <div className="order-3 lg:order-none lg:col-start-1 lg:row-start-3">
+            <Orbit steps={t.chapters} active={ch} onPick={pick} drive={orbit} />
           </div>
-          <div ref={holder} className={`relative flex min-h-0 items-center justify-center lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:h-[min(860px,86vh)] ${reduced ? "h-[620px]" : "h-full"}`} style={{ perspective: "1600px" }}>
+          <div ref={holder} className={`relative flex min-h-0 items-center justify-center lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:h-[min(860px,86vh)] ${reduced ? "h-[620px]" : "h-full"}`} style={{ perspective: "1600px" }}>
             <div style={{ width: FW * scale, height: FH * scale }} className="relative shrink-0">
               <div style={{ width: FW, height: FH, transform: `scale(${scale})`, transformOrigin: "0 0" }} className="absolute left-0 top-0">
                 <div ref={device} className="will-change-transform" style={{ transformOrigin: "50% 80%" }}>
