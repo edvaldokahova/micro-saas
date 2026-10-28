@@ -3,7 +3,7 @@
 export const site = {
   name: "Bilonai",
   // Página pública em bilonai.com, painel em app.bilonai.com, páginas dos clientes em entrega.bilonai.com
-  url: "https://bilonai.com",
+  url: "https://www.bilonai.com",
   appUrl: "https://app.bilonai.com",
   clientUrl: "https://entrega.bilonai.com",
   owner: "A Bilonai Group",

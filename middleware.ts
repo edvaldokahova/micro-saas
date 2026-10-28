@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const MAIN = "bilonai.com";
+// A Vercel serve a página em www.bilonai.com (bilonai.com redireciona para lá)
+const MAIN = "www.bilonai.com";
 const APP = "app.bilonai.com";
 const CLIENT = "entrega.bilonai.com";
 // Caminhos que pertencem ao painel (app.bilonai.com)
@@ -18,10 +19,12 @@ export async function middleware(request: NextRequest) {
   const go = (domain: string, pathname = path) => NextResponse.redirect(`https://${domain}${pathname}${request.nextUrl.search}`, 308);
 
   if (host === CLIENT && !isClient) return go(isApp ? APP : MAIN);
-  if ((host === MAIN || host === APP || host === `www.${MAIN}`) && isClient) return go(CLIENT);
-  if (host === `www.${MAIN}`) return go(MAIN);
-  if (host === MAIN && isApp) return go(APP);
+  const isMain = host === MAIN || host === "bilonai.com";
+  if ((isMain || host === APP) && isClient) return go(CLIENT);
+  if (isMain && isApp) return go(APP);
   if (host === APP && path === "/") return NextResponse.redirect(new URL("/app", request.url));
+  // Páginas públicas (preços, termos, suporte...) abertas no domínio do painel vão para a página principal
+  if (host === APP && !isApp) return go(MAIN);
   if (!isApp) return NextResponse.next();
 
   let response = NextResponse.next({ request });

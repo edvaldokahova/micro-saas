@@ -191,9 +191,11 @@ body {
   .field::placeholder {
     color: color-mix(in oklab, var(--color-muted) 70%, transparent);
   }
-  .field:focus {
-    border-color: var(--color-ivory);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ivory) 10%, transparent);
+  .field:focus,
+  .field:focus-visible {
+    outline: none;
+    border-color: color-mix(in oklab, var(--color-ivory) 55%, var(--color-line-strong));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ivory) 5%, transparent);
   }
   .label {
     display: block;

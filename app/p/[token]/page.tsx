@@ -103,7 +103,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
         {/* Remetente bem identificado: é a primeira coisa que o cliente procura num link que recebeu */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center border border-ivory font-display text-[15px]" aria-hidden>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ivory text-[14px] font-semibold text-ink" aria-hidden>
               {initials}
             </span>
             <div className="min-w-0">

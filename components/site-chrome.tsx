@@ -10,15 +10,15 @@ export async function SiteHeader() {
   const locale = await getLocale();
   const d = getDictionary(locale);
   const links = [
-    { href: "/#como-funciona", label: d.nav.how },
-    { href: "/precos", label: d.nav.pricing },
-    { href: "/suporte", label: d.nav.support },
+    { href: `${site.url}/#como-funciona`, label: d.nav.how },
+    { href: `${site.url}/precos`, label: d.nav.pricing },
+    { href: `${site.url}/suporte`, label: d.nav.support },
   ];
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
       <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
-        <Link href="/" aria-label={site.name} className="shrink-0">
+        <Link href={`${site.url}/`} aria-label={site.name} className="shrink-0">
           <Logo />
         </Link>
         <nav className="flex items-center gap-2 text-sm sm:gap-3">
@@ -29,10 +29,10 @@ export async function SiteHeader() {
           ))}
           <LocaleSwitcher locale={locale} label={d.common.language} />
           <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
-          <Link href="/entrar" className="btn btn-secondary btn-sm hidden sm:inline-flex">
+          <Link href={`${site.appUrl}/entrar`} className="btn btn-secondary btn-sm hidden sm:inline-flex">
             {d.nav.signIn}
           </Link>
-          <Link href="/registar" className="btn btn-primary btn-sm hidden sm:inline-flex">
+          <Link href={`${site.appUrl}/registar`} className="btn btn-primary btn-sm hidden sm:inline-flex">
             {d.nav.tryFree}
           </Link>
           {/* Menu do telemóvel, sem JavaScript */}
@@ -47,10 +47,10 @@ export async function SiteHeader() {
                   {l.label}
                 </Link>
               ))}
-              <Link href="/entrar" className="block rounded-lg px-3 py-2.5 text-sm hover:bg-ink-3">
+              <Link href={`${site.appUrl}/entrar`} className="block rounded-lg px-3 py-2.5 text-sm hover:bg-ink-3">
                 {d.nav.signIn}
               </Link>
-              <Link href="/registar" className="btn btn-primary btn-sm mt-1 w-full">
+              <Link href={`${site.appUrl}/registar`} className="btn btn-primary btn-sm mt-1 w-full">
                 {d.nav.tryFree}
               </Link>
             </div>
@@ -72,15 +72,15 @@ export async function SiteFooter() {
         </div>
         <ul className="space-y-2.5 text-muted">
           <li className="mono-label">{d.nav.product}</li>
-          <li><Link className="transition hover:text-ivory" href="/#como-funciona">{d.nav.how}</Link></li>
-          <li><Link className="transition hover:text-ivory" href="/precos">{d.nav.pricing}</Link></li>
-          <li><Link className="transition hover:text-ivory" href="/suporte">{d.nav.support}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/#como-funciona`}>{d.nav.how}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/precos`}>{d.nav.pricing}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/suporte`}>{d.nav.support}</Link></li>
         </ul>
         <ul className="space-y-2.5 text-muted">
           <li className="mono-label">{d.nav.legal}</li>
-          <li><Link className="transition hover:text-ivory" href="/termos">{d.nav.terms}</Link></li>
-          <li><Link className="transition hover:text-ivory" href="/privacidade">{d.nav.privacy}</Link></li>
-          <li><Link className="transition hover:text-ivory" href="/reembolsos">{d.nav.refunds}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/termos`}>{d.nav.terms}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/privacidade`}>{d.nav.privacy}</Link></li>
+          <li><Link className="transition hover:text-ivory" href={`${site.url}/reembolsos`}>{d.nav.refunds}</Link></li>
         </ul>
       </div>
       <div className="mx-auto max-w-6xl border-t border-line px-5 py-5 font-mono text-[11px] text-muted">
