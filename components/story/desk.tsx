@@ -2,6 +2,7 @@
 // Mesmos textos, marcas e ícones do painel real; os alvos dos cliques têm data-t.
 import { IconClients, IconLedger, IconSettings } from "@/components/icons";
 import { Wordmark } from "@/components/logo";
+import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { DocMark, DocStrip, type DocState } from "@/components/marks";
 import type { Step } from "./engine";
 
@@ -38,6 +39,7 @@ export type DeskTexts = {
     send: string;
     message: string;
     via: string;
+    channels: Record<Channel, string>;
     clientsTitle: string;
     clientsCount: string;
     addClient: string;
@@ -97,7 +99,7 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
     },
     {
       start: { ...BASE, reminded: true },
-      steps: [{ tap: "docs", set: { expanded: true }, zoom: 1.6 }, { wait: 0.2 }, { tap: "confirm", set: { confirmed: true }, zoom: 1.9 }, { wait: 0.5 }],
+      steps: [{ tap: "docs", set: { expanded: true }, zoom: 1.6 }, { wait: 1.4 }, { tap: "confirm", set: { confirmed: true }, zoom: 1.9 }, { wait: 0.5 }],
     },
     {
       start: { ...BASE, reminded: true, confirmed: true },
@@ -124,6 +126,9 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
     },
   ];
 }
+
+// Canais de envio na demonstração (o último é o que o cliente escolhe no telemóvel: e-mail)
+const DEMO_VIA: Channel[] = ["whatsapp", "whatsapp", "email"];
 
 const h1 = "text-[38px] font-semibold leading-none tracking-[-0.03em] [font-variation-settings:'wdth'_84]";
 const small = "text-[12.5px] font-medium";
@@ -271,16 +276,23 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
                         {t.docs.map((d, k) => {
                           const st: DocState = k < n - 1 || s.confirmed ? "received" : "sent";
                           return (
-                            <li key={d} className="flex items-center justify-between gap-2 rounded-xl bg-ink-3/70 px-3 py-2 text-[13px]">
+                            <li key={d} className="rounded-xl bg-ink-3/70 px-3 py-2 text-[13px]">
                               <span className="flex min-w-0 items-center gap-2">
                                 <DocMark state={st} animate={k === n - 1 && s.confirmed} />
                                 <span className="truncate">{d}</span>
                               </span>
-                              {st === "sent" ? (
-                                <span data-t="confirm" className="btn btn-primary btn-sm !min-h-0 !px-3 !py-1 !text-[12px]">{u.confirm}</span>
-                              ) : (
-                                <span className="text-[11.5px] text-muted">{u.docStatus[st]}</span>
-                              )}
+                              <span className="mt-1.5 flex items-center justify-between gap-2.5 pl-6">
+                                {/* Por onde o cliente enviou: fica registado em cada documento */}
+                                <span className="flex items-center gap-1 text-[11.5px] text-muted">
+                                  <ChannelIcon via={DEMO_VIA[k % DEMO_VIA.length]} className="h-3 w-3" />
+                                  {u.channels[DEMO_VIA[k % DEMO_VIA.length]]}
+                                </span>
+                                {st === "sent" ? (
+                                  <span data-t="confirm" className="btn btn-primary btn-sm !min-h-0 !px-3 !py-1 !text-[12px]">{u.confirm}</span>
+                                ) : (
+                                  <span className="text-[11.5px] text-ok">{u.docStatus[st]}</span>
+                                )}
+                              </span>
                             </li>
                           );
                         })}

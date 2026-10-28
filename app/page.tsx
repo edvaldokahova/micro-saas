@@ -79,6 +79,7 @@ export default async function Home() {
         month: h.mock.month,
         collected: d.app.dashboard.collectedIn(locale === "es-ES" ? "octubre de 2026" : "outubro de 2026"),
         newRequest: d.app.request.newTitle,
+        channels: d.common.via,
         stats: { requests: d.app.dashboard.statRequests, delivered: d.app.dashboard.statComplete, pending: d.app.dashboard.statMissing, late: d.app.dashboard.statLate },
         createAll: d.app.dashboard.createAll(5),
         createHint: d.app.dashboard.createAllHint,

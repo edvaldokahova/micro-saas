@@ -91,7 +91,7 @@ const dict = {
       chapters: [
         { title: "Criar os pedidos do mês", text: "Um clique cria o pedido de cada cliente, com a lista de documentos do período anterior." },
         { title: "Lembrar quem está atrasado", text: "A mensagem sai pronta, com o que falta e o link. Revê e envia do seu e-mail ou WhatsApp." },
-        { title: "Confirmar o que chegou", text: "Quando o documento chega, confirma com um clique e o cliente passa a entregue." },
+        { title: "Confirmar o que chegou", text: "Vê por onde chegou cada documento, WhatsApp ou e-mail, e sabe logo onde o procurar. Confirma com um clique." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai dos pedidos e do limite do plano. O histórico fica guardado e reativar é um clique." },
         { title: "Convidar um colaborador", text: "Recebe um convite por e-mail, entra sem palavra-passe e vê só os clientes que lhe atribuir." },
       ],

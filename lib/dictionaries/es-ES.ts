@@ -94,7 +94,7 @@ const dict: Dictionary = {
       chapters: [
         { title: "Crear las solicitudes del periodo", text: "Un clic crea la solicitud de cada cliente, con la lista de documentos del periodo anterior." },
         { title: "Recordar a quien va con retraso", text: "El mensaje sale listo, con lo que falta y el enlace. Lo revisas y lo envías desde tu correo o WhatsApp." },
-        { title: "Confirmar lo que ha llegado", text: "Cuando el documento llega, lo confirmas con un clic y el cliente pasa a entregado." },
+        { title: "Confirmar lo que ha llegado", text: "Ves por dónde llegó cada documento, WhatsApp o correo, y sabes dónde buscarlo. Lo confirmas con un clic." },
         { title: "Archivar y reactivar un cliente", text: "Quien deja de ser cliente sale de las solicitudes y del límite del plan. El historial se conserva y reactivarlo es un clic." },
         { title: "Invitar a un colaborador", text: "Recibe una invitación por correo, entra sin contraseña y solo ve los clientes que le asignes." },
       ],
