@@ -5,6 +5,7 @@ import { IconSeal, IconTick } from "@/components/icons";
 import { Flag } from "@/components/flags";
 import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
 import { MessagePreview } from "@/components/message-preview";
+import { ProductTour, type TourTexts } from "@/components/product-tour";
 import { IntervalToggle } from "@/components/interval-toggle";
 import { ValueEquation } from "@/components/value-equation";
 import { NoCard } from "@/components/no-card";
@@ -21,6 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: { canonical: "/" },
   };
 }
+
+// Mais dois contactos fictícios para a lista de clientes da visita guiada
+const tourPhones: Record<Locale, string[]> = {
+  "pt-PT": ["+351 915 702 214", "+351 936 480 772"],
+  "es-ES": ["+34 615 702 214", "+34 636 480 772"],
+  "pt-BR": ["+55 11 91570-2214", "+55 21 93648-0772"],
+};
 
 // Contactos fictícios para a demonstração (formato local de cada país)
 const demoContacts: Record<Locale, { phone: string; email: string }[]> = {
@@ -81,6 +89,63 @@ export default async function Home() {
     howSent: d.public.howSent,
     via: d.common.via,
     sentVia: d.common.sentVia("{canal}"),
+  };
+
+  // Visita guiada ao painel (gravação simulada, dados fictícios)
+  const tourClients = [...h.mock.clients, ...h.tour.extraClients];
+  const tour: TourTexts = {
+    eyebrow: h.tour.eyebrow,
+    title: h.tour.title,
+    lead: h.tour.lead,
+    note: h.mockNote,
+    office: h.demo.office,
+    chapters: h.tour.chapters,
+    pause: h.tour.pause,
+    play: h.tour.play,
+    clients: tourClients,
+    phones: [...demoContacts[locale].map((c) => c.phone), ...tourPhones[locale]],
+    docs: h.demo.docs,
+    member: h.tour.member,
+    ui: {
+      nav: d.app.nav,
+      periodEyebrow: d.app.dashboard.periodEyebrow,
+      month: h.mock.month,
+      createAll: d.app.dashboard.createAll(5),
+      createHint: d.app.dashboard.createAllHint,
+      create: d.app.request.create,
+      remind: h.mock.remind,
+      reminded: d.app.dashboard.reminders(1),
+      pending: dl.pending,
+      late: dl.lateBy(3),
+      awaiting: d.app.dashboard.awaiting(1),
+      delivered: dl.delivered,
+      showDocs: d.app.dashboard.showDocs,
+      confirm: d.app.dashboard.confirm,
+      docStatus: d.app.request.status,
+      to: h.tour.to,
+      send: h.tour.send,
+      message: fill(d.app.whatsappTemplate, {
+        cliente: tourClients[0],
+        periodo: locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale),
+        lista: h.demo.docs.slice(1).map((l) => `• ${l}`).join("\n"),
+        link: "entrega.bilonai.com/p/q4hfp7k2mx9a",
+        escritorio: h.demo.office,
+      }),
+      via: d.common.via.whatsapp,
+      clientsTitle: d.app.clients.title,
+      archive: d.app.clients.archive,
+      archived: d.app.clients.archived,
+      unarchive: d.app.clients.unarchive,
+      back: d.app.clients.title,
+      settingsTitle: d.app.settings.title,
+      teamTitle: d.app.team.title,
+      add: d.app.team.add,
+      name: d.app.team.name,
+      email: d.app.team.email,
+      access: d.app.team.access,
+      status: d.app.team.status,
+      invitedFlash: d.app.team.invited(h.tour.member.email),
+    },
   };
 
   // A mensagem que o cliente do escritório recebe, gerada pelo modelo real (dados fictícios).
@@ -176,12 +241,27 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* 02 · O que o cliente recebe */}
-        <MessagePreview t={message} index="02" />
+        {/* 02 · Visita guiada ao painel */}
+        <section id="por-dentro" className="scroll-mt-16 border-t border-line">
+          <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
+            <span className="mono-label pt-3 !text-gold">02</span>
+            <div>
+              <p className="eyebrow reveal">{tour.eyebrow}</p>
+              <h2 className="reveal-title mt-3 max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{tour.title}</h2>
+              <p className="reveal mt-4 max-w-2xl text-muted">{tour.lead}</p>
+              <div className="mt-12">
+                <ProductTour t={tour} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 03 · O que o cliente recebe */}
+        <MessagePreview t={message} index="03" />
 
         {/* 03 · Equação de valor */}
         <ValueEquation
-          index="03"
+          index="04"
           t={{
             eyebrow: h.value.eyebrow,
             title: h.value.title,
@@ -198,7 +278,7 @@ export default async function Home() {
         {/* 04 · Preços */}
         <section id="precos" className="scroll-mt-16 border-t border-line">
           <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">04</span>
+            <span className="mono-label pt-3 !text-gold">05</span>
             <div>
               <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.pricingTitle}</h2>
               <p className="reveal mt-4 max-w-2xl text-muted">{h.pricingLead(site.trialDays)}</p>
@@ -267,7 +347,7 @@ export default async function Home() {
         {/* 05 · Perguntas */}
         <section className="border-t border-line">
           <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">05</span>
+            <span className="mono-label pt-3 !text-gold">06</span>
             <div className="max-w-3xl">
               <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.faqTitle}</h2>
               <div className="draw-line mt-10 h-px bg-ivory" aria-hidden />
