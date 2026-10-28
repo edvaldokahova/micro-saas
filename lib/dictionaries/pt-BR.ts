@@ -111,6 +111,7 @@ const dict: Dictionary = {
         date: "Qua., 21 de out.",
         now: "agora",
         thanks: "Obrigado. O escritório já foi avisado.",
+        art: { email: "E-mail", password: "Senha", signup: "Criar conta", open: "Abrir a solicitação" },
       },
       send: "Enviar",
     },

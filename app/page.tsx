@@ -3,7 +3,7 @@ import Link from "next/link";
 import { HeroIntro } from "@/components/hero-intro";
 import { PageMotion } from "@/components/page-motion";
 import { WindowStory, type WindowTexts } from "@/components/story/window-story";
-import { DocsArt, MessageArt, MonthArt } from "@/components/art";
+import { DocsArt, LinkArt, MonthArt } from "@/components/art";
 import { PhoneStory, type PhoneStoryTexts } from "@/components/story/phone-story";
 import { PricingPlans } from "@/components/pricing";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
@@ -123,7 +123,7 @@ export default async function Home() {
     title: h.story.phone.title,
     lead: h.story.phone.lead,
     chapters: h.story.phone.chapters,
-    art: <MessageArt office={h.demo.office} client={clients[1]} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="entrega.bilonai.com/p/q4hf…" reply={d.public.markSent} />,
+    art: <LinkArt link="entrega.bilonai.com/p/q4hf…" labels={h.story.phone.art} />,
     phone: {
       office: h.demo.office,
       client: clients[1],

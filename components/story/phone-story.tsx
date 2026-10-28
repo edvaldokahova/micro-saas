@@ -97,16 +97,16 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
   return (
     <section id="lado-do-cliente" className="border-t border-line">
       <div ref={pin} className={`relative ${reduced ? "py-20" : "h-[100svh] pt-[76px]"}`}>
-        <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-5 pb-4 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:grid-rows-[1fr_auto_auto] lg:gap-x-16 lg:gap-y-6">
-          <div className="hidden lg:col-start-1 lg:row-start-1 lg:flex lg:items-end">{t.art}</div>
-          <div className="lg:col-start-1 lg:row-start-2">
+        <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-5 pb-3 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-x-16 lg:gap-y-2">
+          <div className="lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:justify-center">
+            <div className="mb-4 hidden origin-bottom-left scale-[0.82] lg:block [@media(max-height:860px)]:!hidden">{t.art}</div>
             <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(1.6rem,4.4vw,3.6rem)] leading-[1.02]">{t.title}</h2>
             <p data-split="lines" className="mt-4 hidden max-w-[44ch] text-[17px] leading-[1.6] text-muted lg:block">{t.lead}</p>
           </div>
-          <div className="order-3 lg:order-none lg:col-start-1 lg:row-start-3">
-            <Orbit steps={t.chapters} active={ch} onPick={pick} drive={orbit} bleed="mobile" />
+          <div className="relative z-0 order-3 lg:order-none lg:col-span-2 lg:col-start-1 lg:row-start-2">
+            <Orbit steps={t.chapters} active={ch} onPick={pick} drive={orbit} />
           </div>
-          <div ref={holder} className={`relative flex min-h-0 items-center justify-center lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:h-[min(860px,86vh)] ${reduced ? "h-[620px]" : "h-full"}`} style={{ perspective: "1600px" }}>
+          <div ref={holder} className={`relative flex min-h-0 items-center justify-center relative z-10 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:h-full lg:pb-[150px] ${reduced ? "h-[620px]" : "h-full"}`} style={{ perspective: "1600px" }}>
             <div style={{ width: FW * scale, height: FH * scale }} className="relative shrink-0">
               <div style={{ width: FW, height: FH, transform: `scale(${scale})`, transformOrigin: "0 0" }} className="absolute left-0 top-0">
                 <div ref={device} className="will-change-transform" style={{ transformOrigin: "50% 80%" }}>

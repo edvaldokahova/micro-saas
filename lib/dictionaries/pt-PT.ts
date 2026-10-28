@@ -109,6 +109,7 @@ const dict = {
         date: "Qua., 21 de out.",
         now: "agora",
         thanks: "Obrigado. O escritório já foi avisado.",
+        art: { email: "E-mail", password: "Palavra-passe", signup: "Criar conta", open: "Abrir o pedido" },
       },
       send: "Enviar",
     },

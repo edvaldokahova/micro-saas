@@ -3,7 +3,7 @@
 // Ilustrações animadas próprias (sem bibliotecas de ícones), cada uma ligada ao que a secção conta:
 //  DocsArt     · os documentos do cliente a chegar: em falta → enviado → recebido
 //  MonthArt    · o mês de recolha: os dias vão ficando tratados até ao prazo
-//  MessageArt  · a mensagem ao cliente: escreve, envia o link, o cliente responde
+//  LinkArt     · sem conta: o registo dá lugar a um link que o cliente só abre
 // Animam só quando estão no ecrã; com "reduzir movimento" ficam paradas no estado final.
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -122,61 +122,50 @@ export function MonthArt({ month, due }: { month: string; due: number }) {
   );
 }
 
-/* ---------- A mensagem ao cliente ---------- */
+/* ---------- Sem conta: o formulário de registo dá lugar a um link ---------- */
 
-export function MessageArt({ office, client, text, link, reply }: { office: string; client: string; text: string; link: string; reply: string }) {
+export function LinkArt({ link, labels }: { link: string; labels: { email: string; password: string; signup: string; open: string } }) {
   const ref = useLoop((el) => {
     const q = (k: string) => el.querySelector(`[data-x='${k}']`);
-    const tl = gsap.timeline({ repeat: -1, repeatDelay: 1, defaults: { ease: "power3.out" } });
-    tl.set([q("msg"), q("reply"), q("ticks"), q("blue")], { autoAlpha: 0 })
-      .fromTo(q("typing"), { autoAlpha: 0, scale: 0.8, transformOrigin: "100% 100%" }, { autoAlpha: 1, scale: 1, duration: 0.4 })
-      .to(q("dots")?.children ?? [], { y: -3, duration: 0.3, stagger: 0.12, repeat: 3, yoyo: true, ease: "sine.inOut" })
-      .to(q("typing"), { autoAlpha: 0, scale: 0.9, duration: 0.2 })
-      .fromTo(q("msg"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "100% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "<")
-      .to(q("ticks"), { autoAlpha: 1, duration: 0.3 }, "+=0.3")
-      .to(q("blue"), { autoAlpha: 1, duration: 0.3 }, "+=0.8")
-      .fromTo(q("reply"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "0% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "+=0.5")
-      .to([q("msg"), q("reply"), q("ticks"), q("blue")], { autoAlpha: 0, duration: 0.5, ease: "power2.in" }, "+=2.4");
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8, defaults: { ease: "power3.inOut" } });
+    tl.set(q("form"), { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)" })
+      .set([q("link"), q("ok")], { autoAlpha: 0 })
+      .set(q("strike"), { scaleX: 0 })
+      .to({}, { duration: 1 })
+      .to(q("strike"), { scaleX: 1, duration: 0.6, transformOrigin: "0% 50%" })
+      .to(q("form"), { autoAlpha: 0, y: -16, scale: 0.94, filter: "blur(4px)", duration: 0.6 }, "+=0.3")
+      .fromTo(q("link"), { autoAlpha: 0, y: 20, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.6)" }, "-=0.25")
+      .fromTo(q("ok"), { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(3)" }, "+=0.35")
+      .to([q("link"), q("ok")], { autoAlpha: 0, y: -10, duration: 0.5, ease: "power2.in" }, "+=2.2");
     return tl;
   });
-  const initials = client.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   return (
-    <div ref={ref} className="w-[330px] overflow-hidden rounded-[26px] border border-line bg-ink-2 shadow-[0_30px_60px_-34px_rgba(18,19,22,0.35)]" aria-hidden>
-      {/* Cabeçalho da conversa, visto do lado do escritório */}
-      <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-ink-3 text-[12.5px] font-semibold">{initials}</span>
-        <div className="min-w-0">
-          <p className="truncate text-[14px] font-semibold">{client}</p>
-        </div>
+    <div ref={ref} className="relative h-[230px] w-[320px]" aria-hidden>
+      {/* O que o cliente não precisa de fazer */}
+      <div data-x="form" className="absolute inset-x-0 top-0 rounded-[26px] border border-line bg-ink-2 p-5 shadow-[0_30px_60px_-34px_rgba(18,19,22,0.35)]">
+        {[labels.email, labels.password].map((l) => (
+          <div key={l} className="mb-3">
+            <p className="text-[11.5px] text-muted">{l}</p>
+            <span className="mt-1 block h-9 rounded-[10px] border border-line-strong" />
+          </div>
+        ))}
+        <span className="relative mt-1 block rounded-full bg-ink-3 py-2.5 text-center text-[13px] font-medium text-muted">
+          {labels.signup}
+          <span data-x="strike" className="absolute left-4 right-4 top-1/2 h-[2px] -translate-y-1/2 scale-x-0 rounded-full bg-bad" />
+        </span>
       </div>
-      <div className="relative h-[190px] px-4">
-        <div data-x="typing" className="absolute right-4 top-5 rounded-[18px] rounded-br-[6px] bg-ivory px-4 py-3 opacity-0">
-          <span data-x="dots" className="flex gap-1.5">
-            {[0, 1, 2].map((i) => (
-              <span key={i} className="block h-2 w-2 rounded-full bg-ink/60" />
-            ))}
+      {/* O que o cliente faz: abrir o link */}
+      <div data-x="link" className="absolute inset-x-0 top-12 rounded-[26px] border border-line bg-ink-2 p-5 opacity-0 shadow-[0_30px_60px_-34px_rgba(18,19,22,0.35)]">
+        <span className="flex items-center gap-2 rounded-full bg-ink-3 px-3.5 py-2.5 text-[12.5px]">
+          <svg width="11" height="13" viewBox="0 0 10 12" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><rect x="1" y="5" width="8" height="6" rx="1.5" /><path d="M2.8 5V3.6a2.2 2.2 0 0 1 4.4 0V5" /></svg>
+          <span className="truncate">{link}</span>
+        </span>
+        <span className="mt-4 flex items-center justify-between">
+          <span className="btn btn-primary btn-sm">{labels.open}</span>
+          <span data-x="ok" className="grid h-8 w-8 place-items-center rounded-full bg-ok text-white opacity-0">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7.4l2.6 2.5L11 4.4" /></svg>
           </span>
-        </div>
-        <div data-x="msg" className="absolute right-4 top-5 w-[240px] rounded-[18px] rounded-br-[6px] bg-ivory px-3.5 py-3 text-ink opacity-0">
-          <p className="text-[11px] font-semibold opacity-60">{office}</p>
-          <p className="mt-1 line-clamp-2 text-[13px] leading-[1.4]">{text}</p>
-          <span className="mt-2 inline-flex max-w-full items-center gap-1.5 truncate rounded-full bg-ink/10 px-2.5 py-1 text-[11.5px]">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 7l2-2M4.2 5.6L3 6.8a1.8 1.8 0 0 0 2.5 2.5l1.2-1.2M7.8 6.4L9 5.2a1.8 1.8 0 0 0-2.5-2.5L5.3 3.9" /></svg>
-            <span className="truncate">{link}</span>
-          </span>
-          <span className="absolute -bottom-[18px] right-1 text-muted">
-            <span data-x="ticks" className="relative block opacity-0">
-              <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
-              <svg data-x="blue" width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="var(--color-gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 opacity-0"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
-            </span>
-          </span>
-        </div>
-        <div data-x="reply" className="absolute bottom-4 left-4 rounded-[18px] rounded-bl-[6px] bg-ink-3 px-4 py-2.5 text-[13px] opacity-0">
-          {reply}
-        </div>
-      </div>
-      <div className="border-t border-line px-4 py-3">
-        <span className="block h-8 rounded-full bg-ink-3" />
+        </span>
       </div>
     </div>
   );
