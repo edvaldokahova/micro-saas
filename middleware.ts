@@ -3,19 +3,22 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const MAIN = "bilonai.com";
 const APP = "app.bilonai.com";
+const CLIENT = "entrega.bilonai.com";
 // Caminhos que pertencem ao painel (app.bilonai.com)
 const APP_PATHS = ["/app", "/entrar", "/registar", "/auth", "/pagamento"];
 
-// 1. Põe cada página no domínio certo: a página pública e os links dos clientes em bilonai.com,
-//    o painel em app.bilonai.com; o antigo entrega.bilonai.com redireciona tudo (links antigos continuam a funcionar).
+// 1. Põe cada página no domínio certo: a página pública em bilonai.com, o painel em app.bilonai.com
+//    e as páginas dos clientes (/p/...) em entrega.bilonai.com.
 // 2. Renova a sessão e protege a área do escritório (/app).
 export async function middleware(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const path = request.nextUrl.pathname;
   const isApp = APP_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+  const isClient = path.startsWith("/p/");
   const go = (domain: string, pathname = path) => NextResponse.redirect(`https://${domain}${pathname}${request.nextUrl.search}`, 308);
 
-  if (host === "entrega.bilonai.com") return go(isApp ? APP : MAIN);
+  if (host === CLIENT && !isClient) return go(isApp ? APP : MAIN);
+  if ((host === MAIN || host === APP || host === `www.${MAIN}`) && isClient) return go(CLIENT);
   if (host === `www.${MAIN}`) return go(MAIN);
   if (host === MAIN && isApp) return go(APP);
   if (host === APP && path === "/") return NextResponse.redirect(new URL("/app", request.url));

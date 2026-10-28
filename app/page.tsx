@@ -58,7 +58,7 @@ export default async function Home() {
   // "Como funciona": o painel no portátil e a página do cliente no iPhone (dados fictícios)
   const clients = [...h.mock.clients, ...h.story.extraClients];
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
-  const link = "bilonai.com/p/q4hfp7k2mx9a";
+  const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
   const message = (cliente: string, docs: string[]) =>
     fill(d.app.whatsappTemplate, { cliente, periodo: period, lista: docs.map((l) => `• ${l}`).join("\n"), link, escritorio: h.demo.office });
   const laptop: WindowTexts = {
@@ -123,7 +123,7 @@ export default async function Home() {
     title: h.story.phone.title,
     lead: h.story.phone.lead,
     chapters: h.story.phone.chapters,
-    art: <MessageArt office={h.demo.office} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="bilonai.com/p/q4hf…" reply={d.public.markSent} />,
+    art: <MessageArt office={h.demo.office} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="entrega.bilonai.com/p/q4hf…" reply={d.public.markSent} />,
     phone: {
       office: h.demo.office,
       client: clients[1],
@@ -131,7 +131,7 @@ export default async function Home() {
       via: d.common.via.whatsapp,
       now: h.story.phone.now,
       date: h.story.phone.date,
-      link: "bilonai.com",
+      link: "entrega.bilonai.com",
       hello: d.public.hello(clients[1]),
       intro: d.public.intro(h.demo.office, period),
       due: d.public.due(formatDate("2026-10-30", locale, false)),

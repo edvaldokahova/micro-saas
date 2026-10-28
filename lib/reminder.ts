@@ -4,7 +4,7 @@ import type { Office } from "@/lib/office";
 import { site } from "@/lib/site";
 
 export function publicLink(token: string): string {
-  return `${site.url}/p/${token}`;
+  return `${site.clientUrl}/p/${token}`;
 }
 
 type ReminderReq = { token: string; period: string; months?: number; client_name: string; client_phone: string | null; client_email?: string | null };

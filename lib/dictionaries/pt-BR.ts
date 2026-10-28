@@ -119,7 +119,7 @@ const dict: Dictionary = {
     pricingLead: (d: number) =>
       `Comece com ${d} dias grátis. Mensal ou anual; os impostos aplicáveis são calculados no checkout.`,
     features: ["Solicitações ilimitadas, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que está pendente e de quem está atrasado", "Cobrança pelo WhatsApp ou e-mail com a lista pronta"],
-    popular: "Recomendado",
+    popular: "Melhor preço por cliente",
     perDay: (price: string) => `Cerca de ${price} por dia.`,
     planFor: { starter: "Para quem trabalha sozinho ou com uma equipe pequena.", office: "Para escritórios com mais clientes e vários responsáveis." },
     faqTitle: "Perguntas frequentes",
