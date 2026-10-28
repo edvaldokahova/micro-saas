@@ -83,7 +83,7 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
                           {iv === "year" ? formatYearlyPerMonth(locale, key) : formatPrice(locale, key)}
                         </span>
                         <span className="text-muted">{d.common.perMonth}</span>
-                        {isCurrent && <span className="rounded-[3px] bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
+                        {isCurrent && <span className="rounded-lg bg-gold/15 px-2.5 py-0.5 text-xs text-gold">{t.current}</span>}
                       </p>
                       <p className="mt-1 h-5 text-xs text-muted">{iv === "year" ? d.common.billedYearly(formatPrice(locale, key, "year")) : ""}</p>
                       <p className="mt-2 flex items-center gap-2 text-sm text-muted">

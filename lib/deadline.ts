@@ -41,7 +41,7 @@ export const deadlineTone: Record<Deadline["kind"], string> = {
   pending: "text-muted",
 };
 // Classe tipográfica comum a todas as etiquetas de estado
-export const statusText = "font-mono text-[10.5px] uppercase tracking-[0.08em]";
+export const statusText = "text-[12px] font-medium";
 
 // Ordem no painel: atrasados primeiro, depois os que estão a terminar, pendentes e, por fim, entregues
 export const deadlineOrder: Record<Deadline["kind"], number> = { late: 0, soon: 1, pending: 2, delivered: 3 };

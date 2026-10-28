@@ -64,7 +64,7 @@ export async function SiteHeader() {
 export async function SiteFooter() {
   const d = getDictionary(await getLocale());
   return (
-    <footer className="border-t border-ivory">
+    <footer className="border-t border-line">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 text-sm sm:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />

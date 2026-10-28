@@ -65,10 +65,10 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                         {c.phone && <Phone className="h-3 w-3" aria-hidden />}
                         {c.phone ?? c.email ?? "—"}
                         {c.cadence === "quarterly" && (
-                          <span className="ml-1 rounded-[3px] border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>
+                          <span className="ml-1 rounded-lg border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>
                         )}
                         {c.assignee_id && teamName.get(c.assignee_id) && (
-                          <span className="ml-1 rounded-[3px] bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
+                          <span className="ml-1 rounded-lg bg-ink-3 px-2 py-px text-[10.5px] text-ivory/80">{teamName.get(c.assignee_id)}</span>
                         )}
                       </span>
                     </Link>

@@ -1,4 +1,4 @@
-// Logotipo oficial BILONAI (desenhado em curvas: o "O" é o olho dourado) + nome do produto.
+// Logotipo oficial BILONAI (desenhado em curvas: o "O" é o olho dourado).
 // As letras usam currentColor, por isso acompanham o modo claro e escuro.
 export function Wordmark({ className = "h-[16px] w-auto" }: { className?: string }) {
   return (
@@ -37,18 +37,7 @@ export function Wordmark({ className = "h-[16px] w-auto" }: { className?: string
   );
 }
 
-// Assinatura completa: BILONAI | Entrega
+// Assinatura: só a palavra BILONAI (o produto chama-se Bilonai)
 export function Logo({ className = "" }: { className?: string }) {
-  return (
-    <span className={`inline-flex items-center gap-3 ${className}`}>
-      <Wordmark />
-      <span className="h-[18px] w-px bg-line-strong" aria-hidden />
-      <ProductMark />
-    </span>
-  );
-}
-
-// Nome do produto: serifa editorial, direita
-export function ProductMark({ className = "" }: { className?: string }) {
-  return <span className={`font-display text-[21px] leading-none tracking-[-0.01em] text-ivory ${className}`}>Entrega</span>;
+  return <Wordmark className={`h-[17px] w-auto text-ivory ${className}`} />;
 }

@@ -21,7 +21,7 @@ export function AccessFields({
           <label
             key={a}
             htmlFor={`${idPrefix}-${a}`}
-            className="cursor-pointer rounded-[3px] border border-line px-3 py-2.5 transition has-[:checked]:border-ivory has-[:checked]:bg-ink-3/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold/50"
+            className="cursor-pointer rounded-lg border border-line px-3 py-2.5 transition has-[:checked]:border-ivory has-[:checked]:bg-ink-3/60 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold/50"
           >
             <input id={`${idPrefix}-${a}`} type="radio" name="access" value={a} defaultChecked={defaultAccess === a} className="sr-only" />
             <span className="block text-sm font-medium">{t.access[a]}</span>

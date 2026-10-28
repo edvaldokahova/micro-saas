@@ -20,7 +20,7 @@ export function IntervalToggle({
   const [interval, setInterval] = useState<"month" | "year">(initial);
   return (
     <div data-interval={interval} className={`group ${className}`}>
-      <div role="radiogroup" hidden={!showControl} className="inline-flex items-center gap-0.5 rounded-[4px] border border-line-strong p-0.5 text-sm">
+      <div role="radiogroup" hidden={!showControl} className="inline-flex items-center gap-0.5 rounded-xl border border-line-strong p-0.5 text-sm">
         {(["month", "year"] as const).map((i) => (
           <button
             key={i}
@@ -28,13 +28,13 @@ export function IntervalToggle({
             role="radio"
             aria-checked={interval === i}
             onClick={() => setInterval(i)}
-            className={`inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-medium transition ${
+            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition ${
               interval === i ? "bg-accent text-on-accent" : "text-muted hover:text-ivory"
             }`}
           >
             {labels[i]}
             {i === "year" && (
-              <span className={`font-mono text-[10px] uppercase tracking-[0.08em] ${interval === i ? "opacity-80" : "text-ok"}`}>
+              <span className={`text-[12px] font-medium ${interval === i ? "opacity-80" : "text-ok"}`}>
                 {labels.badge}
               </span>
             )}

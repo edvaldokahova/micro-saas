@@ -1,7 +1,7 @@
 // Fonte única de marca, contactos, preços e dados legais.
 // Páginas de vendas, suporte e políticas leem tudo daqui: muda-se num só sítio.
 export const site = {
-  name: "Bilonai Entrega",
+  name: "Bilonai",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://entrega.bilonai.com",
   owner: "A Bilonai Group",
   supportEmail: "suporte@bilonai.com",

@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import { getDictionary, localeMeta, locales } from "@/lib/i18n";
 import { getLocale, getTheme } from "@/lib/prefs";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-// Identidade "livro-razão": serifa editorial nos títulos e números, Plex no texto, Plex Mono nas etiquetas
-const sans = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex", display: "swap" });
-const display = Newsreader({ subsets: ["latin"], weight: ["400", "500"], style: ["normal", "italic"], variable: "--font-news", display: "swap" });
-const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
+// Uma só família: Instrument Sans (variável em peso e largura; os títulos usam a versão mais estreita)
+const sans = Instrument_Sans({ subsets: ["latin"], axes: ["wdth"], variable: "--font-instrument", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -29,15 +27,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#f3f0e8" },
-    { media: "(prefers-color-scheme: light)", color: "#f3f0e8" },
+    { media: "(prefers-color-scheme: dark)", color: "#f7f7f8" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f7f8" },
   ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [locale, theme] = await Promise.all([getLocale(), getTheme()]);
   return (
-    <html lang={locale} data-theme={theme} className={`${sans.variable} ${display.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang={locale} data-theme={theme} className={sans.variable} suppressHydrationWarning>
       <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );

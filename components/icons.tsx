@@ -1,4 +1,4 @@
-// Ícones próprios do Bilonai Entrega, desenhados numa grelha de 20 px.
+// Ícones próprios do Bilonai, desenhados numa grelha de 20 px.
 // Traço fino (1.3), cantos e pontas retos, e os motivos da identidade: a folha de registo,
 // o duplo traço dos totais e as caixas quadradas das marcas de documento.
 type P = { className?: string };

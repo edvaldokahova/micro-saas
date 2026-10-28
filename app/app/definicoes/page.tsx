@@ -98,7 +98,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         {team.length === 0 ? (
           <p className="mt-4 border border-dashed border-line px-4 py-3 text-sm text-muted">{tm.none}</p>
         ) : (
-          <ul className="mt-5 border-t border-ivory">
+          <ul className="mt-5 border-t border-line">
             {team.map((m) => {
               const status = m.access === "none" ? tm.status.contact : m.joined_at ? tm.status.active : tm.status.invited;
               return (
@@ -124,7 +124,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
                     </div>
                     <span className="text-right">
                       <span className="block text-sm">{tm.access[m.access]}</span>
-                      <span className={`block font-mono text-[10.5px] uppercase tracking-[0.08em] ${m.access === "none" ? "text-muted" : m.joined_at ? "text-ok" : "text-gold"}`}>
+                      <span className={`block text-[12px] font-medium ${m.access === "none" ? "text-muted" : m.joined_at ? "text-ok" : "text-gold"}`}>
                         {status}
                       </span>
                     </span>
@@ -182,7 +182,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         <p className="mt-1 text-sm text-muted">{t.docTypesHint}</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {types.map((x) => (
-            <li key={x.id} className="flex items-center gap-1 rounded-[3px] border border-line bg-ink-3 py-1 pl-3.5 pr-1 text-sm">
+            <li key={x.id} className="flex items-center gap-1 rounded-lg border border-line bg-ink-3 py-1 pl-3.5 pr-1 text-sm">
               {x.label}
               <form action={removeDocType}>
                 <input type="hidden" name="id" value={x.id} />

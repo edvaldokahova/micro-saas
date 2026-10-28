@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   const { token } = await params;
   const req = await loadRequest(token);
   const robots = { index: false, follow: false };
-  if (!req) return { title: "Bilonai Entrega", robots };
+  if (!req) return { title: "Bilonai", robots };
   const locale: Locale = isLocale(req.locale) ? req.locale : "pt-PT";
   const t = getDictionary(locale).public;
   const title = t.metaTitle(periodOf(req.period, locale, req.months ?? 1), req.office_name);

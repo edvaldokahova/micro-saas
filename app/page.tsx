@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { IconSeal, IconTick } from "@/components/icons";
-import { Flag } from "@/components/flags";
-import { HeroDemo, type DemoTexts } from "@/components/hero-demo";
-import { MessagePreview } from "@/components/message-preview";
-import { ProductTour, type TourTexts } from "@/components/product-tour";
+import { IconTick } from "@/components/icons";
+import { HeroIntro } from "@/components/hero-intro";
+import { ScrollStory, type StoryTexts } from "@/components/scroll-story";
 import { IntervalToggle } from "@/components/interval-toggle";
-import { ValueEquation } from "@/components/value-equation";
-import { NoCard } from "@/components/no-card";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { fill, formatMoney, formatPerDay, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
+import { fill, formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site, type PlanKey } from "@/lib/site";
 
@@ -57,55 +52,23 @@ export default async function Home() {
   const d = getDictionary(locale);
   const h = d.home;
   const plans = Object.keys(site.plans) as PlanKey[];
-
-  // Textos da demonstração (só texto simples segue para o navegador)
   const dl = d.common.deadline;
-  const demo: DemoTexts = {
-    month: h.mock.month,
-    officeView: h.demo.officeView,
-    clientView: h.demo.clientView,
-    live: h.demo.live,
-    office: h.demo.office,
-    clients: h.mock.clients,
-    contacts: demoContacts[locale],
-    docs: h.demo.docs,
-    statDelivered: d.app.dashboard.statComplete,
-    statPending: d.app.dashboard.statMissing,
-    statLate: d.app.dashboard.statLate,
-    chipDelivered: dl.delivered,
-    chipPending: dl.pending,
-    chipLate: dl.late,
-    dueIn2: dl.dueIn(2),
-    lateBy3: dl.lateBy(3),
-    docsOf: d.app.dashboard.docsOf(-1, -2).replace("-1", "{a}").replace("-2", "{b}"),
-    awaiting: [1, 2, 3].map((n) => d.app.dashboard.awaiting(n)),
-    hello: d.public.hello(h.mock.clients[1]),
-    markSent: d.public.markSent,
-    sent: d.public.sent,
-    received: d.public.received,
-    toast: h.demo.toast,
-    confirmed: h.demo.confirmed,
-    remind: h.mock.remind,
-    howSent: d.public.howSent,
-    via: d.common.via,
-    sentVia: d.common.sentVia("{canal}"),
-  };
+  const brl = localeMeta[locale].currency === "BRL";
 
-  // Visita guiada ao painel (gravação simulada, dados fictícios)
-  const tourClients = [...h.mock.clients, ...h.tour.extraClients];
-  const tour: TourTexts = {
-    eyebrow: h.tour.eyebrow,
-    title: h.tour.title,
-    lead: h.tour.lead,
+  // "Como funciona": o próprio painel, com dados fictícios, controlado pelo scroll
+  const clients = [...h.mock.clients, ...h.story.extraClients];
+  const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
+  const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
+  const story: StoryTexts = {
+    title: h.story.title,
+    lead: h.story.lead,
     note: h.mockNote,
     office: h.demo.office,
-    chapters: h.tour.chapters,
-    pause: h.tour.pause,
-    play: h.tour.play,
-    clients: tourClients,
+    chapters: h.story.chapters,
+    clients,
     phones: [...demoContacts[locale].map((c) => c.phone), ...tourPhones[locale]],
     docs: h.demo.docs,
-    member: h.tour.member,
+    member: h.story.member,
     ui: {
       nav: d.app.nav,
       periodEyebrow: d.app.dashboard.periodEyebrow,
@@ -122,13 +85,13 @@ export default async function Home() {
       showDocs: d.app.dashboard.showDocs,
       confirm: d.app.dashboard.confirm,
       docStatus: d.app.request.status,
-      to: h.tour.to,
-      send: h.tour.send,
+      to: h.story.to,
+      send: h.story.send,
       message: fill(d.app.whatsappTemplate, {
-        cliente: tourClients[0],
-        periodo: locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale),
+        cliente: clients[0],
+        periodo: period,
         lista: h.demo.docs.slice(1).map((l) => `• ${l}`).join("\n"),
-        link: "entrega.bilonai.com/p/q4hfp7k2mx9a",
+        link,
         escritorio: h.demo.office,
       }),
       via: d.common.via.whatsapp,
@@ -136,7 +99,6 @@ export default async function Home() {
       archive: d.app.clients.archive,
       archived: d.app.clients.archived,
       unarchive: d.app.clients.unarchive,
-      back: d.app.clients.title,
       settingsTitle: d.app.settings.title,
       teamTitle: d.app.team.title,
       add: d.app.team.add,
@@ -144,227 +106,125 @@ export default async function Home() {
       email: d.app.team.email,
       access: d.app.team.access,
       status: d.app.team.status,
-      invitedFlash: d.app.team.invited(h.tour.member.email),
+      invitedFlash: d.app.team.invited(h.story.member.email),
     },
-  };
-
-  // A mensagem que o cliente do escritório recebe, gerada pelo modelo real (dados fictícios).
-  // Em Espanha o exemplo é trimestral, como a maioria dos pedidos de uma gestoria.
-  const demoLink = "entrega.bilonai.com/p/k7m2x9qa4hfp";
-  const demoPeriod = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
-  const message = {
-    ...h.message,
-    office: h.demo.office,
-    message: fill(d.app.whatsappTemplate, {
-      cliente: h.mock.clients[2],
-      periodo: demoPeriod,
-      lista: h.demo.docs.slice(0, 2).map((l) => `• ${l}`).join("\n"),
-      link: demoLink,
-      escritorio: h.demo.office,
-    }),
-    link: demoLink,
-    previewTitle: d.public.metaTitle(demoPeriod, h.demo.office),
-    previewText: d.public.metaDescription(h.demo.office),
-    note: h.mockNote,
+    client: {
+      link: link.replace(/\/p\/.*/, "/p/q4hf…"),
+      hello: d.public.hello(clients[1]),
+      intro: d.public.intro(h.demo.office, period),
+      markSent: d.public.markSent,
+      howSent: d.public.howSent,
+      vias: { whatsapp: d.common.via.whatsapp, email: d.common.via.email },
+      sentVia: d.common.sentVia(d.common.via.email),
+      received: d.public.received,
+      pending: d.public.pending,
+    },
   };
 
   return (
     <>
       <SiteHeader />
       <main className="overflow-x-clip">
-        {/* Herói */}
-        <section className="mx-auto grid max-w-6xl items-start gap-14 px-5 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.08fr_1fr] lg:gap-16 lg:pb-24">
-          <div>
-            <p className="mono-label inline-flex animate-rise items-center gap-2.5">
-              <Flag locale={locale} className="h-2.5 w-4" />
-              {h.badge}
-            </p>
-            {/* Título palavra a palavra (só ao carregar; respeita "reduzir movimento") */}
-            <h1 className="mt-7 font-display text-[2.9rem] leading-[1.02] sm:text-[4.1rem]" aria-label={`${h.titleA} ${h.titleHighlight}${h.titleB}`}>
-              {h.titleA.split(" ").map((w, i) => (
-                <span key={i} className="word" style={{ "--w": i } as React.CSSProperties} aria-hidden>
-                  {w}&nbsp;
-                </span>
-              ))}
-              {h.titleHighlight.split(" ").map((w, i, all) => (
-                <em key={`h${i}`} className="word italic text-gold" style={{ "--w": h.titleA.split(" ").length + i } as React.CSSProperties} aria-hidden>
-                  {w}
-                  {i < all.length - 1 ? "\u00a0" : h.titleB}
-                </em>
-              ))}
-            </h1>
-            <p className="mt-7 max-w-xl animate-rise text-[17.5px] leading-[1.7] text-ivory/80 [animation-delay:120ms]">{h.lead}</p>
-            <div className="mt-9 flex animate-rise flex-wrap items-center gap-x-5 gap-y-3 [animation-delay:180ms]">
-              <Link href="/registar" className="btn btn-primary min-h-[3.1rem] px-6">
-                {d.common.trialFree(site.trialDays)} <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
-              <NoCard text={d.common.noCard} />
-            </div>
-            <dl className="mt-14 grid max-w-lg animate-rise grid-cols-3 border-t border-line [animation-delay:240ms]">
-              {h.stats.map((s, i) => (
-                <div key={s.value} className={`pt-4 ${i > 0 ? "border-l border-line pl-4" : "pr-4"}`}>
-                  <dt className="figure text-[28px]">{s.value}</dt>
-                  <dd className="mt-1 text-[13px] leading-5 text-muted">{s.label}</dd>
+        {/* Abertura: o título é a imagem */}
+        <section>
+          <HeroIntro>
+            <div className="mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
+              <h1 data-hero-title className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] leading-[0.93] tracking-[-0.045em]">
+                {h.title}
+              </h1>
+              <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                <p data-hero-rest className="max-w-[46ch] text-[18px] leading-[1.55] text-muted sm:text-[20px]">
+                  {h.lead}
+                </p>
+                <div data-hero-rest className="flex flex-col items-start gap-3 md:items-end">
+                  <Link href="/registar" className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
+                    {d.common.trialFree(site.trialDays)}
+                  </Link>
+                  <p className="text-[13.5px] text-muted">{d.common.noCard}</p>
                 </div>
-              ))}
-            </dl>
-          </div>
-
-          {/* Demonstração animada (dados fictícios) */}
-          <div className="animate-rise [animation-delay:150ms] lg:pt-2">
-            <HeroDemo t={demo} />
-            <p className="mono-label mt-4 text-center sm:text-right">{h.mockNote}</p>
-          </div>
-        </section>
-
-        {/* 01 · Como funciona */}
-        <section id="como-funciona" className="scroll-mt-16 border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">01</span>
-            <div>
-              <h2 className="reveal-title max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{h.stepsTitle}</h2>
-              <div className="draw-line mt-12 h-px bg-ivory" aria-hidden />
-              <ol className="stagger double-rule grid md:grid-cols-3">
-                {h.steps.map((s, i) => (
-                  <li key={s.title} style={{ "--i": i } as React.CSSProperties} className={`py-6 md:pr-8 ${i > 0 ? "border-t border-line md:border-l md:border-t-0 md:pl-8" : ""}`}>
-                    <span className="mono-label">0{i + 1}</span>
-                    <h3 className="mt-3 font-display text-[23px] leading-tight">{s.title}</h3>
-                    <p className="mt-2.5 text-[15px] leading-7 text-ivory/75">{s.text}</p>
-                  </li>
-                ))}
-              </ol>
-              <p className="reveal mt-8 flex items-center gap-3 text-sm text-muted">
-                <IconSeal className="h-5 w-5 shrink-0 text-gold" />
-                {h.safety}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 02 · Visita guiada ao painel */}
-        <section id="por-dentro" className="scroll-mt-16 border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">02</span>
-            <div>
-              <p className="eyebrow reveal">{tour.eyebrow}</p>
-              <h2 className="reveal-title mt-3 max-w-2xl font-display text-4xl leading-[1.08] sm:text-[46px]">{tour.title}</h2>
-              <p className="reveal mt-4 max-w-2xl text-muted">{tour.lead}</p>
-              <div className="mt-12">
-                <ProductTour t={tour} />
               </div>
             </div>
-          </div>
+          </HeroIntro>
         </section>
 
-        {/* 03 · O que o cliente recebe */}
-        <MessagePreview t={message} index="03" />
+        <ScrollStory t={story} />
 
-        {/* 03 · Equação de valor */}
-        <ValueEquation
-          index="04"
-          t={{
-            eyebrow: h.value.eyebrow,
-            title: h.value.title,
-            lead: h.value.lead,
-            dream: h.value.dream,
-            likelihood: h.value.likelihood,
-            time: h.value.time,
-            effort: h.value.effort,
-            equals: h.value.equals,
-            perDay: h.value.perDay(formatPerDay(locale)),
-          }}
-        />
-
-        {/* 04 · Preços */}
+        {/* Preços */}
         <section id="precos" className="scroll-mt-16 border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">05</span>
-            <div>
-              <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.pricingTitle}</h2>
-              <p className="reveal mt-4 max-w-2xl text-muted">{h.pricingLead(site.trialDays)}</p>
-              <IntervalToggle className="reveal mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
-                <div className="draw-line mt-8 h-px bg-ivory" aria-hidden />
-                <div className="stagger grid md:grid-cols-2">
-                  {plans.map((key, idx) => {
-                    const p = site.plans[key];
-                    const featured = key === "office";
-                    return (
-                      <div key={key} style={{ "--i": idx } as React.CSSProperties} className={`flex flex-col py-8 md:px-8 ${idx === 0 ? "md:pl-0" : "border-t border-line md:border-l md:border-t-0"}`}>
-                        <div className="flex items-baseline justify-between gap-3">
-                          <h3 className="font-display text-[28px] leading-none">{d.common.planNames[key]}</h3>
-                          {featured && <span className="mono-label !text-gold">{h.popular}</span>}
-                        </div>
-                        <p className="mt-2 text-sm text-muted">{h.planFor[key]}</p>
-                        {/* Mensal */}
-                        <div className="group-data-[interval=year]:hidden">
-                          <p className="mt-7 flex items-baseline gap-1.5">
-                            <span className="figure text-[56px]">{formatPrice(locale, key)}</span>
-                            <span className="text-muted">{d.common.perMonth}</span>
-                          </p>
-                          <p className="mt-1 h-5 text-sm text-muted" />
-                        </div>
-                        {/* Anual: equivalente mensal em destaque, total por ano por baixo */}
-                        <div className="hidden animate-fade group-data-[interval=year]:block">
-                          <p className="mt-7 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                            <span className="figure text-[56px]">{formatYearlyPerMonth(locale, key)}</span>
-                            <span className="text-muted">{d.common.perMonth}</span>
-                            <span className="mono-label !text-ok">{d.common.twoMonthsFree}</span>
-                          </p>
-                          <p className="mt-1 h-5 text-sm text-muted">
-                            <span className="line-through opacity-70">{formatMoney(locale, (localeMeta[locale].currency === "BRL" ? p.priceBrl : p.priceEur) * 12)}</span>{" "}
-                            {d.common.billedYearly(formatPrice(locale, key, "year"))}
-                          </p>
-                        </div>
-                        <dl className="double-rule mt-6 grid grid-cols-2 border-t border-line">
-                          <div className="py-3">
-                            <dt className="mono-label">{d.app.nav.clients}</dt>
-                            <dd className="figure mt-1 text-2xl">{p.clientLimit}</dd>
-                          </div>
-                          <div className="border-l border-line py-3 pl-4">
-                            <dt className="mono-label">{d.app.team.title}</dt>
-                            <dd className="figure mt-1 text-2xl">{p.teamLimit}</dd>
-                          </div>
-                        </dl>
-                        <ul className="mt-6 space-y-2.5 text-[15px]">
-                          {h.features.map((f) => (
-                            <li key={f} className="flex items-start gap-3">
-                              <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {f}
-                            </li>
-                          ))}
-                        </ul>
-                        <Link href="/registar" className={`btn mt-8 w-full ${featured ? "btn-primary" : "btn-secondary"}`}>
-                          {d.common.trialFree(site.trialDays)}
-                        </Link>
+          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">
+            <h2 className="max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
+            <p className="mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
+            <IntervalToggle className="mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
+              <div className="mt-8 grid gap-4 md:grid-cols-2">
+                {plans.map((key) => {
+                  const p = site.plans[key];
+                  const featured = key === "office";
+                  const monthly = brl ? p.priceBrl : p.priceEur;
+                  return (
+                    <div key={key} className={`flex flex-col rounded-3xl bg-ink-2 p-7 sm:p-9 ${featured ? "border-2 border-ivory" : "border border-line"}`}>
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-[22px] font-semibold tracking-[-0.015em]">{d.common.planNames[key]}</h3>
+                        {featured && <span className="rounded-full bg-ivory px-3 py-1 text-[12px] font-medium text-ink">{h.popular}</span>}
                       </div>
-                    );
-                  })}
-                </div>
-              </IntervalToggle>
-            </div>
+                      <p className="mt-1.5 text-[15px] text-muted">{h.planFor[key]}</p>
+                      <div className="group-data-[interval=year]:hidden">
+                        <p className="mt-8 flex items-baseline gap-1.5">
+                          <span className="figure text-[64px]">{formatPrice(locale, key)}</span>
+                          <span className="text-muted">{d.common.perMonth}</span>
+                        </p>
+                        <p className="mt-1 text-[14px] text-muted">{h.perDay(formatMoney(locale, Math.round((monthly / 30) * 100) / 100))}</p>
+                      </div>
+                      <div className="hidden animate-fade group-data-[interval=year]:block">
+                        <p className="mt-8 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                          <span className="figure text-[64px]">{formatYearlyPerMonth(locale, key)}</span>
+                          <span className="text-muted">{d.common.perMonth}</span>
+                        </p>
+                        <p className="mt-1 text-[14px] text-muted">
+                          <span className="line-through opacity-70">{formatMoney(locale, monthly * 12)}</span> {d.common.billedYearly(formatPrice(locale, key, "year"))}
+                        </p>
+                      </div>
+                      <p className="mt-7 text-[15px] leading-7">
+                        {d.common.upToClients(p.clientLimit)}
+                        <br />
+                        <span className="text-muted">{d.common.upToTeam(p.teamLimit)}</span>
+                      </p>
+                      <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[15px]">
+                        {h.features.map((f) => (
+                          <li key={f} className="flex items-start gap-3">
+                            <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {f}
+                          </li>
+                        ))}
+                      </ul>
+                      <Link href="/registar" className={`btn mt-9 w-full min-h-[3rem] ${featured ? "btn-primary" : "btn-secondary"}`}>
+                        {d.common.trialFree(site.trialDays)}
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </IntervalToggle>
           </div>
         </section>
 
-        {/* 05 · Perguntas */}
+        {/* Perguntas */}
         <section className="border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-y-6 px-5 py-24 lg:grid-cols-[120px_1fr]">
-            <span className="mono-label pt-3 !text-gold">06</span>
-            <div className="max-w-3xl">
-              <h2 className="reveal-title font-display text-4xl leading-[1.08] sm:text-[46px]">{h.faqTitle}</h2>
-              <div className="draw-line mt-10 h-px bg-ivory" aria-hidden />
-              <div className="stagger divide-y divide-line border-b border-ivory">
-                {h.faq(site.trialDays).map((f, i) => (
-                  <details key={f.q} style={{ "--i": i } as React.CSSProperties} className="group py-5">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-medium [&::-webkit-details-marker]:hidden">
+          <div className="mx-auto grid max-w-6xl gap-10 px-5 py-28 sm:py-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
+            <h2 className="font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.faqTitle}</h2>
+            <div>
+              <div className="divide-y divide-line border-y border-line">
+                {h.faq(site.trialDays).map((f) => (
+                  <details key={f.q} className="group py-5">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[17px] font-medium [&::-webkit-details-marker]:hidden">
                       {f.q}
-                      <span className="font-mono text-lg text-muted transition duration-200 group-open:rotate-45" aria-hidden>
-                        +
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-line-strong text-muted transition duration-300 group-open:rotate-45" aria-hidden>
+                        <svg viewBox="0 0 12 12" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M6 1.5v9M1.5 6h9" /></svg>
                       </span>
                     </summary>
-                    <p className="mt-3 animate-fade leading-7 text-ivory/75">{f.a}</p>
+                    <p className="mt-3 max-w-[60ch] animate-fade leading-7 text-muted">{f.a}</p>
                   </details>
                 ))}
               </div>
-              <p className="mt-8 text-sm text-muted">
+              <p className="mt-8 text-[15px] text-muted">
                 {h.moreQuestions}{" "}
                 <a className="text-ivory underline decoration-line-strong underline-offset-4 hover:decoration-ivory" href={`mailto:${site.supportEmail}`}>
                   {site.supportEmail}
@@ -376,15 +236,15 @@ export default async function Home() {
         </section>
 
         {/* Chamada final */}
-        <section className="border-t border-ivory">
-          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-5 py-20 md:flex-row md:items-end">
-            <div>
-              <h2 className="reveal-title max-w-2xl font-display text-4xl leading-[1.08] sm:text-[52px]">{h.finalTitle}</h2>
-              <p className="reveal mt-4 text-muted">{h.finalText(site.trialDays)}</p>
+        <section className="border-t border-line">
+          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
+            <h2 className="max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link href="/registar" className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
+                {d.common.trialFree(site.trialDays)}
+              </Link>
+              <p className="text-[14px] text-muted">{h.finalText(site.trialDays)}</p>
             </div>
-            <Link href="/registar" className="btn btn-primary reveal min-h-[3.1rem] shrink-0 px-7">
-              {d.common.trialFree(site.trialDays)} <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
           </div>
         </section>
       </main>

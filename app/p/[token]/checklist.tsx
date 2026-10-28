@@ -58,7 +58,7 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
 
   return (
     <div>
-      <div className="flex items-center justify-between border-b border-ivory pb-2 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+      <div className="flex items-center justify-between border-b border-line pb-2 text-[12px] font-medium text-muted">
         <span>{t.progress.replace("{a}", String(handled)).replace("{b}", String(items.length))}</span>
         <span className="tabular-nums text-ivory">{pct}%</span>
       </div>
@@ -100,7 +100,7 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                 </span>
                 {!received && !sent && (
                   <span
-                    className={`shrink-0 rounded-[3px] border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                    className={`shrink-0 rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors ${
                       closed ? "border-line text-muted" : open ? "border-ivory bg-ivory text-ink" : "border-ivory"
                     }`}
                   >
@@ -124,7 +124,7 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                         key={c}
                         type="button"
                         onClick={() => save(i, true, c)}
-                        className="flex flex-col items-center gap-1.5 rounded-[3px] border border-line-strong px-2 py-3 text-xs font-medium transition hover:border-ivory active:bg-ink-3"
+                        className="flex flex-col items-center gap-1.5 rounded-lg border border-line-strong px-2 py-3 text-xs font-medium transition hover:border-ivory active:bg-ink-3"
                       >
                         <ChannelIcon via={c} className="h-5 w-5" />
                         {t.via[c]}

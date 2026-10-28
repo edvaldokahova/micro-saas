@@ -43,7 +43,7 @@ export function AppNav({ labels, show }: { labels: Labels; show: Key[] }) {
 export function AppTabBar({ labels, show }: { labels: Labels; show: Key[] }) {
   const path = usePathname();
   return (
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ivory/80 bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${show.length}, minmax(0, 1fr))` }}>
           {items.filter((x) => show.includes(x.key)).map(({ href, key, icon: Icon }) => {
             const active = isActive(path, href);

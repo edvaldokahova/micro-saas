@@ -1,54 +1,54 @@
 <!-- Supabase > Authentication > Emails > Reset password
-     Assunto: Bilonai Entrega · Recuperar acesso / Recuperar acceso
+     Assunto: Bilonai · Recuperar acesso / Recuperar acceso
      O logotipo vem de https://entrega.bilonai.com/email/logo-entrega.png (o Gmail não mostra SVG, por isso usamos PNG). -->
 <!doctype html>
 <html lang="pt">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>Bilonai Entrega</title></head>
-<body style="margin:0;padding:0;background:#f3f0e8;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f0e8" style="background:#f3f0e8;">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>Bilonai</title></head>
+<body style="margin:0;padding:0;background:#f7f7f8;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f7f7f8" style="background:#f7f7f8;">
   <tr><td align="center" style="padding:40px 16px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
       <tr><td style="padding:0 4px 24px;">
-        <img src="https://entrega.bilonai.com/email/logo-entrega.png" width="198" height="24" alt="Bilonai Entrega" style="display:block;border:0;outline:none;width:198px;height:24px;">
+        <img src="https://entrega.bilonai.com/email/logo.png" width="127" height="24" alt="Bilonai" style="display:block;border:0;outline:none;width:127px;height:24px;">
       </td></tr>
-      <tr><td bgcolor="#fbfaf6" style="background:#fbfaf6;border:1px solid #dcd5c6;border-radius:4px;padding:36px 32px;">
-      <div style="height:3px;width:100%;border-top:1px solid #bfb6a3;border-bottom:1px solid #bfb6a3;margin:0 0 28px;line-height:1px;font-size:0;">&nbsp;</div>
+      <tr><td bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e2e3e7;border-radius:16px;padding:36px 32px;">
+      <div style="height:3px;width:100%;border-top:1px solid #c7c9cf;border-bottom:1px solid #c7c9cf;margin:0 0 28px;line-height:1px;font-size:0;">&nbsp;</div>
       {{ if eq .Data.locale "es-ES" }}
-      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupera el acceso a Bilonai Entrega.</div>
-      <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:34px;font-weight:400;color:#16171a;letter-spacing:-.3px;">Recuperar acceso</h1>
-      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#3b3c40;">Hemos recibido una solicitud para recuperar el acceso a tu cuenta. Pulsa el botón para entrar.</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#16171a" style="border-radius:3px;background:#16171a;">
-        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f3f0e8;text-decoration:none;border-radius:3px;">Recuperar acceso &rarr;</a>
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupera el acceso a Bilonai.</div>
+      <h1 style="margin:0 0 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;line-height:32px;font-weight:600;color:#121316;letter-spacing:-.3px;">Recuperar acceso</h1>
+      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#2f3136;">Hemos recibido una solicitud para recuperar el acceso a tu cuenta. Pulsa el botón para entrar.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
+        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Recuperar acceso</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#6f6a60;">El enlace caduca en 1 hora y solo funciona una vez.</p>
-      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Si el botón no funciona, copia esta dirección en el navegador:</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">El enlace caduca en 1 hora y solo funciona una vez.</p>
+      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Si el botón no funciona, copia esta dirección en el navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="color:#8a6a1f;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery</a></p>
-      <p style="margin:0;padding-top:20px;border-top:1px solid #dcd5c6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Si no has hecho esta solicitud, ignora este correo.</p>
+      <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Si no has hecho esta solicitud, ignora este correo.</p>
       {{ else if eq .Data.locale "pt-BR" }}
-      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupere o acesso ao Bilonai Entrega.</div>
-      <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:34px;font-weight:400;color:#16171a;letter-spacing:-.3px;">Recuperar acesso</h1>
-      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#3b3c40;">Recebemos um pedido para recuperar o acesso à sua conta. Clique no botão para entrar.</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#16171a" style="border-radius:3px;background:#16171a;">
-        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f3f0e8;text-decoration:none;border-radius:3px;">Recuperar acesso &rarr;</a>
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupere o acesso ao Bilonai.</div>
+      <h1 style="margin:0 0 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;line-height:32px;font-weight:600;color:#121316;letter-spacing:-.3px;">Recuperar acesso</h1>
+      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#2f3136;">Recebemos um pedido para recuperar o acesso à sua conta. Clique no botão para entrar.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
+        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Recuperar acesso</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#6f6a60;">O link expira em 1 hora e só funciona uma vez.</p>
-      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Se o botão não funcionar, copie este endereço no navegador:</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link expira em 1 hora e só funciona uma vez.</p>
+      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se o botão não funcionar, copie este endereço no navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="color:#8a6a1f;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery</a></p>
-      <p style="margin:0;padding-top:20px;border-top:1px solid #dcd5c6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Se você não fez este pedido, ignore este e-mail.</p>
+      <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se você não fez este pedido, ignore este e-mail.</p>
       {{ else }}
-      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupere o acesso ao Bilonai Entrega.</div>
-      <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:34px;font-weight:400;color:#16171a;letter-spacing:-.3px;">Recuperar acesso</h1>
-      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#3b3c40;">Recebemos um pedido para recuperar o acesso à sua conta. Carregue no botão para entrar.</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#16171a" style="border-radius:3px;background:#16171a;">
-        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f3f0e8;text-decoration:none;border-radius:3px;">Recuperar acesso &rarr;</a>
+      <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Recupere o acesso ao Bilonai.</div>
+      <h1 style="margin:0 0 12px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:26px;line-height:32px;font-weight:600;color:#121316;letter-spacing:-.3px;">Recuperar acesso</h1>
+      <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#2f3136;">Recebemos um pedido para recuperar o acesso à sua conta. Carregue no botão para entrar.</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
+        <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Recuperar acesso</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#6f6a60;">O link expira em 1 hora e só funciona uma vez.</p>
-      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Se o botão não funcionar, copie este endereço para o navegador:</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link expira em 1 hora e só funciona uma vez.</p>
+      <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se o botão não funcionar, copie este endereço para o navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery" style="color:#8a6a1f;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery</a></p>
-      <p style="margin:0;padding-top:20px;border-top:1px solid #dcd5c6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6a60;">Se não fez este pedido, ignore este e-mail.</p>
+      <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se não fez este pedido, ignore este e-mail.</p>
       {{ end }}
       </td></tr>
-      <tr><td align="center" style="padding:24px 8px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:20px;color:#6f6a60;">
+      <tr><td align="center" style="padding:24px 8px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:20px;color:#60636b;">
       {{ if eq .Data.locale "es-ES" }}
       ¿Necesitas ayuda? <a href="mailto:suporte@bilonai.com" style="color:#8a6a1f;text-decoration:none;">suporte@bilonai.com</a>
       {{ else if eq .Data.locale "pt-BR" }}
@@ -56,7 +56,7 @@
       {{ else }}
       Precisa de ajuda? <a href="mailto:suporte@bilonai.com" style="color:#8a6a1f;text-decoration:none;">suporte@bilonai.com</a>
       {{ end }}<br>
-        A Bilonai Group &middot; <a href="https://entrega.bilonai.com" style="color:#6f6a60;text-decoration:none;">entrega.bilonai.com</a>
+        A Bilonai Group &middot; <a href="https://entrega.bilonai.com" style="color:#60636b;text-decoration:none;">entrega.bilonai.com</a>
       </td></tr>
     </table>
   </td></tr>

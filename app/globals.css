@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
-/* Identidade "livro-razão" do Bilonai Entrega.
-   Papel e tinta, latão usado com parcimónia, réguas finas e o duplo traço dos totais.
-   Os nomes dos tokens são semânticos e mantêm-se: ink = fundo, ivory = texto, gold = latão (acento).
-   O papel (claro) é o tema por omissão; o escuro existe por escolha explícita. */
+/* Identidade do Bilonai.
+   Branco frio e tinta quase preta, uma só família de letra (Instrument Sans, mais estreita nos títulos)
+   e o dourado do logótipo usado só para o que pede atenção. Cantos arredondados conforme a hierarquia:
+   botões em pílula, campos 10 px, superfícies 14 px, o ecrã do produto 28 px.
+   Os nomes dos tokens são semânticos e mantêm-se: ink = fundo, ivory = texto, gold = acento. */
 @theme {
-  --color-ink: #f3f0e8;
-  --color-ink-2: #fbfaf6;
-  --color-ink-3: #e9e4d8;
-  --color-line: #dcd5c6;
-  --color-line-strong: #bfb6a3;
-  --color-ivory: #16171a;
-  --color-muted: #6f6a60;
+  --color-ink: #f7f7f8;
+  --color-ink-2: #ffffff;
+  --color-ink-3: #eeeff1;
+  --color-line: #e2e3e7;
+  --color-line-strong: #c7c9cf;
+  --color-ivory: #121316;
+  --color-muted: #60636b;
   --color-gold: #8a6a1f;
   --color-gold-2: #6d5316;
-  --color-ok: #2e6a4e;
+  --color-ok: #1e7a52;
   --color-warn: #9a6114;
-  --color-bad: #9b2c26;
-  --color-on-accent: #f3f0e8;
-  --color-accent: #16171a;
+  --color-bad: #b4352b;
+  --color-on-accent: #ffffff;
+  --color-accent: #121316;
 
-  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-news), Georgia, ui-serif, serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
 
-  /* Cantos quase retos: precisão, não "app de brincar" */
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 3px;
-  --radius-xl: 4px;
-  --radius-2xl: 5px;
-  --radius-3xl: 6px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --radius-3xl: 24px;
 
   --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-fade: fade 0.5s ease both;
@@ -40,23 +40,22 @@
   color-scheme: light;
 }
 
-/* Tinta: o mesmo sistema em fundo escuro */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --color-ink: #0f1012;
-  --color-ink-2: #17181b;
-  --color-ink-3: #212226;
-  --color-line: #2b2c30;
-  --color-line-strong: #3d3e43;
-  --color-ivory: #ebe7dd;
-  --color-muted: #8f8a7f;
-  --color-gold: #c9a65c;
-  --color-gold-2: #a8853f;
-  --color-ok: #74b493;
-  --color-warn: #d6a04c;
-  --color-bad: #de6d61;
-  --color-on-accent: #0f1012;
-  --color-accent: #ebe7dd;
+  --color-ink: #101114;
+  --color-ink-2: #17181c;
+  --color-ink-3: #1f2025;
+  --color-line: #2a2b31;
+  --color-line-strong: #3b3d44;
+  --color-ivory: #f1f1f3;
+  --color-muted: #969aa3;
+  --color-gold: #d2b061;
+  --color-gold-2: #b8954a;
+  --color-ok: #5cc493;
+  --color-warn: #e0a24f;
+  --color-bad: #ef7064;
+  --color-on-accent: #101114;
+  --color-accent: #f1f1f3;
 }
 
 body {
@@ -64,7 +63,7 @@ body {
   color: var(--color-ivory);
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "ss01";
+  text-rendering: optimizeLegibility;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -78,14 +77,16 @@ body {
 }
 
 @layer base {
+  /* Títulos: a mesma família, mais estreita e mais firme */
   .font-display {
-    font-weight: 400;
-    letter-spacing: -0.015em;
-    font-optical-sizing: auto;
+    font-weight: 600;
+    font-variation-settings: "wdth" 84;
+    letter-spacing: -0.028em;
   }
-  .font-display.font-semibold,
-  .font-display.font-bold {
-    font-weight: 500;
+  /* Números e datas: algarismos tabulares, sem letra de máquina */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
   }
 }
 
@@ -96,27 +97,24 @@ body {
     color: var(--color-gold);
   }
 
-  /* Etiquetas em mono, como as colunas de um livro de registo */
+  /* Etiquetas pequenas: texto normal, sem maiúsculas */
   .eyebrow,
   .mono-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0;
     color: var(--color-muted);
   }
-  /* Números de totais: serifa com algarismos tabulares */
+  /* Números grandes: estreitos e tabulares */
   .figure {
-    font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 600;
+    font-variation-settings: "wdth" 84;
     font-variant-numeric: tabular-nums lining-nums;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.03em;
     line-height: 1.05;
   }
-  /* O duplo traço dos totais contabilísticos */
   .double-rule {
-    border-bottom: 3px double var(--color-line-strong);
+    border-bottom: 1px solid var(--color-line);
   }
   .ink-rule {
     border-top: 1px solid var(--color-ivory);
@@ -129,9 +127,9 @@ body {
     justify-content: center;
     gap: 0.5rem;
     min-height: 2.75rem;
-    border-radius: 3px;
+    border-radius: 999px;
     border: 1px solid transparent;
-    padding: 0.65rem 1.2rem;
+    padding: 0.65rem 1.25rem;
     font-weight: 500;
     font-size: 0.92rem;
     line-height: 1.2;
@@ -139,7 +137,7 @@ body {
     white-space: nowrap;
   }
   .btn:active {
-    transform: translateY(1px);
+    transform: scale(0.98);
   }
   .btn:disabled {
     opacity: 0.5;
@@ -152,11 +150,11 @@ body {
   }
   .btn-primary:hover,
   .btn-whatsapp:hover {
-    background: color-mix(in oklab, var(--color-accent) 86%, var(--color-gold));
+    background: color-mix(in oklab, var(--color-accent) 84%, var(--color-ink));
   }
   .btn-secondary {
     border-color: var(--color-line-strong);
-    background: transparent;
+    background: var(--color-ink-2);
     color: var(--color-ivory);
   }
   .btn-secondary:hover {
@@ -168,21 +166,21 @@ body {
     font-size: 0.82rem;
   }
 
-  /* Superfícies: folhas de papel, sem sombras decorativas */
+  /* Superfícies: brancas, contorno fino, sem sombra (a sombra fica só para o ecrã do produto) */
   .card {
     border: 1px solid var(--color-line);
     background: var(--color-ink-2);
-    border-radius: 4px;
+    border-radius: 14px;
   }
   .sheet-shadow {
-    box-shadow: 0 40px 70px -50px rgba(40, 30, 10, 0.45);
+    box-shadow: 0 1px 0 rgba(18, 19, 22, 0.04), 0 30px 80px -30px rgba(18, 19, 22, 0.28);
   }
   :root[data-theme="dark"] .sheet-shadow {
-    box-shadow: 0 40px 70px -50px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
   }
   .field {
     width: 100%;
-    border-radius: 3px;
+    border-radius: 10px;
     border: 1px solid var(--color-line-strong);
     background: var(--color-ink-2);
     padding: 0.7rem 0.85rem;
@@ -195,7 +193,7 @@ body {
   }
   .field:focus {
     border-color: var(--color-ivory);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-gold) 18%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ivory) 10%, transparent);
   }
   .label {
     display: block;
@@ -406,4 +404,9 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+/* A máscara de cada linha deixa espaço para as descendentes (g, p, q) */
+.hero-line-mask {
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
 }

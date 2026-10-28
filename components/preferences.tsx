@@ -104,7 +104,7 @@ export function ThemeToggle({ labels }: { labels: { light: string; dark: string 
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="grid h-9 w-9 place-items-center rounded-[3px] border border-line text-muted transition hover:border-line-strong hover:text-ivory"
+      className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
     >
       {theme === "light" ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
     </button>

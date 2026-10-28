@@ -1,4 +1,4 @@
-// Marcas de documento: o sistema de ícones próprio do Bilonai Entrega.
+// Marcas de documento: o sistema de ícones próprio do Bilonai.
 // □ em falta · ◪ enviado pelo cliente (por confirmar) · ■✓ recebido
 // Desenhadas numa grelha de 14 px, com cantos quase retos, como as caixas de um livro de registo.
 export type DocState = "pending" | "sent" | "received";

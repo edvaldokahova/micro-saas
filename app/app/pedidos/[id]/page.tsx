@@ -91,7 +91,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
         </div>
       </div>
 
-      <div className="double-rule mt-6 flex items-center gap-3 border-t border-ivory py-3">
+      <div className="double-rule mt-6 flex items-center gap-3 border-t border-line py-3">
         <DocStrip states={orderStates(items.map((i) => i.status))} label={d.app.dashboard.docsOf(req.received_items, req.total_items)} />
         <span className="font-mono text-[11px] text-muted tabular-nums">{pct}%</span>
       </div>
@@ -125,7 +125,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       )}
 
       {/* Documentos */}
-      <ul className="mt-8 border-t border-ivory">
+      <ul className="mt-8 border-t border-line">
         {items.map((i) => (
           <li key={i.id} className="flex flex-wrap items-center gap-3 border-b border-line py-3.5">
             <DocMark state={i.status} className="h-4 w-4" />

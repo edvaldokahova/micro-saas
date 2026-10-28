@@ -139,7 +139,7 @@ export function Select({
       >
         <span className={`min-w-0 truncate ${current ? "" : "text-muted/80"}`}>
           {current ? current.label : placeholder}
-          {current?.hint && <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">{current.hint}</span>}
+          {current?.hint && <span className="ml-2 text-[12px] font-medium text-muted">{current.hint}</span>}
         </span>
         <svg viewBox="0 0 20 20" className={`h-4 w-4 shrink-0 text-muted transition ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
           <path d="M5.5 8l4.5 4.5L14.5 8" />
@@ -149,7 +149,7 @@ export function Select({
       {open && (
         <div
           style={{ animationDuration: "140ms" }}
-          className={`absolute inset-x-0 z-40 animate-fade border border-ivory bg-ink-2 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.35)] ${up ? "bottom-full mb-1" : "top-full mt-1"}`}
+          className={`absolute inset-x-0 z-40 animate-fade overflow-hidden rounded-xl border border-line-strong bg-ink-2 shadow-[0_16px_40px_-16px_rgba(18,19,22,0.3)] ${up ? "bottom-full mb-1" : "top-full mt-1"}`}
         >
           {searchable && (
             <div className="border-b border-line p-2">
@@ -184,7 +184,7 @@ export function Select({
                 >
                   <span className="min-w-0 truncate">
                     {o.label}
-                    {o.hint && <span className="ml-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">{o.hint}</span>}
+                    {o.hint && <span className="ml-2 text-[12px] font-medium text-muted">{o.hint}</span>}
                   </span>
                   {selected && <IconTick className="h-4 w-4 shrink-0 text-gold" />}
                 </li>

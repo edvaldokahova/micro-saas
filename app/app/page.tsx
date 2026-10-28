@@ -167,7 +167,7 @@ export default async function Painel({
       </div>
 
       {activeClients === 0 && rows.length === 0 ? (
-        <div className="mt-10 animate-rise border-t border-ivory py-14 text-center">
+        <div className="mt-10 animate-rise border-t border-line py-14 text-center">
           <DocStrip states={["pending", "pending", "pending"]} className="justify-center" />
           <h2 className="mt-5 font-display text-2xl">{t.noClientsTitle}</h2>
           <p className="mx-auto mt-2 max-w-sm text-muted">{t.noClientsText}</p>
@@ -195,7 +195,7 @@ export default async function Painel({
           )}
 
           {/* Totais: régua de tinta em cima, duplo traço em baixo (os números também são filtros) */}
-          <dl className="double-rule mt-8 grid grid-cols-2 border-t border-ivory lg:grid-cols-4">
+          <dl className="double-rule mt-8 grid grid-cols-2 border-t border-line lg:grid-cols-4">
             {stats.map((s, i) => {
               const active = Boolean(s.f && filter === s.f);
               return (
@@ -290,7 +290,7 @@ export default async function Painel({
                 <ListSearch listId="lista-pedidos" placeholder={d.common.searchClient} emptyText={d.common.noResults} />
               </div>
             )}
-            <ul id="lista-pedidos" className={`border-t border-ivory ${rows.length >= 8 ? "mt-4" : "mt-8"}`}>
+            <ul id="lista-pedidos" className={`border-t border-line ${rows.length >= 8 ? "mt-4" : "mt-8"}`}>
               {rows.map((r, i) => {
                 const done = isComplete(r);
                 const st = state.get(r.id)!;

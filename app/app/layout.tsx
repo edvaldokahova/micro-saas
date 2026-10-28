@@ -51,7 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
             <form action={signOut}>
               <button
-                className="grid h-9 w-9 place-items-center rounded-[3px] border border-line text-muted transition hover:border-line-strong hover:text-ivory"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
                 aria-label={d.common.signOut}
                 title={d.common.signOut}
               >
@@ -64,7 +64,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       {banner && (
         <div className={`border-b ${banner.tone}`}>
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-5 py-2 font-mono text-[11.5px] uppercase tracking-[0.06em]">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-5 py-2 text-[12px] font-medium">
             <span>{banner.text}</span>
             {role === "owner" && (
               <Link href="/app/assinatura" className="underline decoration-line-strong underline-offset-4 hover:decoration-current">
