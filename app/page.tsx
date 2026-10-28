@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { IconTick } from "@/components/icons";
 import { HeroIntro } from "@/components/hero-intro";
-import { ScrollStory, type StoryTexts } from "@/components/scroll-story";
+import { PageMotion } from "@/components/page-motion";
+import { LaptopStory, type LaptopTexts } from "@/components/story/laptop-story";
+import { PhoneStory, type PhoneStoryTexts } from "@/components/story/phone-story";
 import { IntervalToggle } from "@/components/interval-toggle";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { fill, formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
+import { fill, formatDate, formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site, type PlanKey } from "@/lib/site";
 
@@ -55,69 +57,93 @@ export default async function Home() {
   const dl = d.common.deadline;
   const brl = localeMeta[locale].currency === "BRL";
 
-  // "Como funciona": o próprio painel, com dados fictícios, controlado pelo scroll
+  // "Como funciona": o painel no portátil e a página do cliente no iPhone (dados fictícios)
   const clients = [...h.mock.clients, ...h.story.extraClients];
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
   const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
-  const story: StoryTexts = {
+  const message = (cliente: string, docs: string[]) =>
+    fill(d.app.whatsappTemplate, { cliente, periodo: period, lista: docs.map((l) => `• ${l}`).join("\n"), link, escritorio: h.demo.office });
+  const laptop: LaptopTexts = {
     title: h.story.title,
     lead: h.story.lead,
     note: h.mockNote,
-    office: h.demo.office,
     chapters: h.story.chapters,
-    clients,
-    phones: [...demoContacts[locale].map((c) => c.phone), ...tourPhones[locale]],
-    docs: h.demo.docs,
-    member: h.story.member,
-    ui: {
-      nav: d.app.nav,
-      periodEyebrow: d.app.dashboard.periodEyebrow,
-      month: h.mock.month,
-      createAll: d.app.dashboard.createAll(5),
-      createHint: d.app.dashboard.createAllHint,
-      create: d.app.request.create,
-      remind: h.mock.remind,
-      reminded: d.app.dashboard.reminders(1),
-      pending: dl.pending,
-      late: dl.lateBy(3),
-      awaiting: d.app.dashboard.awaiting(1),
-      delivered: dl.delivered,
-      showDocs: d.app.dashboard.showDocs,
-      confirm: d.app.dashboard.confirm,
-      docStatus: d.app.request.status,
-      to: h.story.to,
-      send: h.story.send,
-      message: fill(d.app.whatsappTemplate, {
-        cliente: clients[0],
-        periodo: period,
-        lista: h.demo.docs.slice(1).map((l) => `• ${l}`).join("\n"),
-        link,
-        escritorio: h.demo.office,
-      }),
-      via: d.common.via.whatsapp,
-      clientsTitle: d.app.clients.title,
-      archive: d.app.clients.archive,
-      archived: d.app.clients.archived,
-      unarchive: d.app.clients.unarchive,
-      settingsTitle: d.app.settings.title,
-      teamTitle: d.app.team.title,
-      add: d.app.team.add,
-      name: d.app.team.name,
-      email: d.app.team.email,
-      access: d.app.team.access,
-      status: d.app.team.status,
-      invitedFlash: d.app.team.invited(h.story.member.email),
+    desk: {
+      office: h.demo.office,
+      clients,
+      phones: [...demoContacts[locale].map((c) => c.phone), ...tourPhones[locale]],
+      docs: h.demo.docs,
+      member: h.story.member,
+      ui: {
+        nav: d.app.nav,
+        periodEyebrow: d.app.dashboard.periodEyebrow,
+        month: h.mock.month,
+        collected: d.app.dashboard.collectedIn(locale === "es-ES" ? "octubre de 2026" : "outubro de 2026"),
+        newRequest: d.app.request.newTitle,
+        stats: { requests: d.app.dashboard.statRequests, delivered: d.app.dashboard.statComplete, pending: d.app.dashboard.statMissing, late: d.app.dashboard.statLate },
+        createAll: d.app.dashboard.createAll(5),
+        createHint: d.app.dashboard.createAllHint,
+        create: d.app.request.create,
+        remind: d.app.remind,
+        reminded: d.app.dashboard.reminders(1),
+        copy: d.common.copy,
+        pending: dl.pending,
+        late: dl.lateBy(3),
+        awaiting: d.app.dashboard.awaiting(1),
+        delivered: dl.delivered,
+        showDocs: d.app.dashboard.showDocs,
+        confirm: d.app.dashboard.confirm,
+        docStatus: d.app.request.status,
+        to: h.story.to,
+        send: h.story.send,
+        message: message(clients[0], h.demo.docs.slice(1)),
+        via: d.common.via.whatsapp,
+        clientsTitle: d.app.clients.title,
+        clientsCount: d.app.clients.count(6, site.plans.office.clientLimit),
+        addClient: d.app.clients.add,
+        name: d.app.clients.name,
+        phone: d.app.clients.phone,
+        archive: d.app.clients.archive,
+        archived: d.app.clients.archived,
+        unarchive: d.app.clients.unarchive,
+        settingsTitle: d.app.settings.title,
+        officeTitle: d.app.settings.office,
+        teamTitle: d.app.team.title,
+        teamHint: d.app.team.inviteHint,
+        add: d.app.team.add,
+        email: d.app.team.email,
+        accessLabel: d.app.team.accessLabel,
+        access: d.app.team.access,
+        accessHint: d.app.team.accessHint,
+        status: d.app.team.status,
+        invitedFlash: d.app.team.invited(h.story.member.email),
+      },
     },
-    client: {
-      link: link.replace(/\/p\/.*/, "/p/q4hf…"),
+  };
+  const phone: PhoneStoryTexts = {
+    title: h.story.phone.title,
+    lead: h.story.phone.lead,
+    chapters: h.story.phone.chapters,
+    phone: {
+      office: h.demo.office,
+      client: clients[1],
+      preview: message(clients[1], h.demo.docs.slice(2)),
+      via: d.common.via.whatsapp,
+      now: h.story.phone.now,
+      date: h.story.phone.date,
+      link: "entrega.bilonai.com",
       hello: d.public.hello(clients[1]),
       intro: d.public.intro(h.demo.office, period),
+      due: d.public.due(formatDate("2026-10-30", locale, false)),
+      progress: [d.public.progress(2, 3), d.public.progress(3, 3)],
+      docs: h.demo.docs,
       markSent: d.public.markSent,
       howSent: d.public.howSent,
       vias: { whatsapp: d.common.via.whatsapp, email: d.common.via.email },
       sentVia: d.common.sentVia(d.common.via.email),
       received: d.public.received,
       pending: d.public.pending,
+      thanks: h.story.phone.thanks,
     },
   };
 
@@ -129,7 +155,7 @@ export default async function Home() {
         <section>
           <HeroIntro>
             <div className="mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
-              <h1 data-hero-title className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] leading-[0.93] tracking-[-0.045em]">
+              <h1 data-hero-title data-parallax="0.35" className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] leading-[0.93] tracking-[-0.045em]">
                 {h.title}
               </h1>
               <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
@@ -137,7 +163,7 @@ export default async function Home() {
                   {h.lead}
                 </p>
                 <div data-hero-rest className="flex flex-col items-start gap-3 md:items-end">
-                  <Link href="/registar" className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
+                  <Link href="/registar" data-magnetic className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
                     {d.common.trialFree(site.trialDays)}
                   </Link>
                   <p className="text-[13.5px] text-muted">{d.common.noCard}</p>
@@ -147,13 +173,23 @@ export default async function Home() {
           </HeroIntro>
         </section>
 
-        <ScrollStory t={story} />
+        {/* O problema, numa frase que acende à medida que se desce */}
+        <section>
+          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
+            <p data-scrub className="max-w-[24ch] font-display text-[clamp(2rem,5.2vw,4.3rem)] leading-[1.06] tracking-[-0.035em]">
+              {h.statement}
+            </p>
+          </div>
+        </section>
+
+        <LaptopStory t={laptop} />
+        <PhoneStory t={phone} />
 
         {/* Preços */}
         <section id="precos" className="scroll-mt-16 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">
-            <h2 className="max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
-            <p className="mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
+            <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
+            <p data-split="lines" className="mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
             <IntervalToggle className="mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 {plans.map((key) => {
@@ -209,7 +245,7 @@ export default async function Home() {
         {/* Perguntas */}
         <section className="border-t border-line">
           <div className="mx-auto grid max-w-6xl gap-10 px-5 py-28 sm:py-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
-            <h2 className="font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.faqTitle}</h2>
+            <h2 data-split="chars" className="font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.faqTitle}</h2>
             <div>
               <div className="divide-y divide-line border-y border-line">
                 {h.faq(site.trialDays).map((f) => (
@@ -238,9 +274,9 @@ export default async function Home() {
         {/* Chamada final */}
         <section className="border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
-            <h2 className="max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
+            <h2 data-split="chars" className="max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/registar" className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
+              <Link href="/registar" data-magnetic className="btn btn-primary min-h-[3.25rem] px-7 text-[15px]">
                 {d.common.trialFree(site.trialDays)}
               </Link>
               <p className="text-[14px] text-muted">{h.finalText(site.trialDays)}</p>
@@ -249,6 +285,7 @@ export default async function Home() {
         </section>
       </main>
       <SiteFooter />
+      <PageMotion />
     </>
   );
 }

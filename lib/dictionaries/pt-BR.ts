@@ -86,12 +86,12 @@ const dict: Dictionary = {
       toast: "Cobrança enviada pelo WhatsApp",
       confirmed: "Documentos confirmados",
     },
+    statement: "Todo mês, a mesma lista de documentos, as mesmas mensagens e os mesmos clientes atrasados. O Bilonai cuida dessa parte e devolve seu tempo para a contabilidade.",
     story: {
       title: "Um mês de coleta, da primeira solicitação ao último documento.",
       lead: "Continue descendo: o cursor faz cada tarefa no próprio painel. Quando criar a conta, você já sabe onde clicar.",
       chapters: [
         { title: "Criar as solicitações do mês", text: "Um clique cria a solicitação de cada cliente, com a lista de documentos do período anterior." },
-        { title: "O cliente abre o link", text: "Abre no celular sem criar conta, vê o que falta e marca o que já enviou." },
         { title: "Cobrar quem está atrasado", text: "A mensagem sai pronta, com o que falta e o link. Você revisa e envia pelo WhatsApp ou e-mail." },
         { title: "Conferir o que chegou", text: "Quando o documento chega, você confirma com um clique e o cliente passa para entregue." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai das solicitações e do limite do plano. O histórico fica guardado e reativar é um clique." },
@@ -100,6 +100,18 @@ const dict: Dictionary = {
       extraClients: ["Bar do Largo", "Ferreira & Filhos Ltda."],
       member: { name: "Rita Lopes", email: "rita@escritorio.com.br", existing: "João Matos" },
       to: "Para",
+      phone: {
+        title: "Para o cliente, é um link e dois toques.",
+        lead: "Sem conta nem aplicativo: abre no celular, marca o que enviou e o seu painel se atualiza.",
+        chapters: [
+          { title: "Recebe a mensagem", text: "Do seu WhatsApp ou e-mail, com a lista do que falta e o link." },
+          { title: "Abre o link", text: "Vê o nome do escritório, o prazo e cada documento pedido." },
+          { title: "Marca o que enviou", text: "Diz por onde enviou. No seu painel, o documento fica para conferir." },
+        ],
+        date: "quarta-feira, 21 de outubro",
+        now: "agora",
+        thanks: "Obrigado. O escritório já foi avisado.",
+      },
       send: "Enviar",
     },
     mockNote: "Exemplo ilustrativo com dados fictícios.",

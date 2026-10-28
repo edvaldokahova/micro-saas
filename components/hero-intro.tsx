@@ -1,7 +1,7 @@
 "use client";
 
-// O único momento orquestrado ao carregar a página: o título sobe linha a linha por trás de uma
-// máscara (SplitText), e o texto e o botão aparecem logo a seguir. Com "reduzir movimento" não anima.
+// Abertura da página: cada letra do título sobe e endireita-se por trás da máscara da linha (SplitText),
+// e o texto e o botão aparecem logo a seguir. Com "reduzir movimento" não anima.
 // Sem JavaScript o título fica visível (a regra de CSS volta a mostrá-lo ao fim de 2 s).
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -23,7 +23,7 @@ export function HeroIntro({ children }: { children: React.ReactNode }) {
       let split: SplitText | undefined;
       document.fonts.ready.then(() => {
         split = SplitText.create(title, {
-          type: "lines,words",
+          type: "lines,words,chars",
           mask: "lines",
           linesClass: "hero-line",
           autoSplit: true,
@@ -31,7 +31,7 @@ export function HeroIntro({ children }: { children: React.ReactNode }) {
             gsap.set(title, { autoAlpha: 1 });
             return gsap
               .timeline()
-              .from(self.words, { yPercent: 110, duration: 1.1, ease: "expo.out", stagger: 0.045 })
+              .from(self.chars, { yPercent: 120, rotationX: -80, transformPerspective: 700, transformOrigin: "50% 100%", opacity: 0, duration: 1.25, ease: "expo.out", stagger: 0.022 })
               .from(rest, { autoAlpha: 0, y: 14, duration: 0.8, ease: "power3.out", stagger: 0.08 }, "-=0.75");
           },
         });

@@ -2,7 +2,7 @@
 
 /* Identidade do Bilonai.
    Branco frio e tinta quase preta, uma só família de letra (Instrument Sans, mais estreita nos títulos)
-   e o dourado do logótipo usado só para o que pede atenção. Cantos arredondados conforme a hierarquia:
+   e um azul sóbrio só para o que pede atenção (documentos por confirmar, foco). Cantos arredondados conforme a hierarquia:
    botões em pílula, campos 10 px, superfícies 14 px, o ecrã do produto 28 px.
    Os nomes dos tokens são semânticos e mantêm-se: ink = fundo, ivory = texto, gold = acento. */
 @theme {
@@ -13,8 +13,8 @@
   --color-line-strong: #c7c9cf;
   --color-ivory: #121316;
   --color-muted: #60636b;
-  --color-gold: #8a6a1f;
-  --color-gold-2: #6d5316;
+  --color-gold: #2f5bea;
+  --color-gold-2: #2248c9;
   --color-ok: #1e7a52;
   --color-warn: #9a6114;
   --color-bad: #b4352b;
@@ -49,8 +49,8 @@
   --color-line-strong: #3b3d44;
   --color-ivory: #f1f1f3;
   --color-muted: #969aa3;
-  --color-gold: #d2b061;
-  --color-gold-2: #b8954a;
+  --color-gold: #7ea2ff;
+  --color-gold-2: #6489f0;
   --color-ok: #5cc493;
   --color-warn: #e0a24f;
   --color-bad: #ef7064;
@@ -406,7 +406,8 @@ body {
   }
 }
 /* A máscara de cada linha deixa espaço para as descendentes (g, p, q) */
-.hero-line-mask {
+.hero-line-mask,
+.split-line-mask {
   padding-bottom: 0.12em;
   margin-bottom: -0.12em;
 }

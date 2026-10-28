@@ -87,12 +87,12 @@ const dict: Dictionary = {
       toast: "Recordatorio enviado por WhatsApp",
       confirmed: "Documentos confirmados",
     },
+    statement: "Cada trimestre, la misma lista de documentos, los mismos mensajes y los mismos clientes con retraso. Bilonai se encarga de esa parte y te devuelve tiempo para la contabilidad.",
     story: {
       title: "Un periodo de recogida, de la primera solicitud al último documento.",
       lead: "Sigue bajando: el cursor hace cada tarea en el propio panel. Cuando crees la cuenta, ya sabrás dónde hacer clic.",
       chapters: [
         { title: "Crear las solicitudes del periodo", text: "Un clic crea la solicitud de cada cliente, con la lista de documentos del periodo anterior." },
-        { title: "El cliente abre el enlace", text: "Lo abre en el móvil sin crear cuenta, ve lo que falta y marca lo que ya ha enviado." },
         { title: "Recordar a quien va con retraso", text: "El mensaje sale listo, con lo que falta y el enlace. Lo revisas y lo envías desde tu correo o WhatsApp." },
         { title: "Confirmar lo que ha llegado", text: "Cuando el documento llega, lo confirmas con un clic y el cliente pasa a entregado." },
         { title: "Archivar y reactivar un cliente", text: "Quien deja de ser cliente sale de las solicitudes y del límite del plan. El historial se conserva y reactivarlo es un clic." },
@@ -101,6 +101,18 @@ const dict: Dictionary = {
       extraClients: ["Bar La Plaza", "Ferretería Gómez, S.L."],
       member: { name: "Lucía Gómez", email: "lucia@asesoria.es", existing: "Javier Ruiz" },
       to: "Para",
+      phone: {
+        title: "Para el cliente, es un enlace y dos toques.",
+        lead: "Sin cuenta ni aplicación: lo abre en el móvil, marca lo que ha enviado y tu panel se actualiza.",
+        chapters: [
+          { title: "Recibe el mensaje", text: "Desde tu correo o WhatsApp, con la lista de lo que falta y el enlace." },
+          { title: "Abre el enlace", text: "Ve el nombre del despacho, el plazo y cada documento pedido." },
+          { title: "Marca lo que ha enviado", text: "Indica por dónde lo envió. En tu panel, el documento queda por confirmar." },
+        ],
+        date: "miércoles, 21 de octubre",
+        now: "ahora",
+        thanks: "Gracias. El despacho ya está avisado.",
+      },
       send: "Enviar",
     },
     mockNote: "Ejemplo ilustrativo con datos ficticios.",
