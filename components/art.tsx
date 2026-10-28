@@ -124,47 +124,59 @@ export function MonthArt({ month, due }: { month: string; due: number }) {
 
 /* ---------- A mensagem ao cliente ---------- */
 
-export function MessageArt({ office, text, link, reply }: { office: string; text: string; link: string; reply: string }) {
+export function MessageArt({ office, client, text, link, reply }: { office: string; client: string; text: string; link: string; reply: string }) {
   const ref = useLoop((el) => {
-    const q = (s: string) => el.querySelector(`[data-x='${s}']`);
+    const q = (k: string) => el.querySelector(`[data-x='${k}']`);
     const tl = gsap.timeline({ repeat: -1, repeatDelay: 1, defaults: { ease: "power3.out" } });
-    tl.set([q("msg"), q("reply"), q("ticks")], { autoAlpha: 0 })
-      .set(q("blue"), { autoAlpha: 0 })
-      .fromTo(q("typing"), { autoAlpha: 0, scale: 0.8, transformOrigin: "0% 100%" }, { autoAlpha: 1, scale: 1, duration: 0.4 })
+    tl.set([q("msg"), q("reply"), q("ticks"), q("blue")], { autoAlpha: 0 })
+      .fromTo(q("typing"), { autoAlpha: 0, scale: 0.8, transformOrigin: "100% 100%" }, { autoAlpha: 1, scale: 1, duration: 0.4 })
       .to(q("dots")?.children ?? [], { y: -3, duration: 0.3, stagger: 0.12, repeat: 3, yoyo: true, ease: "sine.inOut" })
       .to(q("typing"), { autoAlpha: 0, scale: 0.9, duration: 0.2 })
-      .fromTo(q("msg"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "0% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "<")
+      .fromTo(q("msg"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "100% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "<")
       .to(q("ticks"), { autoAlpha: 1, duration: 0.3 }, "+=0.3")
       .to(q("blue"), { autoAlpha: 1, duration: 0.3 }, "+=0.8")
-      .fromTo(q("reply"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "100% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "+=0.5")
+      .fromTo(q("reply"), { autoAlpha: 0, y: 14, scale: 0.96, transformOrigin: "0% 100%" }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, "+=0.5")
       .to([q("msg"), q("reply"), q("ticks"), q("blue")], { autoAlpha: 0, duration: 0.5, ease: "power2.in" }, "+=2.4");
     return tl;
   });
+  const initials = client.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   return (
-    <div ref={ref} className="relative h-[250px] w-[340px]" aria-hidden>
-      <div data-x="typing" className="absolute left-0 top-6 rounded-[20px] rounded-bl-[6px] bg-ink-3 px-4 py-3 opacity-0">
-        <span data-x="dots" className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="block h-2 w-2 rounded-full bg-muted" />
-          ))}
-        </span>
+    <div ref={ref} className="w-[330px] overflow-hidden rounded-[26px] border border-line bg-ink-2 shadow-[0_30px_60px_-34px_rgba(18,19,22,0.35)]" aria-hidden>
+      {/* Cabeçalho da conversa, visto do lado do escritório */}
+      <div className="flex items-center gap-3 border-b border-line px-4 py-3">
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-ink-3 text-[12.5px] font-semibold">{initials}</span>
+        <div className="min-w-0">
+          <p className="truncate text-[14px] font-semibold">{client}</p>
+        </div>
       </div>
-      <div data-x="msg" className="absolute left-0 top-6 w-[270px] rounded-[20px] rounded-bl-[6px] bg-ink-3 px-4 py-3 opacity-0">
-        <p className="text-[11.5px] font-semibold text-muted">{office}</p>
-        <p className="mt-1 line-clamp-2 text-[13.5px] leading-[1.4]">{text}</p>
-        <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-ink-2 px-2.5 py-1 text-[12px] text-gold">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 7l2-2M4.2 5.6L3 6.8a1.8 1.8 0 0 0 2.5 2.5l1.2-1.2M7.8 6.4L9 5.2a1.8 1.8 0 0 0-2.5-2.5L5.3 3.9" /></svg>
-          {link}
-        </span>
-        <span className="absolute -bottom-5 left-1 flex items-center text-[11px] text-muted">
-          <span data-x="ticks" className="relative opacity-0">
-            <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
-            <svg data-x="blue" width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="var(--color-gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 opacity-0"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
+      <div className="relative h-[190px] px-4">
+        <div data-x="typing" className="absolute right-4 top-5 rounded-[18px] rounded-br-[6px] bg-ivory px-4 py-3 opacity-0">
+          <span data-x="dots" className="flex gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="block h-2 w-2 rounded-full bg-ink/60" />
+            ))}
           </span>
-        </span>
+        </div>
+        <div data-x="msg" className="absolute right-4 top-5 w-[240px] rounded-[18px] rounded-br-[6px] bg-ivory px-3.5 py-3 text-ink opacity-0">
+          <p className="text-[11px] font-semibold opacity-60">{office}</p>
+          <p className="mt-1 line-clamp-2 text-[13px] leading-[1.4]">{text}</p>
+          <span className="mt-2 inline-flex max-w-full items-center gap-1.5 truncate rounded-full bg-ink/10 px-2.5 py-1 text-[11.5px]">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 7l2-2M4.2 5.6L3 6.8a1.8 1.8 0 0 0 2.5 2.5l1.2-1.2M7.8 6.4L9 5.2a1.8 1.8 0 0 0-2.5-2.5L5.3 3.9" /></svg>
+            <span className="truncate">{link}</span>
+          </span>
+          <span className="absolute -bottom-[18px] right-1 text-muted">
+            <span data-x="ticks" className="relative block opacity-0">
+              <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
+              <svg data-x="blue" width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="var(--color-gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="absolute inset-0 opacity-0"><path d="M1 5.5l2.6 2.6L9 2.5M7.5 7.8l.3.3L13.2 2.5" /></svg>
+            </span>
+          </span>
+        </div>
+        <div data-x="reply" className="absolute bottom-4 left-4 rounded-[18px] rounded-bl-[6px] bg-ink-3 px-4 py-2.5 text-[13px] opacity-0">
+          {reply}
+        </div>
       </div>
-      <div data-x="reply" className="absolute bottom-4 right-0 rounded-[20px] rounded-br-[6px] bg-ivory px-4 py-2.5 text-[13.5px] text-ink opacity-0">
-        {reply}
+      <div className="border-t border-line px-4 py-3">
+        <span className="block h-8 rounded-full bg-ink-3" />
       </div>
     </div>
   );

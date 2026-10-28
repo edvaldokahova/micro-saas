@@ -51,7 +51,7 @@ export function SubscribeButton({
         const paddle = await loadPaddle();
         paddle.Checkout.open({
           transactionId: res.transactionId,
-          settings: { successUrl: `${window.location.origin}/app/assinatura?ok=1`, locale },
+          settings: { successUrl: `${window.location.origin}/assinatura?ok=1`, locale },
         });
       } catch {
         setError(t.openError);

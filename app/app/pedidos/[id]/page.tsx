@@ -68,7 +68,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href={`/app?mes=${backMonth}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
+      <Link href={`/?mes=${backMonth}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
         <ArrowLeft className="h-4 w-4" aria-hidden /> {formatPeriod(`${backMonth}-01`, locale)}
       </Link>
 
@@ -76,7 +76,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
         <div>
           <p className="eyebrow">{periodLabel}</p>
           <h1 className="mt-2 font-display text-[2.4rem] leading-none">
-            <Link href={`/app/clientes/${req.client_id}`} className="underline-offset-4 hover:underline">
+            <Link href={`/clientes/${req.client_id}`} className="underline-offset-4 hover:underline">
               {req.client_name}
             </Link>
           </h1>

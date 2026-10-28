@@ -123,7 +123,7 @@ export default async function Home() {
     title: h.story.phone.title,
     lead: h.story.phone.lead,
     chapters: h.story.phone.chapters,
-    art: <MessageArt office={h.demo.office} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="entrega.bilonai.com/p/q4hf…" reply={d.public.markSent} />,
+    art: <MessageArt office={h.demo.office} client={clients[1]} text={message(clients[1], h.demo.docs.slice(2)).split("\n")[0]} link="entrega.bilonai.com/p/q4hf…" reply={d.public.markSent} />,
     phone: {
       office: h.demo.office,
       client: clients[1],

@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { IconBilling, IconClients, IconLedger, IconSettings } from "@/components/icons";
 
 const items = [
-  { href: "/app", key: "dashboard", icon: IconLedger },
-  { href: "/app/clientes", key: "clients", icon: IconClients },
-  { href: "/app/definicoes", key: "settings", icon: IconSettings },
-  { href: "/app/assinatura", key: "billing", icon: IconBilling },
+  { href: "/", key: "dashboard", icon: IconLedger },
+  { href: "/clientes", key: "clients", icon: IconClients },
+  { href: "/definicoes", key: "settings", icon: IconSettings },
+  { href: "/assinatura", key: "billing", icon: IconBilling },
 ] as const;
 
 type Labels = Record<(typeof items)[number]["key"], string>;
 
-function isActive(path: string, href: string) {
-  if (href === "/app") return path === "/app" || path.startsWith("/app/pedidos");
+// Funciona com o endereço curto (app.bilonai.com/clientes) e com a rota interna (/app/clientes)
+function isActive(raw: string, href: string) {
+  const path = raw.replace(/^\/app(?=\/|$)/, "") || "/";
+  if (href === "/") return path === "/" || path.startsWith("/pedidos");
   return path.startsWith(href);
 }
 

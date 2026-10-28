@@ -109,7 +109,7 @@ const dict: Dictionary = {
           { title: "Abre el enlace", text: "Ve el nombre del despacho, el plazo y cada documento pedido." },
           { title: "Marca lo que ha enviado", text: "Indica por dónde lo envió. En tu panel, el documento queda por confirmar." },
         ],
-        date: "miércoles, 21 de octubre",
+        date: "Mié., 21 oct.",
         now: "ahora",
         thanks: "Gracias. El despacho ya está avisado.",
       },

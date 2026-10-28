@@ -9,15 +9,15 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
 
   // Só aceita caminhos internos (evita redirecionamentos para sites externos)
-  const rawNext = searchParams.get("next") ?? "/app";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/app";
+  const rawNext = searchParams.get("next") ?? "/";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
   if (tokenHash && type) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) {
       // Sem palavras-passe: a recuperação também entra direto no painel
-      const target = type === "recovery" ? "/app" : next;
+      const target = type === "recovery" ? "/" : next;
       return NextResponse.redirect(new URL(target, origin));
     }
   }

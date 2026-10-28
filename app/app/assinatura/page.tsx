@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Assinatura" };
 export default async function Assinatura({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string }> }) {
   const { ok, erro } = await searchParams;
   const { office, locale, d, role } = await getSession();
-  if (role !== "owner") redirect("/app");
+  if (role !== "owner") redirect("/");
   const t = d.app.billing;
   const plans = d.common.planNames;
 

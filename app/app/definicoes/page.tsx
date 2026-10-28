@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Definições" };
 export default async function Definicoes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string; convite?: string }> }) {
   const sp = await searchParams;
   const { supabase, office, locale, d, isManager } = await getSession();
-  if (!isManager) redirect("/app");
+  if (!isManager) redirect("/");
   const t = d.app.settings;
   const [{ data }, { data: teamData }] = await Promise.all([
     supabase.from("document_types").select("id, label").order("position"),

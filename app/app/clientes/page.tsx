@@ -59,7 +59,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                     <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
                       {c.name.charAt(0).toUpperCase()}
                     </span>
-                    <Link href={`/app/clientes/${c.id}`} className="min-w-0 flex-1">
+                    <Link href={`/clientes/${c.id}`} className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{c.name}</span>
                       <span className="flex items-center gap-1.5 truncate text-xs text-muted">
                         {c.phone && <Phone className="h-3 w-3" aria-hidden />}
@@ -73,12 +73,12 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                       </span>
                     </Link>
                     {officeAccess(office).canWrite && (
-                      <Link href={`/app/pedidos/novo?cliente=${c.id}`} className="btn btn-secondary btn-sm" title={t.newRequest}>
+                      <Link href={`/pedidos/novo?cliente=${c.id}`} className="btn btn-secondary btn-sm" title={t.newRequest}>
                         <Plus className="h-4 w-4" aria-hidden />
                         <span className="hidden sm:inline">{t.newRequest}</span>
                       </Link>
                     )}
-                    <Link href={`/app/clientes/${c.id}`} className="text-muted hover:text-ivory" aria-label={t.editTitle}>
+                    <Link href={`/clientes/${c.id}`} className="text-muted hover:text-ivory" aria-label={t.editTitle}>
                       <ChevronRight className="h-5 w-5" aria-hidden />
                     </Link>
                   </div>
@@ -97,7 +97,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               <ul className="card mt-3 divide-y divide-line">
                 {archived.map((c) => (
                   <li key={c.id}>
-                    <Link href={`/app/clientes/${c.id}`} className="block px-5 py-3 text-sm text-muted hover:text-ivory">
+                    <Link href={`/clientes/${c.id}`} className="block px-5 py-3 text-sm text-muted hover:text-ivory">
                       {c.name}
                     </Link>
                   </li>

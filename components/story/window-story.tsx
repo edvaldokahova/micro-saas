@@ -20,7 +20,7 @@ const WH = DH + BAR;
 const ENTER = 0.9;
 const REST: Pt = { x: DW * 0.64, y: DH * 0.72 };
 const OVERVIEW: Pt = { x: DW / 2, y: DH / 2 };
-const PATHS: Record<DeskState["tab"], string> = { dash: "/app", clients: "/app/clientes", settings: "/app/definicoes" };
+const PATHS: Record<DeskState["tab"], string> = { dash: "", clients: "/clientes", settings: "/definicoes" };
 
 export function WindowStory({ t }: { t: WindowTexts }) {
   const film = useMemo(() => compile(deskScript(t.desk.member), ENTER), [t.desk.member]);

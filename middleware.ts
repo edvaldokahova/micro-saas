@@ -5,29 +5,45 @@ import { NextResponse, type NextRequest } from "next/server";
 const MAIN = "www.bilonai.com";
 const APP = "app.bilonai.com";
 const CLIENT = "entrega.bilonai.com";
-// Caminhos que pertencem ao painel (app.bilonai.com)
-const APP_PATHS = ["/app", "/entrar", "/registar", "/auth", "/pagamento"];
+// Entrada e autenticação (no domínio do painel)
+const AUTH_PATHS = ["/entrar", "/registar", "/auth", "/pagamento"];
+// Páginas públicas que vivem só em www.bilonai.com
+const MARKETING_PATHS = ["/precos", "/termos", "/privacidade", "/reembolsos", "/suporte"];
 
-// 1. Põe cada página no domínio certo: a página pública em bilonai.com, o painel em app.bilonai.com
-//    e as páginas dos clientes (/p/...) em entrega.bilonai.com.
-// 2. Renova a sessão e protege a área do escritório (/app).
+const under = (path: string, list: string[]) => list.some((p) => path === p || path.startsWith(`${p}/`));
+// /app/clientes -> /clientes ; /app -> /
+const short = (path: string) => path.replace(/^\/app(?=\/|$)/, "") || "/";
+
+// 1. Põe cada página no domínio certo: página pública em www.bilonai.com, painel em app.bilonai.com
+//    (com endereços curtos: app.bilonai.com/clientes, sem o /app) e páginas dos clientes em entrega.bilonai.com.
+// 2. Renova a sessão e protege o painel.
 export async function middleware(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const path = request.nextUrl.pathname;
-  const isApp = APP_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
+  const isAuth = under(path, AUTH_PATHS);
+  const isPanel = under(path, ["/app"]);
   const isClient = path.startsWith("/p/");
+  const isMain = host === MAIN || host === "bilonai.com";
   const go = (domain: string, pathname = path) => NextResponse.redirect(`https://${domain}${pathname}${request.nextUrl.search}`, 308);
 
-  if (host === CLIENT && !isClient) return go(isApp ? APP : MAIN);
-  const isMain = host === MAIN || host === "bilonai.com";
+  if (host === CLIENT && !isClient) return go(isAuth || isPanel ? APP : MAIN, short(path));
   if ((isMain || host === APP) && isClient) return go(CLIENT);
-  if (isMain && isApp) return go(APP);
-  if (host === APP && path === "/") return NextResponse.redirect(new URL("/app", request.url));
-  // Páginas públicas (preços, termos, suporte...) abertas no domínio do painel vão para a página principal
-  if (host === APP && !isApp) return go(MAIN);
-  if (!isApp) return NextResponse.next();
+  if (isMain && (isAuth || isPanel)) return go(APP, short(path));
 
-  let response = NextResponse.next({ request });
+  // No domínio do painel, as rotas internas /app/... ficam escondidas atrás de endereços curtos
+  let internal = path;
+  if (host === APP) {
+    if (isPanel) return go(APP, short(path));
+    if (under(path, MARKETING_PATHS)) return go(MAIN);
+    if (!isAuth) internal = path === "/" ? "/app" : `/app${path}`;
+  }
+
+  const needsSession = internal.startsWith("/app") || path === "/entrar" || path === "/registar";
+  if (!needsSession) return NextResponse.next();
+
+  const target = new URL(`${internal}${request.nextUrl.search}`, request.url);
+  const pass = () => (internal !== path ? NextResponse.rewrite(target, { request }) : NextResponse.next({ request }));
+  let response = pass();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -39,22 +55,22 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          response = pass();
           cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
     },
   );
 
-  // getClaims valida o token localmente (sem ida ao servidor de autenticação quando as chaves são assimétricas)
-  // e renova a sessão quando é preciso. Mais rápido em cada navegação dentro do painel.
+  // getClaims valida o token localmente e renova a sessão quando é preciso
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims?.sub ? data.claims : null;
 
-  if (!user && request.nextUrl.pathname.startsWith("/app")) {
+  if (!user && internal.startsWith("/app")) {
     const url = request.nextUrl.clone();
     url.pathname = "/entrar";
-    url.searchParams.set("next", request.nextUrl.pathname);
+    url.search = "";
+    url.searchParams.set("next", path);
     return NextResponse.redirect(url);
   }
 

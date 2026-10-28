@@ -40,7 +40,7 @@ export function phoneScript(): { start: PhoneState; steps: Step<PhoneState>[] }[
 
 export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
   return (
-    <div className="relative h-full overflow-hidden bg-ink-2 text-ivory">
+    <div className="relative h-full select-none overflow-hidden bg-ink-2 text-ivory [-webkit-touch-callout:none]" onContextMenu={(e) => e.preventDefault()}>
       {/* Barra de estado (branca no ecrã bloqueado, escura no navegador) */}
       <div className={`absolute inset-x-0 top-0 z-30 flex h-[54px] items-center justify-between px-[30px] pt-[6px] text-[16px] font-semibold ${s.stage === "lock" ? "text-white" : "text-ivory"}`}>
         <span className="w-[54px] text-center">{s.stage === "lock" ? "" : "9:41"}</span>
@@ -57,32 +57,35 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
 
       {/* Ecrã bloqueado, como no iOS: fundo, data, relógio grande, notificação, lanterna e câmara */}
       <div className={`absolute inset-0 transition-opacity duration-500 ${s.stage === "lock" ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-        <img src="/story/wallpaper.webp" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        {/* Fundo como imagem de CSS (não se pode arrastar nem guardar com toque longo) */}
+        <div className="pointer-events-none absolute inset-0 select-none bg-cover bg-center" style={{ backgroundImage: "url(/story/wallpaper.webp)" }} />
         <div className="relative pt-[72px] text-center text-white">
           <p className="text-[19px] font-semibold tracking-[-0.01em] opacity-90">{t.date}</p>
           <p
-            className="mt-[-4px] text-[118px] font-medium leading-[1.02] tracking-[-0.015em] [font-variation-settings:'wdth'_75]"
-            style={{ color: "rgba(255,255,255,0.88)", textShadow: "0 1px 2px rgba(0,0,0,0.18)" }}
+            className="mt-[-6px] bg-clip-text text-[112px] font-semibold leading-[1.02] tracking-[-0.01em] text-transparent [font-variation-settings:'wdth'_75]"
+            style={{ backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(235,240,255,0.62) 100%)", filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.15))" }}
           >
-            9:41
+            09:41
           </p>
         </div>
+        {/* Notificação como no iOS: vidro claro, avatar com o ícone da app, nome, texto e hora */}
         <div
           data-t="banner"
-          className={`absolute inset-x-[10px] bottom-[150px] rounded-[24px] border border-white/10 bg-[rgba(40,42,48,0.55)] px-3.5 py-3 text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${s.banner ? "translate-y-0 scale-100 opacity-100" : "translate-y-8 scale-95 opacity-0"}`}
+          className={`absolute inset-x-[12px] bottom-[138px] rounded-[22px] bg-white/55 px-3 py-[11px] text-[#121316] shadow-[0_8px_24px_-14px_rgba(0,0,0,0.5)] ring-1 ring-white/30 backdrop-blur-2xl backdrop-saturate-150 transition-all duration-500 ease-[cubic-bezier(.2,.8,.2,1)] ${s.banner ? "translate-y-0 scale-100 opacity-100" : "translate-y-8 scale-95 opacity-0"}`}
         >
-          <div className="flex items-start gap-3">
-            <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[10px] bg-gradient-to-b from-[#5ef08a] to-[#1fbf56] text-white">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                <path d="M12 3.2c-4.9 0-8.8 3.6-8.8 8.1 0 2.5 1.2 4.7 3.1 6.2l-.6 2.9c-.1.4.4.7.7.5l3.2-1.8c.8.2 1.6.3 2.4.3 4.9 0 8.8-3.6 8.8-8.1S16.9 3.2 12 3.2z" />
-              </svg>
+          <div className="flex items-start gap-[10px]">
+            <span className="relative mt-[1px] shrink-0">
+              <span className="grid h-[38px] w-[38px] place-items-center rounded-full bg-gradient-to-b from-[#9aa3b2] to-[#6b7383] text-[14px] font-semibold text-white">CS</span>
+              <span className="absolute -bottom-[3px] -right-[3px] grid h-[18px] w-[18px] place-items-center rounded-[5px] bg-gradient-to-b from-[#5ef08a] to-[#1fbf56] ring-2 ring-white/70">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff" aria-hidden><path d="M12 3.2c-4.9 0-8.8 3.6-8.8 8.1 0 2.5 1.2 4.7 3.1 6.2l-.6 2.9c-.1.4.4.7.7.5l3.2-1.8c.8.2 1.6.3 2.4.3 4.9 0 8.8-3.6 8.8-8.1S16.9 3.2 12 3.2z" /></svg>
+              </span>
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="truncate text-[15px] font-semibold">{t.office}</p>
-                <span className="shrink-0 text-[13px] text-white/60">{t.now}</span>
+                <p className="truncate text-[15px] font-semibold leading-[1.25]">{t.office}</p>
+                <span className="shrink-0 text-[13px] text-[#121316]/50">{t.now}</span>
               </div>
-              <p className="mt-0.5 line-clamp-3 text-[14.5px] leading-[1.32] text-white/90">{t.preview}</p>
+              <p className="line-clamp-3 text-[15px] leading-[1.27] text-[#121316]/90">{t.preview}</p>
             </div>
           </div>
         </div>

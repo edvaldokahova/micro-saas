@@ -19,7 +19,7 @@ export default async function NovoPedido({
 }) {
   const sp = await searchParams;
   const { supabase, office, d, locale } = await getSession();
-  if (!officeAccess(office).canWrite) redirect("/app/assinatura");
+  if (!officeAccess(office).canWrite) redirect("/assinatura");
   const t = d.app.request;
   const clientId = sp.cliente && /^[0-9a-f-]{36}$/i.test(sp.cliente) ? sp.cliente : null;
 
@@ -30,7 +30,7 @@ export default async function NovoPedido({
       ? supabase.from("requests").select("id").eq("client_id", clientId).order("period", { ascending: false }).limit(1).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
-  if (!clients?.length) redirect("/app/clientes");
+  if (!clients?.length) redirect("/clientes");
 
   // Documentos sugeridos: a lista do último pedido deste cliente, ou todos os tipos do escritório
   const base: string[] = (types ?? []).map((x: { label: string }) => x.label);
@@ -54,7 +54,7 @@ export default async function NovoPedido({
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/app" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
         <ArrowLeft className="h-4 w-4" aria-hidden /> {d.app.nav.dashboard}
       </Link>
       <h1 className="mt-4 font-display text-3xl">{t.newTitle}</h1>

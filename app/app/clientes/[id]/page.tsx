@@ -50,7 +50,7 @@ export default async function Cliente({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/app/clientes" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
+      <Link href="/clientes" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ivory">
         <ArrowLeft className="h-4 w-4" aria-hidden /> {t.title}
       </Link>
       <div className="mt-4">
@@ -59,7 +59,7 @@ export default async function Cliente({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl">{client.name}</h1>
         {canWrite && !client.archived_at && (
-          <Link href={`/app/pedidos/novo?cliente=${client.id}`} className="btn btn-primary btn-sm">
+          <Link href={`/pedidos/novo?cliente=${client.id}`} className="btn btn-primary btn-sm">
             <Plus className="h-4 w-4" aria-hidden /> {t.newRequest}
           </Link>
         )}
@@ -124,7 +124,7 @@ export default async function Cliente({
               const done = r.total_items > 0 && r.received_items === r.total_items;
               return (
                 <li key={r.id}>
-                  <Link href={`/app/pedidos/${r.id}`} className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm hover:bg-ink-3/50">
+                  <Link href={`/pedidos/${r.id}`} className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm hover:bg-ink-3/50">
                     <span className="font-medium">{formatPeriod(r.period, locale, r.months)}</span>
                     <span className={done ? "text-ok" : "text-muted"}>{d.app.dashboard.docsOf(r.received_items, r.total_items)}</span>
                   </Link>

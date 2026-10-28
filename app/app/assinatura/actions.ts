@@ -35,7 +35,7 @@ async function currentOffice(): Promise<Office> {
     .select("id, plan, plan_status, billing_interval, paddle_subscription_id, paddle_customer_id")
     .eq("owner_id", user.id) // a assinatura é só do dono da conta (responsáveis não pagam nem mudam o plano)
     .maybeSingle();
-  if (!data) redirect("/app");
+  if (!data) redirect("/");
   return data as Office;
 }
 
@@ -89,7 +89,7 @@ export async function changePlan(plan: PlanKey, interval: BillingInterval = "mon
 export async function openPortal() {
   const office = await currentOffice();
   if (!office.paddle_customer_id || !/^ctm_[a-z0-9]+$/i.test(office.paddle_customer_id)) {
-    redirect("/app/assinatura");
+    redirect("/assinatura");
   }
 
   let url: string;
@@ -103,7 +103,7 @@ export async function openPortal() {
     );
     url = session.urls.general.overview;
   } catch {
-    redirect("/app/assinatura?erro=portal");
+    redirect("/assinatura?erro=portal");
   }
   redirect(url);
 }

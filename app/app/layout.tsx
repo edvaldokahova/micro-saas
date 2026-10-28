@@ -41,7 +41,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-stretch justify-between gap-3 px-4 sm:px-5">
           <div className="flex items-stretch gap-8">
-            <Link href="/app" aria-label={d.app.nav.dashboard} className="flex shrink-0 items-center">
+            <Link href="/" aria-label={d.app.nav.dashboard} className="flex shrink-0 items-center">
               <Logo />
             </Link>
             <AppNav labels={d.app.nav} show={show} />
@@ -67,7 +67,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-5 py-2 text-[12px] font-medium">
             <span>{banner.text}</span>
             {role === "owner" && (
-              <Link href="/app/assinatura" className="underline decoration-line-strong underline-offset-4 hover:decoration-current">
+              <Link href="/assinatura" className="underline decoration-line-strong underline-offset-4 hover:decoration-current">
                 {b.choosePlan} →
               </Link>
             )}

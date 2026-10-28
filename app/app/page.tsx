@@ -127,7 +127,7 @@ export default async function Painel({
   const open = byPerson.length - delivered - late;
 
   // Os números são também filtros (clicar de novo limpa)
-  const base = `/app?mes=${ym}${resp ? `&resp=${resp}` : ""}`;
+  const base = `/?mes=${ym}${resp ? `&resp=${resp}` : ""}`;
   const href = (f?: Filter) => (f && f !== filter ? `${base}&f=${f}` : base);
   const stats: { label: string; value: number; tone?: string; f?: Filter }[] = [
     { label: t.statRequests, value: byPerson.length },
@@ -152,14 +152,14 @@ export default async function Painel({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href={`/app?mes=${shiftPeriod(period, -1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.prev} title={t.prev}>
+          <Link href={`/?mes=${shiftPeriod(period, -1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.prev} title={t.prev}>
             <ChevronLeft className="h-4 w-4" aria-hidden />
           </Link>
-          <Link href={`/app?mes=${shiftPeriod(period, 1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.next} title={t.next}>
+          <Link href={`/?mes=${shiftPeriod(period, 1)}`} className="btn btn-secondary btn-sm w-9 px-0" aria-label={t.next} title={t.next}>
             <ChevronRight className="h-4 w-4" aria-hidden />
           </Link>
           {canWrite && activeClients > 0 && (
-            <Link href={`/app/pedidos/novo?mes=${ym}`} className="btn btn-primary btn-sm ml-1">
+            <Link href={`/pedidos/novo?mes=${ym}`} className="btn btn-primary btn-sm ml-1">
               <Plus className="h-4 w-4" aria-hidden /> {d.app.request.newTitle}
             </Link>
           )}
@@ -171,7 +171,7 @@ export default async function Painel({
           <DocStrip states={["pending", "pending", "pending"]} className="justify-center" />
           <h2 className="mt-5 font-display text-2xl">{t.noClientsTitle}</h2>
           <p className="mx-auto mt-2 max-w-sm text-muted">{t.noClientsText}</p>
-          <Link href="/app/clientes" className="btn btn-primary mt-6">
+          <Link href="/clientes" className="btn btn-primary mt-6">
             <UserPlus className="h-4 w-4" aria-hidden /> {t.addClients}
           </Link>
         </div>
@@ -184,7 +184,7 @@ export default async function Painel({
                 return (
                   <Link
                     key={m.id || "all"}
-                    href={`/app?mes=${ym}${m.id ? `&resp=${m.id}` : ""}`}
+                    href={`/?mes=${ym}${m.id ? `&resp=${m.id}` : ""}`}
                     className={`border-b pb-0.5 transition ${active ? "border-ivory text-ivory" : "border-transparent text-muted hover:text-ivory"}`}
                   >
                     {m.name}
@@ -306,7 +306,7 @@ export default async function Painel({
                       {/* Cliente */}
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <Link href={`/app/pedidos/${r.id}`} className="truncate font-medium underline-offset-4 hover:underline">
+                          <Link href={`/pedidos/${r.id}`} className="truncate font-medium underline-offset-4 hover:underline">
                             {r.client_name}
                           </Link>
                           {r.months === 3 && <span className="mono-label hidden shrink-0 border border-line px-1.5 py-px !text-[9.5px] sm:inline">{d.common.cadence.quarterly}</span>}

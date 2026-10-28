@@ -10,7 +10,9 @@ export function Orbit({
   active,
   onPick,
   drive,
+  bleed = "all",
 }: {
+  bleed?: "all" | "mobile";
   steps: { title: string; text: string }[];
   active: number;
   onPick: (i: number) => void;
@@ -35,7 +37,7 @@ export function Orbit({
   const R = Math.max(w * 1.15, 620);
   const cx = w / 2;
   const cy = R + 34;
-  const step = Math.asin(Math.min(0.9, (w * 0.34) / R));
+  const step = Math.asin(Math.min(0.9, (Math.min(w, 1400) * 0.3) / R));
 
   useEffect(() => {
     const place = (p: number) => {
@@ -54,7 +56,7 @@ export function Orbit({
           dot.dataset.on = ad < 0.5 ? "1" : "0";
         }
         if (n) {
-          const r2 = R - 84;
+          const r2 = R - 104;
           const x = cx + r2 * Math.sin(a);
           const y = cy - r2 * Math.cos(a);
           n.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${(a * 180) / Math.PI}deg) scale(${1 - Math.min(1, ad) * 0.18})`;
@@ -71,18 +73,22 @@ export function Orbit({
 
   const s = steps[Math.max(0, active)];
   return (
-    <div className="mx-auto w-full max-w-[760px] text-center">
-      <div ref={box} className="relative h-[165px] overflow-hidden sm:h-[190px]" aria-hidden>
+    <div className="w-full text-center">
+      <div
+        ref={box}
+        className={`relative ml-[calc(50%-50vw)] h-[180px] w-screen overflow-hidden sm:h-[235px] ${bleed === "mobile" ? "lg:ml-0 lg:w-full" : ""}`}
+        aria-hidden
+      >
         <svg ref={arcs} className="absolute inset-0 h-full w-full" fill="none">
           <defs>
             <linearGradient id="orbit-fade" x1="0" x2="1">
-              <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+              <stop offset="0" stopColor="currentColor" stopOpacity="0.35" />
               <stop offset="0.5" stopColor="currentColor" stopOpacity="1" />
-              <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+              <stop offset="1" stopColor="currentColor" stopOpacity="0.35" />
             </linearGradient>
           </defs>
           <circle cx={cx} cy={cy} r={R} stroke="url(#orbit-fade)" strokeWidth="1" className="text-gold/70" />
-          <circle cx={cx} cy={cy} r={R - 180} stroke="url(#orbit-fade)" strokeWidth="1" className="text-line-strong" />
+          <circle cx={cx} cy={cy} r={R - 215} stroke="url(#orbit-fade)" strokeWidth="1" className="text-line-strong" />
         </svg>
         {steps.map((st, i) => (
           <span
@@ -98,7 +104,7 @@ export function Orbit({
             type="button"
             tabIndex={-1}
             onClick={() => onPick(i)}
-            className="absolute left-0 top-0 text-[54px] font-semibold leading-none tracking-[-0.04em] tabular-nums [font-variation-settings:'wdth'_84] sm:text-[64px]"
+            className="absolute left-0 top-0 text-[64px] font-semibold leading-none tracking-[-0.04em] tabular-nums [font-variation-settings:'wdth'_84] sm:text-[88px]"
           >
             {String(i + 1).padStart(2, "0")}
           </button>

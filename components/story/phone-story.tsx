@@ -104,7 +104,7 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
             <p data-split="lines" className="mt-4 hidden max-w-[44ch] text-[17px] leading-[1.6] text-muted lg:block">{t.lead}</p>
           </div>
           <div className="order-3 lg:order-none lg:col-start-1 lg:row-start-3">
-            <Orbit steps={t.chapters} active={ch} onPick={pick} drive={orbit} />
+            <Orbit steps={t.chapters} active={ch} onPick={pick} drive={orbit} bleed="mobile" />
           </div>
           <div ref={holder} className={`relative flex min-h-0 items-center justify-center lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:h-[min(860px,86vh)] ${reduced ? "h-[620px]" : "h-full"}`} style={{ perspective: "1600px" }}>
             <div style={{ width: FW * scale, height: FH * scale }} className="relative shrink-0">
