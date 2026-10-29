@@ -63,8 +63,8 @@ function IconEssential() {
       <P s={0} e={0.55} d="M12 6h16a5 5 0 0 1 5 5v18a5 5 0 0 1-5 5H12a5 5 0 0 1-5-5V11a5 5 0 0 1 5-5z" />
       <P s={0.5} e={0.75} d="M13.5 25.4a2.8 2.8 0 1 1 0 5.6a2.8 2.8 0 1 1 0-5.6z" className="opacity-45" />
       <P s={0.55} e={0.8} d="M19.5 14.2h8M19.5 21.2h8M19.5 28.2h4.5" />
-      <P s={0.35} e={0.62} d="M10.8 14.4l2.3 2.4 4-4.8" className={ok} strokeWidth={2} />
-      <P s={0.45} e={0.72} d="M10.8 21.4l2.3 2.4 4-4.8" className={ok} strokeWidth={2} />
+      <P s={0.35} e={0.62} d="M11.6 14.3l1.6 1.7 2.8-3.4" className={ok} strokeWidth={1.8} />
+      <P s={0.45} e={0.72} d="M11.6 21.3l1.6 1.7 2.8-3.4" className={ok} strokeWidth={1.8} />
     </svg>
   );
 }
