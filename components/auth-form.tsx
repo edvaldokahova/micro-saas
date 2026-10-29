@@ -58,8 +58,8 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
   if (state === "sent") {
     return (
       <div className="card animate-rise p-8 text-center">
-        <span className="mx-auto grid h-14 w-14 animate-pop place-items-center rounded-2xl border border-line bg-ink-3">
-          <MailCheck className="h-7 w-7 text-gold" aria-hidden />
+        <span className="mx-auto grid animate-pop place-items-center">
+          <MailCheck className="h-10 w-10 text-gold" strokeWidth={1.6} aria-hidden />
         </span>
         <h2 className="mt-5 font-display text-xl">{t.checkTitle}</h2>
         <p className="mt-2 text-[15px] leading-7 text-muted">
