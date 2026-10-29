@@ -21,8 +21,8 @@ const seg = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
 /* ---------- Ícones: traços que se desenham (pathLength=1) ---------- */
 
 // Um traço que se desenha entre os instantes s e e (0..1) do ícone
-function P({ d, s = 0, e = 1, className }: { d: string; s?: number; e?: number; className?: string }) {
-  return <path d={d} pathLength={1} data-s={s} data-e={e} className={className} strokeDasharray="1" />;
+function P({ d, s = 0, e = 1, className, strokeWidth }: { d: string; s?: number; e?: number; className?: string; strokeWidth?: number }) {
+  return <path d={d} pathLength={1} data-s={s} data-e={e} className={className} strokeWidth={strokeWidth} strokeDasharray="1" />;
 }
 
 // Mensagem e e-mail: os canais de sempre, lado a lado
@@ -61,12 +61,10 @@ function IconEssential() {
   return (
     <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <P s={0} e={0.55} d="M12 6h16a5 5 0 0 1 5 5v18a5 5 0 0 1-5 5H12a5 5 0 0 1-5-5V11a5 5 0 0 1 5-5z" />
-      <P s={0.3} e={0.55} d="M13.5 11.4a2.8 2.8 0 1 1 0 5.6a2.8 2.8 0 1 1 0-5.6z" />
-      <P s={0.4} e={0.65} d="M13.5 18.4a2.8 2.8 0 1 1 0 5.6a2.8 2.8 0 1 1 0-5.6z" />
       <P s={0.5} e={0.75} d="M13.5 25.4a2.8 2.8 0 1 1 0 5.6a2.8 2.8 0 1 1 0-5.6z" className="opacity-45" />
       <P s={0.55} e={0.8} d="M19.5 14.2h8M19.5 21.2h8M19.5 28.2h4.5" />
-      <P s={0.75} e={0.9} d="M12.3 14.3l.9.95 1.7-2" className={ok} />
-      <P s={0.85} e={1} d="M12.3 21.3l.9.95 1.7-2" className={ok} />
+      <P s={0.35} e={0.62} d="M10.8 14.4l2.3 2.4 4-4.8" className={ok} strokeWidth={2} />
+      <P s={0.45} e={0.72} d="M10.8 21.4l2.3 2.4 4-4.8" className={ok} strokeWidth={2} />
     </svg>
   );
 }
