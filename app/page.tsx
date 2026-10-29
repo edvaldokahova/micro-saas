@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { preload } from "react-dom";
 import { HeroIntro } from "@/components/hero-intro";
 import { PageMotion } from "@/components/page-motion";
 import { WindowStory, type WindowTexts } from "@/components/story/window-story";
@@ -50,6 +51,10 @@ const demoContacts: Record<Locale, { phone: string; email: string }[]> = {
 };
 
 export default async function Home() {
+  // Logótipos do WhatsApp e do e-mail usados na demonstração: descarregados logo ao abrir a página,
+  // para já estarem prontos quando o visitante chega à secção (são pequenos, não atrasam o resto)
+  preload("/channels/whatsapp.webp", { as: "image", fetchPriority: "low" });
+  preload("/channels/email.webp", { as: "image", fetchPriority: "low" });
   const locale = await getLocale();
   const d = getDictionary(locale);
   const h = d.home;

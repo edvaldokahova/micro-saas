@@ -59,7 +59,8 @@ export async function addClient(formData: FormData) {
   });
   if (error) redirect(`/clientes?erro=${errorCode(error.message, error.code)}`);
   revalidatePath("/app", "layout");
-  redirect("/clientes?ok=1");
+  // Valor único: a janela de "Adicionar cliente" fecha-se e o aviso de sucesso aparece outra vez
+  redirect(`/clientes?ok=${Date.now().toString(36)}`);
 }
 
 export async function updateClient(formData: FormData) {

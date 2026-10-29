@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { X } from "lucide-react";
 import { ChannelLogo } from "@/components/channel-logo";
 import { AccessFields } from "@/components/access-fields";
+import { Avatar } from "@/components/avatar";
 import { AutoEmailSettings } from "@/components/auto-email-settings";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flag } from "@/components/flags";
@@ -151,9 +152,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
               return (
                 <li key={m.id} className="border-b border-line py-3.5">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]" aria-hidden>
-                      {m.name.charAt(0).toUpperCase()}
-                    </span>
+                    <Avatar name={m.name} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{m.name}</p>
                       <p className="flex flex-wrap gap-x-3 font-mono text-[11px] text-muted">

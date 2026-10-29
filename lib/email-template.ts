@@ -34,7 +34,7 @@ export type EmailData = {
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: string; html: string; text: string } {
+export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: string; html: string; text: string; body: string } {
   const values = {
     cliente: x.client,
     periodo: x.period,
@@ -55,9 +55,8 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
     .map((p) => `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#1d1e22">${esc(p).replace(/\n/g, "<br>")}</p>`)
     .join("");
 
-  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(subject)}</title></head>
-<body style="margin:0;padding:0;background:#ffffff">
-<div style="display:none;max-height:0;overflow:hidden">${esc(status)}${due ? ` · ${esc(due)}` : ""}</div>
+  // Conteúdo do e-mail (também usado na pré-visualização das Definições)
+  const body = `<div style="display:none;max-height:0;overflow:hidden">${esc(status)}${due ? ` · ${esc(due)}` : ""}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff"><tr><td align="center" style="padding:32px 20px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;font-family:${font}">
 <tr><td style="padding:0 0 28px;font-size:15px;font-weight:600;color:#121316">${esc(x.office)}</td></tr>
@@ -75,8 +74,11 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
   </td></tr></table>
 </td></tr>
 <tr><td style="padding:36px 0 0;font-size:11.5px;line-height:1.6;color:#9a9da5">${esc(footer)}</td></tr>
-</table></td></tr></table></body></html>`;
+</table></td></tr></table>`;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#ffffff">
+${body}</body></html>`;
 
   const text = `${message}\n\n${status}${due ? ` · ${due}` : ""}\n${t.button}: ${x.link}\n${t.buttonHint}\n\n—\n${footer}`;
-  return { subject, html, text };
+  return { subject, html, text, body };
 }

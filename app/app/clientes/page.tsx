@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Phone, Plus } from "lucide-react";
+import { ChevronRight, Phone, Plus, UserPlus } from "lucide-react";
+import { Avatar } from "@/components/avatar";
+import { Dialog, OpenDialog } from "@/components/dialog";
 import { CadenceField } from "@/components/cadence-field";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flash } from "@/components/flash";
@@ -31,20 +33,36 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
 
   return (
     <div>
-      <Flash d={d} error={sp.erro} success={sp.ok ? d.common.saved : null} />
+      <Flash d={d} error={isManager ? undefined : sp.erro} success={sp.ok ? d.common.saved : null} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{t.title}</p>
           <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
           {isManager && <p className="mt-2 text-sm text-muted">{t.count(active.length, limit)}</p>}
         </div>
+        {isManager && active.length > 0 && (
+          <OpenDialog target="novo-cliente" className="btn btn-primary">
+            <Plus className="h-4 w-4" aria-hidden /> {t.add}
+          </OpenDialog>
+        )}
       </div>
 
-      <div className={`mt-8 grid gap-6 ${isManager ? "lg:grid-cols-[1fr_380px]" : ""}`}>
+      <div className="mt-8">
         {/* Lista */}
-        <div className="order-2 lg:order-1">
+        <div>
           {active.length === 0 ? (
-            <p className="card p-8 text-center text-muted">{t.empty}</p>
+            <div className="card flex flex-col items-center px-6 py-14 text-center">
+              <span className="grid h-14 w-14 place-items-center rounded-full bg-ink-3">
+                <UserPlus className="h-6 w-6 text-ivory" aria-hidden />
+              </span>
+              <p className="mt-5 font-display text-xl">{t.empty}</p>
+              {isManager && <p className="mt-2 max-w-sm text-sm text-muted">{t.emptyHint}</p>}
+              {isManager && (
+                <OpenDialog target="novo-cliente" className="btn btn-primary mt-6">
+                  <Plus className="h-4 w-4" aria-hidden /> {t.add}
+                </OpenDialog>
+              )}
+            </div>
           ) : (
             <>
             {active.length >= 8 && (
@@ -56,9 +74,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               {active.map((c, i) => (
                 <li key={c.id} data-search={`${c.name} ${c.phone ?? ""} ${c.email ?? ""}`} className="animate-rise" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
                   <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center border border-line-strong font-display text-[15px]">
-                      {c.name.charAt(0).toUpperCase()}
-                    </span>
+                    <Avatar name={c.name} />
                     <Link href={`/clientes/${c.id}`} className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{c.name}</span>
                       <span className="flex items-center gap-1.5 truncate text-xs text-muted">
@@ -107,11 +123,13 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
           )}
         </div>
 
-        {/* Adicionar (só dono e administradores) */}
-        {isManager && (
-        <div className="order-1 lg:order-2">
-          <form action={addClient} className="card space-y-4 p-5 lg:sticky lg:top-24">
-            <h2 className="font-display text-lg">{t.add}</h2>
+      </div>
+
+      {/* Adicionar (só dono e administradores): janela modal aberta pelo botão */}
+      {isManager && (
+        <Dialog key={`${sp.ok ?? ""}-${sp.erro ?? ""}`} id="novo-cliente" title={t.add} closeLabel={d.common.cancel} openOnLoad={Boolean(sp.erro)}>
+          {sp.erro && <Flash d={d} error={sp.erro} />}
+          <form action={addClient} className="space-y-4">
             <label className="block">
               <span className="label">{t.name}</span>
               <input name="name" required maxLength={160} className="field" disabled={!canAdd} autoComplete="off" />
@@ -154,9 +172,8 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               <p className="text-sm text-warn">{officeAccess(office).canWrite ? t.errors.limit : t.errors.inactive}</p>
             )}
           </form>
-        </div>
-        )}
-      </div>
+        </Dialog>
+      )}
     </div>
   );
 }

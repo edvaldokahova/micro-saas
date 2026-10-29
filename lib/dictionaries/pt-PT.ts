@@ -255,6 +255,7 @@ const dict = {
       email: "E-mail",
       notes: "Notas internas",
       empty: "Ainda não tem clientes.",
+      emptyHint: "Adicione o primeiro cliente para lhe criar pedidos e enviar o link.",
       archive: "Arquivar",
       archived: "Arquivados",
       unarchive: "Reativar",
@@ -371,10 +372,10 @@ const dict = {
     whatsappTemplate:
       "Olá {cliente}! Para fecharmos as contas {periodo}, ainda faltam {em_falta}. Veja quais são e assinale o que já enviou aqui: {link}\n\nObrigado,\n{escritorio}",
     whatsappAllSent: "Olá {cliente}! Pode confirmar os documentos {periodo} aqui: {link}\n\nObrigado,\n{escritorio}",
-    emailSubject: "Documentos em falta {periodo} · {escritorio}",
+    emailSubject: "Documentos em falta {periodo}",
   },
   autoEmail: {
-    subject: "Documentos {periodo} · {escritorio}",
+    subject: "Documentos {periodo}",
     message: "Olá {cliente},\n\nPara fecharmos as contas {periodo}, ainda precisamos de {em_falta}. Está tudo numa página só sua: vê o que falta e assinala o que já enviou, num minuto.\n\nObrigado,\n{escritorio}",
     missingOne: "1 documento",
     missingMany: "{n} documentos",

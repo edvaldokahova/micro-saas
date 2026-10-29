@@ -105,18 +105,18 @@ export function AutoEmailSettings({
       </div>
 
       {/* Quando enviar */}
-      <fieldset className={`grid gap-4 transition-opacity sm:grid-cols-3 ${on ? "" : "opacity-50"}`}>
+      <fieldset className={`grid gap-4 sm:grid-cols-3 ${on ? "" : "[&_.label]:text-muted"}`}>
         <div>
           <label htmlFor="auto-first" className="label">{t.first}</label>
-          <Select id="auto-first" name="auto_days_before" defaultValue={String(defaults.first)} options={options.first} />
+          <Select id="auto-first" name="auto_days_before" defaultValue={String(defaults.first)} options={options.first} disabled={!on} />
         </div>
         <div>
           <label htmlFor="auto-repeat" className="label">{t.repeat}</label>
-          <Select id="auto-repeat" name="auto_repeat_days" defaultValue={String(defaults.repeat)} options={options.repeat} />
+          <Select id="auto-repeat" name="auto_repeat_days" defaultValue={String(defaults.repeat)} options={options.repeat} disabled={!on} />
         </div>
         <div>
           <label htmlFor="auto-max" className="label">{t.max}</label>
-          <Select id="auto-max" name="auto_max" defaultValue={String(defaults.max)} options={options.max} />
+          <Select id="auto-max" name="auto_max" defaultValue={String(defaults.max)} options={options.max} disabled={!on} />
         </div>
         <p className="-mt-1 text-xs leading-5 text-muted sm:col-span-3">{t.when}</p>
       </fieldset>
@@ -151,7 +151,8 @@ export function AutoEmailSettings({
             <p className="truncate border-b border-[#eeeff1] px-4 py-2.5 text-[13px] text-[#121316]">
               <span className="font-semibold">{office}</span> <span className="text-[#6b6e76]">· {preview.subject}</span>
             </p>
-            <iframe title={t.preview} srcDoc={preview.html} sandbox="" className="block h-[700px] w-full" />
+            {/* O mesmo HTML do e-mail (texto já escapado), sem links clicáveis */}
+            <div className="pointer-events-none select-none" aria-label={t.preview} dangerouslySetInnerHTML={{ __html: preview.body }} />
           </div>
         </div>
       </div>
