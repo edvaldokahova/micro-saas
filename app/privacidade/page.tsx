@@ -56,6 +56,11 @@ export default function Privacidade() {
         <ul>
           <li>Prestar o serviço contratado e gerir a sua conta (execução do contrato).</li>
           <li>Enviar e-mails de acesso e de segurança, como o link de entrada (execução do contrato).</li>
+          <li>
+            Enviar, em nome do escritório e só se este os ativar, lembretes automáticos por e-mail aos clientes com
+            documentos em falta (como subcontratante, segundo as instruções do escritório). Estes e-mails não incluem
+            publicidade e não pedem palavras-passe, dados bancários nem pagamentos.
+          </li>
           <li>Processar pagamentos e cumprir obrigações fiscais e contabilísticas (obrigação legal e execução do contrato).</li>
           <li>Garantir a segurança e prevenir abusos (interesse legítimo).</li>
           <li>Responder aos seus pedidos de suporte (execução do contrato e interesse legítimo).</li>
@@ -78,7 +83,7 @@ export default function Privacidade() {
         <ul>
           <li><strong>Supabase</strong>: base de dados e autenticação, numa região da União Europeia (Irlanda).</li>
           <li><strong>Vercel</strong>: alojamento da aplicação. Quando aplicável, as transferências para fora do Espaço Económico Europeu apoiam-se em cláusulas contratuais-tipo.</li>
-          <li><strong>Resend</strong>: envio de e-mails de acesso, com servidores na União Europeia.</li>
+          <li><strong>Resend</strong>: envio de e-mails de acesso e dos lembretes automáticos dos escritórios, com servidores na União Europeia.</li>
           <li>
             <strong>Paddle</strong> (Paddle.com Market Limited): <em>Merchant of Record</em>. Trata do pagamento, da
             faturação, dos impostos e dos reembolsos das assinaturas, e atua como responsável autónomo pelos dados de
@@ -92,6 +97,7 @@ export default function Privacidade() {
         <ul>
           <li>Enquanto a conta estiver ativa.</li>
           <li>Após o cancelamento ou fim do teste, apagamos os dados da conta e dos clientes do escritório até 30 dias depois, salvo pedido de eliminação mais cedo.</li>
+          <li>O registo dos lembretes automáticos (data e pedido a que respeitam, sem o conteúdo do e-mail) segue a mesma regra dos dados do escritório.</li>
           <li>Os registos de faturação são conservados pelo prazo exigido por lei.</li>
         </ul>
       </section>

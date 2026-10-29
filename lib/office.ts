@@ -20,13 +20,19 @@ export type Office = {
   billing_interval: string | null;
   reminder_template: string | null;
   owner_id: string;
+  auto_remind: boolean;
+  auto_days_before: number;
+  auto_repeat_days: number;
+  auto_max: number;
+  email_subject: string | null;
+  email_message: string | null;
 };
 
 // Papel de quem está na sessão: dono da conta (paga a assinatura), administrador ou colaborador
 export type Role = "owner" | "admin" | "member";
 
 const columns =
-  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id";
+  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id, auto_remind, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message";
 
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {

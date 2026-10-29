@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/office";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { buildReminderEmail } from "@/lib/email-template";
+import { emailOk, fromOffice, sendOne } from "@/lib/mailer";
 import { site } from "@/lib/site";
 import { isLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import { cookies } from "next/headers";
@@ -211,6 +213,71 @@ export async function updateSettings(formData: FormData) {
   }
   revalidatePath("/app", "layout");
   redirect("/definicoes?ok=1");
+}
+
+// Lembretes automáticos por e-mail: ligar/desligar, quando enviar e o texto do e-mail
+export async function updateAutoRemind(formData: FormData) {
+  const { supabase, office, isManager } = await getSession();
+  if (!isManager) redirect("/");
+  const int = (k: string, min: number, max: number, fallback: number) => {
+    const n = Number(formData.get(k));
+    return Number.isInteger(n) && n >= min && n <= max ? n : fallback;
+  };
+  const { error } = await supabase
+    .from("offices")
+    .update({
+      auto_remind: formData.get("auto_remind") === "on",
+      auto_days_before: int("auto_days_before", 0, 15, 3),
+      auto_repeat_days: int("auto_repeat_days", 1, 15, 3),
+      auto_max: int("auto_max", 1, 5, 2),
+      email_subject: text(formData.get("email_subject"), 160),
+      email_message: text(formData.get("email_message"), 1500),
+    })
+    .eq("id", office.id);
+  if (error) redirect(`/definicoes?erro=${errorCode(error.message, error.code)}#automatico`);
+  revalidatePath("/app", "layout");
+  redirect("/definicoes?ok=1#automatico");
+}
+
+// Envia um e-mail de exemplo para quem está na sessão, com o assunto e a mensagem que estão no formulário
+export async function sendTestEmail(formData: FormData) {
+  const { office, user, isManager, d } = await getSession();
+  if (!isManager) redirect("/");
+  if (!emailOk(user.email)) redirect("/definicoes?erro=generic#automatico");
+  const admin = createAdminClient();
+  // No máximo 5 testes por dia e por escritório
+  const since = `${new Date().toISOString().slice(0, 10)}T00:00:00Z`;
+  const { count } = await admin
+    .from("auto_email_log")
+    .select("id", { count: "exact", head: true })
+    .eq("office_id", office.id)
+    .is("request_id", null)
+    .gte("sent_at", since);
+  if ((count ?? 0) >= 5) redirect("/definicoes?erro=teste#automatico");
+
+  const sample = d.app.settings.auto.sample;
+  const mail = buildReminderEmail(d.autoEmail, {
+    office: office.name,
+    client: sample.client,
+    period: sample.period,
+    dueLabel: sample.due,
+    missing: 2,
+    total: 5,
+    link: `${site.url}/#lado-do-cliente`,
+    subject: text(formData.get("email_subject"), 160),
+    message: text(formData.get("email_message"), 1500),
+  });
+  const reply = emailOk(office.contact_email) ? office.contact_email.trim() : user.email;
+  const result = await sendOne({ from: fromOffice(office.name), to: [user.email], reply_to: reply, subject: mail.subject, html: mail.html, text: mail.text });
+  await admin.from("auto_email_log").insert({
+    office_id: office.id,
+    request_id: null,
+    ok: result.ok,
+    provider_id: result.ok ? result.ids[0] : null,
+    error: result.ok ? null : result.error.slice(0, 300),
+  });
+  if (!result.ok) redirect("/definicoes?erro=teste#automatico");
+  redirect(`/definicoes?teste=${encodeURIComponent(user.email)}#automatico`);
 }
 
 export async function addDocType(formData: FormData) {

@@ -19,6 +19,8 @@ function reminderText(office: Office, locale: Locale, d: Dictionary, req: Remind
     mes: formatPeriod(req.period, locale, req.months).toLowerCase(),
     periodo: periodOf(req.period, locale, req.months),
     lista: pendingLabels.map((l) => `• ${l}`).join("\n"),
+    // Quantos faltam (o padrão não lista quais: o cliente abre o link para os ver)
+    em_falta: pendingLabels.length === 1 ? d.autoEmail.missingOne : fill(d.autoEmail.missingMany, { n: String(pendingLabels.length) }),
     link: publicLink(req.token),
     escritorio: office.name,
   });

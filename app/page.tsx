@@ -60,7 +60,14 @@ export default async function Home() {
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
   const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
   const message = (cliente: string, docs: string[]) =>
-    fill(d.app.whatsappTemplate, { cliente, periodo: period, lista: docs.map((l) => `• ${l}`).join("\n"), link, escritorio: h.demo.office });
+    fill(d.app.whatsappTemplate, {
+      cliente,
+      periodo: period,
+      lista: docs.map((l) => `• ${l}`).join("\n"),
+      em_falta: docs.length === 1 ? d.autoEmail.missingOne : fill(d.autoEmail.missingMany, { n: String(docs.length) }),
+      link,
+      escritorio: h.demo.office,
+    });
   const laptop: WindowTexts = {
     title: h.story.title,
     lead: h.story.lead,
@@ -79,6 +86,7 @@ export default async function Home() {
         month: h.mock.month,
         collected: d.app.dashboard.collectedIn(locale === "es-ES" ? "octubre de 2026" : "outubro de 2026"),
         newRequest: d.app.request.newTitle,
+        auto: d.app.settings.auto.title,
         channels: d.common.via,
         stats: { requests: d.app.dashboard.statRequests, delivered: d.app.dashboard.statComplete, pending: d.app.dashboard.statMissing, late: d.app.dashboard.statLate },
         createAll: d.app.dashboard.createAll(5),

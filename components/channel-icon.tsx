@@ -1,4 +1,5 @@
-import { Mail, MessageCircle, Ellipsis } from "lucide-react";
+import { Ellipsis } from "lucide-react";
+import { ChannelLogo } from "@/components/channel-logo";
 
 export type Channel = "whatsapp" | "email" | "other";
 
@@ -6,9 +7,8 @@ export function isChannel(v: unknown): v is Channel {
   return v === "whatsapp" || v === "email" || v === "other";
 }
 
-// Ícone do canal por onde o cliente enviou o documento
+// Ícone do canal por onde o cliente enviou o documento (logótipos reais para WhatsApp e e-mail)
 export function ChannelIcon({ via, className = "h-3.5 w-3.5" }: { via: Channel; className?: string }) {
-  if (via === "whatsapp") return <MessageCircle className={`${className} text-[#1f9d55]`} aria-hidden />;
-  if (via === "email") return <Mail className={`${className} text-gold`} aria-hidden />;
+  if (via === "whatsapp" || via === "email") return <ChannelLogo channel={via} className={className} />;
   return <Ellipsis className={`${className} text-muted`} aria-hidden />;
 }

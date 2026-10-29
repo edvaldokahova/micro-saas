@@ -20,8 +20,9 @@ export default function Termos() {
         <h2>1. O serviço</h2>
         <p>
           O {site.name} é uma aplicação online, da {site.owner}, que permite a escritórios de contabilidade e
-          profissionais semelhantes pedir documentos aos seus clientes por link, acompanhar o estado de cada documento e
-          preparar lembretes por WhatsApp. Destina-se a uso profissional.
+          profissionais semelhantes pedir documentos aos seus clientes por link, acompanhar o estado de cada documento,
+          preparar lembretes por WhatsApp ou e-mail e, se o escritório o ativar, enviar lembretes automáticos por e-mail em
+          seu nome. Destina-se a uso profissional.
         </p>
         <Identity />
       </section>
@@ -75,6 +76,10 @@ export default function Termos() {
           <li>Não envie spam, mensagens abusivas ou enganosas, nem contacte pessoas sem fundamento legal para o fazer.</li>
           <li>Não tente aceder a dados de outros escritórios, contornar limites do plano ou comprometer a segurança do serviço.</li>
           <li>Não introduza dados que não tenha o direito de tratar.</li>
+          <li>
+            Nos lembretes automáticos, não use o texto do e-mail para publicidade, para pedir pagamentos, palavras-passe ou
+            dados bancários, nem para se fazer passar por outra entidade.
+          </li>
         </ul>
       </section>
 
@@ -89,10 +94,21 @@ export default function Termos() {
       </section>
 
       <section>
-        <h2>8. WhatsApp</h2>
+        <h2>8. Lembretes</h2>
         <p>
-          Os lembretes são preparados pelo serviço mas enviados por si, a partir do seu próprio WhatsApp. Não somos
-          afiliados ao WhatsApp nem à Meta e não controlamos a entrega das mensagens.
+          <strong>Por WhatsApp e lembretes manuais por e-mail:</strong> o serviço prepara a mensagem, mas é o escritório
+          que a envia, a partir do seu próprio WhatsApp ou programa de e-mail. Não somos afiliados ao WhatsApp nem à Meta e
+          não controlamos a entrega dessas mensagens.
+        </p>
+        <p>
+          <strong>Lembretes automáticos por e-mail (opcional):</strong> quando o escritório os ativa nas Definições, o
+          serviço envia, em nome do escritório e segundo as regras que este escolhe, e-mails de lembrete aos clientes que
+          ainda têm documentos em falta. O e-mail mostra o nome do escritório como remetente, as respostas seguem para o
+          e-mail do escritório e o rodapé identifica a mensagem como automática. O escritório é responsável por ter
+          fundamento legal para contactar cada destinatário, pela exatidão dos endereços que introduz e pelo texto que
+          personaliza. Pode desligar o envio automático a qualquer momento. Podemos limitar o número de envios diários e
+          suspender o envio automático em caso de abuso, queixas ou risco para a entrega de e-mails. Não garantimos a
+          entrega de cada mensagem, que depende também dos serviços de e-mail dos destinatários.
         </p>
       </section>
 

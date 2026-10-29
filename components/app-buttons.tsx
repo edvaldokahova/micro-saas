@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Check, Copy, Mail, MessageCircle } from "lucide-react";
+import { Check, Copy } from "lucide-react";
+import { ChannelLogo } from "@/components/channel-logo";
 import { bumpReminder } from "@/app/app/actions";
 import { BusyLabel } from "@/components/spinner";
 
@@ -22,7 +23,6 @@ export function ReminderButton({
   channel?: "whatsapp" | "email";
   secondary?: boolean;
 }) {
-  const Icon = channel === "email" ? Mail : MessageCircle;
   const look = compact || secondary ? "btn-secondary" : channel === "email" ? "btn-primary" : "btn-whatsapp";
   return (
     <a
@@ -35,7 +35,7 @@ export function ReminderButton({
       aria-label={label}
       title={label}
     >
-      <Icon className="h-4 w-4" aria-hidden />
+      <ChannelLogo channel={channel} className="h-[18px] w-[18px]" />
       <span className={compact ? "hidden sm:inline" : ""}>{label}</span>
     </a>
   );

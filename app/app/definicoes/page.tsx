@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Mail, MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
+import { ChannelLogo } from "@/components/channel-logo";
 import { AccessFields } from "@/components/access-fields";
+import { AutoEmailSettings } from "@/components/auto-email-settings";
 import { SubmitButton } from "@/components/app-buttons";
 import { Flag } from "@/components/flags";
 import { Flash } from "@/components/flash";
@@ -12,9 +14,9 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Definições" };
 
-export default async function Definicoes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string; convite?: string }> }) {
+export default async function Definicoes({ searchParams }: { searchParams: Promise<{ erro?: string; ok?: string; convite?: string; teste?: string }> }) {
   const sp = await searchParams;
-  const { supabase, office, locale, d, isManager } = await getSession();
+  const { supabase, office, locale, d, isManager, user } = await getSession();
   if (!isManager) redirect("/");
   const t = d.app.settings;
   const [{ data }, { data: teamData }] = await Promise.all([
@@ -35,7 +37,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       <p className="eyebrow">{t.office}</p>
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
       <div className="mt-6">
-        <Flash d={d} error={sp.erro} success={sp.convite ? d.app.team.invited(sp.convite) : sp.ok ? d.common.saved : null} />
+        <Flash d={d} error={sp.erro} success={sp.convite ? d.app.team.invited(sp.convite) : sp.teste ? t.auto.testSent(sp.teste) : sp.ok ? d.common.saved : null} />
       </div>
 
       <form action={updateSettings} className="card space-y-5 p-5 sm:p-6">
@@ -92,6 +94,51 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         <SubmitButton pendingText={d.common.saving}>{d.common.save}</SubmitButton>
       </form>
 
+      <section id="automatico" className="mt-8 scroll-mt-24">
+        <AutoEmailSettings
+          t={{
+            title: t.auto.title,
+            hint: t.auto.hint,
+            toggle: t.auto.toggle,
+            channels: t.auto.channels,
+            email: t.auto.email,
+            whatsapp: t.auto.whatsapp,
+            included: t.auto.included,
+            soon: t.auto.soon,
+            first: t.auto.first,
+            repeat: t.auto.repeat,
+            max: t.auto.max,
+            subject: t.auto.subject,
+            message: t.auto.message,
+            vars: t.auto.vars,
+            preview: t.auto.preview,
+            sender: t.auto.sender(office.name),
+            noReply: t.auto.noReply,
+            when: t.auto.when,
+            save: d.common.save,
+            saving: d.common.saving,
+            test: t.auto.test,
+          }}
+          email={d.autoEmail}
+          sample={{ ...t.auto.sample, link: `${site.clientUrl}/p/exemplo` }}
+          office={office.name}
+          replyTo={office.contact_email || user.email || null}
+          defaults={{
+            on: office.auto_remind,
+            first: office.auto_days_before,
+            repeat: office.auto_repeat_days,
+            max: office.auto_max,
+            subject: office.email_subject ?? "",
+            message: office.email_message ?? "",
+          }}
+          options={{
+            first: [0, 1, 2, 3, 5, 7].map((n) => ({ value: String(n), label: t.auto.firstOpt(n) })),
+            repeat: [2, 3, 4, 5, 7].map((n) => ({ value: String(n), label: t.auto.repeatOpt(n) })),
+            max: [1, 2, 3].map((n) => ({ value: String(n), label: t.auto.maxOpt(n) })),
+          }}
+        />
+      </section>
+
       <section id="equipa" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
         <h2 className="font-display text-lg">{tm.title}</h2>
         <p className="mt-1 text-sm text-muted">{tm.hint}</p>
@@ -112,12 +159,12 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
                       <p className="flex flex-wrap gap-x-3 font-mono text-[11px] text-muted">
                         {m.phone && (
                           <span className="inline-flex items-center gap-1">
-                            <MessageCircle className="h-3 w-3" aria-hidden /> {m.phone}
+                            <ChannelLogo channel="whatsapp" className="h-3 w-3" /> {m.phone}
                           </span>
                         )}
                         {m.email && (
                           <span className="inline-flex items-center gap-1">
-                            <Mail className="h-3 w-3" aria-hidden /> {m.email}
+                            <ChannelLogo channel="email" className="h-3 w-3" /> {m.email}
                           </span>
                         )}
                       </p>

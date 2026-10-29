@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { CalendarClock, FolderUp, Lock, Mail, MessageCircle, UserRound } from "lucide-react";
+import { CalendarClock, FolderUp, Lock, UserRound } from "lucide-react";
+import { ChannelLogo } from "@/components/channel-logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, whatsappNumber, type Locale } from "@/lib/i18n";
 import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
@@ -146,20 +147,20 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
             )}
             <div className="mt-4 grid gap-2 sm:grid-cols-2 [&_.btn]:min-h-[3.1rem]">
               {waHref && (
-                <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
-                  <MessageCircle className="h-4 w-4" aria-hidden /> {t.sendWhatsapp}
+                <a href={waHref} target="_blank" rel="noopener noreferrer" className={`btn btn-whatsapp ${!req.office_email && !req.upload_url ? "sm:col-span-2" : ""}`}>
+                  <ChannelLogo channel="whatsapp" className="h-5 w-5" /> {t.sendWhatsapp}
                 </a>
               )}
               {req.office_email && (
                 <a
                   href={`mailto:${req.office_email}?subject=${encodeURIComponent(`${t.emailSubject(ofPeriod)} · ${req.client_name}`)}`}
-                  className="btn btn-secondary"
+                  className={`btn ${waHref ? "btn-secondary" : "btn-primary"} ${!waHref && !req.upload_url ? "sm:col-span-2" : ""}`}
                 >
-                  <Mail className="h-4 w-4" aria-hidden /> {t.sendEmail}
+                  <ChannelLogo channel="email" className="h-5 w-5" /> {t.sendEmail}
                 </a>
               )}
               {req.upload_url && /^https:\/\//.test(req.upload_url) && (
-                <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary sm:col-span-2">
+                <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className={`btn ${waHref || req.office_email ? "btn-secondary" : "btn-primary"} sm:col-span-2`}>
                   <FolderUp className="h-4 w-4" aria-hidden /> {t.sendPortal}
                 </a>
               )}

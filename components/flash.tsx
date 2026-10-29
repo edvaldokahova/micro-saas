@@ -15,6 +15,7 @@ export function errorText(d: Dictionary, code: string): string {
     emailRequired: e.emailRequired,
     emailTaken: e.emailTaken,
     invite: e.invite,
+    teste: d.app.settings.auto.testError,
   };
   return map[code] ?? d.common.errorGeneric;
 }

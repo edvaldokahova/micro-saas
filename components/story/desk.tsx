@@ -40,6 +40,7 @@ export type DeskTexts = {
     message: string;
     via: string;
     channels: Record<Channel, string>;
+    auto: string;
     clientsTitle: string;
     clientsCount: string;
     addClient: string;
@@ -219,7 +220,16 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
           <p className={`mt-1.5 ${h1}`}>{u.month}</p>
           <p className="mt-2 text-[13.5px] text-muted">{u.collected}</p>
         </div>
-        <span className="btn btn-primary btn-sm">+ {u.newRequest}</span>
+        <div className="flex items-center gap-3">
+          {/* Lembretes automáticos ligados (discreto) */}
+          <span className="flex items-center gap-2 rounded-full border border-line bg-ink-2 py-1.5 pl-3 pr-1.5 text-[12.5px] text-muted">
+            {u.auto}
+            <span className="relative h-[18px] w-[30px] rounded-full bg-ivory">
+              <span className="absolute right-[2px] top-[2px] h-[14px] w-[14px] rounded-full bg-ink-2" />
+            </span>
+          </span>
+          <span className="btn btn-primary btn-sm">+ {u.newRequest}</span>
+        </div>
       </div>
 
       {!s.created ? (
