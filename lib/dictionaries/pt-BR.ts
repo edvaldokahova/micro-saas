@@ -88,7 +88,6 @@ const dict: Dictionary = {
     },
     statement: "Todo mês, a mesma lista de documentos, as mesmas mensagens e os mesmos clientes atrasados. O Bilonai cuida dessa parte e devolve seu tempo para a contabilidade.",
     fit: {
-      eyebrow: "Para quem é",
       title: "Para o escritório que não quer obrigar os clientes a usar um portal.",
       points: [
         { title: "O cliente não muda de hábito", text: "Continua enviando pelo WhatsApp ou por e-mail, como sempre. Sem conta, sem aplicativo, sem senha: abre um link e vê o que falta." },

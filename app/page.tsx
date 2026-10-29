@@ -5,6 +5,7 @@ import { HeroIntro } from "@/components/hero-intro";
 import { PageMotion } from "@/components/page-motion";
 import { WindowStory, type WindowTexts } from "@/components/story/window-story";
 import { DocsArt, LinkArt, MonthArt } from "@/components/art";
+import { FitStory } from "@/components/story/fit-story";
 import { PhoneStory, type PhoneStoryTexts } from "@/components/story/phone-story";
 import { PricingPlans } from "@/components/pricing";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
@@ -169,9 +170,6 @@ export default async function Home() {
         <section>
           <HeroIntro>
             <div className="relative mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
-              <div className="absolute right-5 top-24 hidden lg:block" data-hero-rest>
-                <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
-              </div>
               <h1 data-hero-title data-parallax="0.35" className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] lg:max-w-[10.5ch] leading-[0.93] tracking-[-0.045em]">
                 {h.title}
               </h1>
@@ -185,6 +183,9 @@ export default async function Home() {
                   </Link>
                   <p className="text-[13.5px] text-muted">{d.common.noCard}</p>
                 </div>
+              </div>
+              <div className="mt-14 flex justify-center lg:absolute lg:right-5 lg:top-24 lg:mt-0 lg:block" data-hero-rest>
+                <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
               </div>
             </div>
           </HeroIntro>
@@ -203,27 +204,7 @@ export default async function Home() {
         <PhoneStory t={phone} />
 
         {/* Para quem é: sem portal para o cliente, sem ferramenta pesada para o escritório */}
-        <section className="border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-10 px-5 py-28 sm:py-36 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
-            <div>
-              <p className="text-[13px] font-medium uppercase tracking-[0.14em] text-muted">{h.fit.eyebrow}</p>
-              <h2 data-split="chars" className="mt-5 max-w-[17ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.fit.title}</h2>
-            </div>
-            <ol className="divide-y divide-line border-y border-line lg:self-end">
-              {h.fit.points.map((p, i) => (
-                <li key={p.title} className="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 py-6">
-                  <span className="pt-0.5 font-display text-[15px] tabular-nums text-muted" aria-hidden>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 className="text-[17px] font-medium">{p.title}</h3>
-                    <p className="mt-2 max-w-[48ch] leading-7 text-muted">{p.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        <FitStory t={h.fit} />
 
         {/* Preços */}
         <section id="precos" className="scroll-mt-16 border-t border-line">

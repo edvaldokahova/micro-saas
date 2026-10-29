@@ -465,3 +465,30 @@ body {
     opacity: 0.15;
   }
 }
+
+/* «Para quem é»: três pontinhos que pulsam enquanto o ponto seguinte está a chegar */
+.fit-dots > span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-muted);
+  animation: fit-dot 1.2s ease-in-out infinite;
+}
+.fit-dots > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.fit-dots > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes fit-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

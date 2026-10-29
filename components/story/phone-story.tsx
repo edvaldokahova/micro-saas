@@ -96,6 +96,8 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
 
   return (
     <section id="lado-do-cliente" className="border-t border-line">
+      {/* No telemóvel não há espaço dentro da secção fixa: a ilustração fica logo antes */}
+      <div className="flex justify-center px-5 pb-2 pt-24 lg:hidden">{t.art}</div>
       <div ref={pin} className={`relative ${reduced ? "py-20" : "h-[100svh] pt-[76px]"}`}>
         <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-5 pb-3 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-x-16 lg:gap-y-2">
           <div className="lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:justify-center">

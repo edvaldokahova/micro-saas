@@ -117,7 +117,7 @@ export function WindowStory({ t }: { t: WindowTexts }) {
             {t.lead}
           </p>
         </div>
-        <div className="hidden lg:block">{t.art}</div>
+        <div className="flex justify-center lg:block">{t.art}</div>
       </div>
 
       <div ref={pin} className={`relative flex flex-col justify-center ${reduced ? "py-10" : "h-[100svh] pb-4 pt-[80px]"}`}>
