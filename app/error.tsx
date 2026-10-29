@@ -5,7 +5,7 @@
 // Outra falha: pede desculpa e oferece "Tentar de novo".
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Wordmark } from "@/components/logo";
+import { Mark, Wordmark } from "@/components/logo";
 
 const T = {
   "pt-PT": {
@@ -58,7 +58,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <main className="grid min-h-dvh place-items-center bg-ink px-5 py-16 text-center">
       <div className="max-w-[420px]">
-        <EyeMark spinning={offline} />
+        <Mark spin={offline} className="mx-auto h-[76px] w-[76px] text-ivory" />
         <h1 className="mt-7 font-display text-[30px] leading-[1.08]">{offline ? t.offTitle : t.errTitle}</h1>
         <p className="mt-3 text-[16px] leading-[1.55] text-muted">{offline ? t.offLead : t.errLead}</p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -85,18 +85,3 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   );
 }
 
-// O olho do logótipo; sem rede, os anéis rodam devagar (como quem procura sinal)
-function EyeMark({ spinning }: { spinning: boolean }) {
-  const spin = spinning ? "motion-safe:animate-[spin_6s_linear_infinite]" : "";
-  return (
-    <svg viewBox="-50 -50 100 100" className="mx-auto h-[76px] w-[76px] text-ivory" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden>
-      <g className={`origin-center [transform-box:fill-box] ${spin}`}>
-        <circle r="40" strokeWidth="5" strokeDasharray="205 46.33" transform="rotate(-60)" />
-      </g>
-      <g className={`origin-center [transform-box:fill-box] ${spinning ? "motion-safe:animate-[spin_4.5s_linear_infinite_reverse]" : ""}`}>
-        <circle r="25" strokeWidth="4.5" strokeDasharray="120 37.08" transform="rotate(120)" />
-      </g>
-      <circle r="9" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}

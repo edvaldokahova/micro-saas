@@ -1,7 +1,7 @@
 // Service worker do Bilonai: só uma tarefa.
 // Guarda a página "Sem ligação" (offline.html) e mostra-a quando uma página não abre por falta de internet.
 // Não guarda mais nada em cache: com internet, tudo vem sempre do servidor, como antes.
-const CACHE = "bilonai-offline-v1";
+const CACHE = "bilonai-offline-v2";
 const OFFLINE = "/offline.html";
 
 self.addEventListener("install", (event) => {
