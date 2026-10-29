@@ -202,6 +202,29 @@ export default async function Home() {
         <WindowStory t={laptop} />
         <PhoneStory t={phone} />
 
+        {/* Para quem é: sem portal para o cliente, sem ferramenta pesada para o escritório */}
+        <section className="border-t border-line">
+          <div className="mx-auto grid max-w-6xl gap-10 px-5 py-28 sm:py-36 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
+            <div>
+              <p className="text-[13px] font-medium uppercase tracking-[0.14em] text-muted">{h.fit.eyebrow}</p>
+              <h2 data-split="chars" className="mt-5 max-w-[17ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.fit.title}</h2>
+            </div>
+            <ol className="divide-y divide-line border-y border-line lg:self-end">
+              {h.fit.points.map((p, i) => (
+                <li key={p.title} className="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 py-6">
+                  <span className="pt-0.5 font-display text-[15px] tabular-nums text-muted" aria-hidden>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="text-[17px] font-medium">{p.title}</h3>
+                    <p className="mt-2 max-w-[48ch] leading-7 text-muted">{p.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
         {/* Preços */}
         <section id="precos" className="scroll-mt-16 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">

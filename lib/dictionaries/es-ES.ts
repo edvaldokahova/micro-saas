@@ -88,6 +88,15 @@ const dict: Dictionary = {
       confirmed: "Documentos confirmados",
     },
     statement: "Cada trimestre, la misma lista de documentos, los mismos mensajes y los mismos clientes con retraso. Bilonai se encarga de esa parte y te devuelve tiempo para la contabilidad.",
+    fit: {
+      eyebrow: "Para quién es",
+      title: "Para el despacho que no quiere obligar a sus clientes a usar un portal.",
+      points: [
+        { title: "El cliente no cambia de hábitos", text: "Sigue enviando por WhatsApp o por correo, como siempre. Sin cuenta, sin aplicación, sin contraseña: abre un enlace y ve lo que falta." },
+        { title: "Sin implantación", text: "Nada de semanas de configuración ni de formar al equipo. Añades los clientes, creas las solicitudes del trimestre y empiezas el mismo día." },
+        { title: "Solo lo esencial", text: "Una herramienta para una tarea: saber quién ha entregado, qué falta y por dónde llegó cada documento. Lo demás sigue en tu programa de siempre." },
+      ],
+    },
     story: {
       title: "Un periodo de recogida, de la primera solicitud al último documento.",
       lead: "Sigue bajando: el cursor hace cada tarea en el propio panel. Cuando crees la cuenta, ya sabrás dónde hacer clic.",
