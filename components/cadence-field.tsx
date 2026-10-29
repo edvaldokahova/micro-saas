@@ -19,7 +19,7 @@ export function CadenceField({
         {(["monthly", "quarterly"] as const).map((v) => (
           <label
             key={v}
-            className="cursor-pointer rounded-lg px-3 py-2 text-center text-sm text-muted transition has-[:checked]:bg-ink-2 has-[:checked]:font-medium has-[:checked]:text-ivory has-[:checked]:shadow-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold/50"
+            className="cursor-pointer rounded-lg px-3 py-2 text-center text-sm text-muted transition has-[:checked]:bg-ink-2 has-[:checked]:font-medium has-[:checked]:text-ivory has-[:checked]:shadow-sm has-[:focus-visible]:outline has-[:focus-visible]:outline-[1.5px] has-[:focus-visible]:outline-ivory"
           >
             <input type="radio" name="cadence" value={v} defaultChecked={defaultValue === v} className="sr-only" />
             {labels[v]}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, Copy, Mail, MessageCircle } from "lucide-react";
 import { bumpReminder } from "@/app/app/actions";
+import { BusyLabel } from "@/components/spinner";
 
 // Abre o WhatsApp (ou o programa de e-mail) com a mensagem pronta e regista o lembrete
 export function ReminderButton({
@@ -77,12 +78,15 @@ export function SubmitButton({
     <button
       type="submit"
       disabled={pending}
+      aria-busy={pending}
       className={className}
       onClick={(e) => {
         if (confirm && !window.confirm(confirm)) e.preventDefault();
       }}
     >
-      {pending && pendingText ? pendingText : children}
+      <BusyLabel busy={pending} text={pendingText}>
+        {children}
+      </BusyLabel>
     </button>
   );
 }

@@ -6,6 +6,7 @@ import { changePlan, startCheckout, type BillingError } from "@/app/app/assinatu
 import { loadPaddle } from "@/lib/paddle/client";
 import type { BillingInterval } from "@/lib/paddle/config";
 import type { PlanKey } from "@/lib/site";
+import { BusyLabel } from "@/components/spinner";
 
 export type BillingTexts = {
   opening: string;
@@ -61,8 +62,10 @@ export function SubscribeButton({
 
   return (
     <div className="space-y-2">
-      <button type="button" onClick={onClick} disabled={pending} className={`btn w-full ${primary ? "btn-primary" : "btn-secondary"}`}>
-        {pending ? t.opening : label}
+      <button type="button" onClick={onClick} disabled={pending} aria-busy={pending} className={`btn w-full ${primary ? "btn-primary" : "btn-secondary"}`}>
+        <BusyLabel busy={pending} text={t.opening}>
+          {label}
+        </BusyLabel>
       </button>
       {error && <p className="text-sm text-bad">{error}</p>}
     </div>
@@ -100,8 +103,10 @@ export function ChangePlanButton({
 
   return (
     <div className="space-y-2">
-      <button type="button" onClick={onClick} disabled={pending} className="btn btn-secondary w-full">
-        {pending ? t.changing : label}
+      <button type="button" onClick={onClick} disabled={pending} aria-busy={pending} className="btn btn-secondary w-full">
+        <BusyLabel busy={pending} text={t.changing}>
+          {label}
+        </BusyLabel>
       </button>
       {message && <p className="text-sm text-muted">{message}</p>}
     </div>

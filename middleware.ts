@@ -79,5 +79,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Todas as páginas (para os domínios), exceto ficheiros estáticos e a API (webhooks da Paddle).
-  matcher: ["/((?!_next/|api/|favicon.png|android-chrome|email/|story/|.*\\.(?:png|jpg|jpeg|webp|svg|ico|txt|xml)$).*)"],
+  matcher: ["/((?!_next/|api/|favicon.png|android-chrome|email/|story/|sw.js|offline.html|.*\\.(?:png|jpg|jpeg|webp|svg|ico|txt|xml)$).*)"],
 };

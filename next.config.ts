@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // Service worker: o navegador verifica sempre se há versão nova
+      {
+        source: "/sw.js",
+        headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }],
+      },
       // Links de pedido nunca devem ser indexados nem passar o token por Referer
       {
         source: "/p/:token*",

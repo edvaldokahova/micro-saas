@@ -6,6 +6,7 @@ import { MailCheck } from "lucide-react";
 import { Flag } from "@/components/flags";
 import { createClient } from "@/lib/supabase/client";
 import { localeMeta, locales, type Locale } from "@/lib/locales";
+import { BusyLabel } from "@/components/spinner";
 
 type Mode = "login" | "signup";
 
@@ -89,9 +90,7 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
               {locales.map((l) => (
                 <label
                   key={l}
-                  className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition ${
-                    locale === l ? "border-gold bg-gold/10" : "border-line hover:border-gold/50"
-                  }`}
+                  className="choice flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm"
                 >
                   <input type="radio" name="locale" value={l} checked={locale === l} onChange={() => setLocale(l)} className="sr-only" />
                   <Flag locale={l} />
@@ -121,7 +120,7 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
             required
             checked={accepted}
             onChange={(e) => setAccepted(e.target.checked)}
-            className="mt-1 h-4 w-4 accent-[var(--color-gold)]"
+            className="mt-1 h-4 w-4 accent-[var(--color-ivory)]"
           />
           <span>
             {t.acceptA}{" "}
@@ -131,8 +130,10 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
         </label>
       )}
       {state === "error" && <p className="text-sm text-bad">{message}</p>}
-      <button type="submit" disabled={state === "sending"} className="btn btn-primary w-full py-3.5">
-        {state === "sending" ? t.sending : mode === "signup" ? t.submitSignup : t.submitLogin}
+      <button type="submit" disabled={state === "sending"} aria-busy={state === "sending"} className="btn btn-primary w-full py-3.5">
+        <BusyLabel busy={state === "sending"} text={t.sending}>
+          {mode === "signup" ? t.submitSignup : t.submitLogin}
+        </BusyLabel>
       </button>
     </form>
   );

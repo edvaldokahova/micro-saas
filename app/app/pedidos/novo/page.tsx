@@ -109,9 +109,9 @@ export default async function NovoPedido({
             {options.map((label) => (
               <label
                 key={label}
-                className="flex cursor-pointer items-center gap-3 rounded-xl border border-line px-3.5 py-3 text-sm transition has-[:checked]:border-gold/60 has-[:checked]:bg-gold/5"
+                className="choice flex cursor-pointer items-center gap-3 rounded-xl px-3.5 py-3 text-sm"
               >
-                <input type="checkbox" name="doc" value={label} defaultChecked={checked.has(label)} className="h-4 w-4 accent-[var(--color-gold)]" />
+                <input type="checkbox" name="doc" value={label} defaultChecked={checked.has(label)} className="h-4 w-4 accent-[var(--color-ivory)]" />
                 {label}
               </label>
             ))}

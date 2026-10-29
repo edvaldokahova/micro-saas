@@ -66,7 +66,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
             {locales.map((l) => (
               <label
                 key={l}
-                className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-line px-3 py-2.5 text-sm transition has-[:checked]:border-gold has-[:checked]:bg-gold/10"
+                className="choice flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm"
               >
                 <input type="radio" name="locale" value={l} defaultChecked={l === locale} className="sr-only" />
                 <Flag locale={l} />

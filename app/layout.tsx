@@ -3,6 +3,7 @@ import { Instrument_Sans } from "next/font/google";
 import { getDictionary, localeMeta, locales } from "@/lib/i18n";
 import { getLocale, getTheme } from "@/lib/prefs";
 import { site } from "@/lib/site";
+import { OfflineReady } from "@/components/offline-ready";
 import "./globals.css";
 
 // Uma só família: Instrument Sans (variável em peso e largura; os títulos usam a versão mais estreita)
@@ -36,7 +37,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const [locale, theme] = await Promise.all([getLocale(), getTheme()]);
   return (
     <html lang={locale} data-theme={theme} className={sans.variable} suppressHydrationWarning>
-      <body className="min-h-dvh font-sans">{children}</body>
+      <body className="min-h-dvh font-sans">
+        {children}
+        <OfflineReady />
+      </body>
     </html>
   );
 }
