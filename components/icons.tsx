@@ -73,6 +73,15 @@ export function IconTick({ className = "h-4 w-4" }: P) {
   );
 }
 
+// Estrela de quatro pontas (a "estrela de IA"), preenchida, para os benefícios dos planos
+export function IconSpark({ className = "h-4 w-4" }: P) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden>
+      <path d="M10 1.5c.5 4.4 2.9 7.3 8.5 8.5-5.6 1.2-8 4.1-8.5 8.5-.5-4.4-2.9-7.3-8.5-8.5 5.6-1.2 8-4.1 8.5-8.5z" />
+    </svg>
+  );
+}
+
 // Selo: escudo arredondado com o visto, para garantias
 export function IconSeal({ className = "h-5 w-5" }: P) {
   return (

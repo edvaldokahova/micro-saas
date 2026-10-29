@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { IconTick } from "@/components/icons";
+import { IconSpark } from "@/components/icons";
 import { ChangePlanButton, SubscribeButton, type BillingTexts } from "@/components/billing-buttons";
 import { formatDate, formatPrice, formatYearlyPerMonth, localeMeta } from "@/lib/i18n";
 import { IntervalToggle } from "@/components/interval-toggle";
@@ -87,10 +87,10 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
                       </p>
                       <p className="mt-1 h-5 text-xs text-muted">{iv === "year" ? d.common.billedYearly(formatPrice(locale, key, "year")) : ""}</p>
                       <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-                        <IconTick className="h-4 w-4 text-gold" /> {d.common.upToClients(p.clientLimit)}
+                        <IconSpark className="h-[15px] w-[15px] shrink-0 text-ivory" /> {d.common.upToClients(p.clientLimit)}
                       </p>
                       <p className="mt-1 flex items-center gap-2 text-sm text-muted">
-                        <IconTick className="h-4 w-4 text-gold" /> {d.common.upToTeam(p.teamLimit)}
+                        <IconSpark className="h-[15px] w-[15px] shrink-0 text-ivory" /> {d.common.upToTeam(p.teamLimit)}
                       </p>
                       <div className="mt-5">
                         {isCurrent ? null : live ? (

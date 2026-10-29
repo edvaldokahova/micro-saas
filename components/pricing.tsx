@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconTick } from "@/components/icons";
+import { IconSpark } from "@/components/icons";
 import { IntervalToggle } from "@/components/interval-toggle";
 import { formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, type Locale } from "@/lib/i18n";
 import { site, type PlanKey } from "@/lib/site";
@@ -48,7 +48,7 @@ export function PricingPlans({ locale }: { locale: Locale }) {
               <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[15px]">
                 {h.features.map((f) => (
                   <li key={f} className="flex items-start gap-3">
-                    <IconTick className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {f}
+                    <IconSpark className="mt-[3px] h-[15px] w-[15px] shrink-0 text-ivory" /> {f}
                   </li>
                 ))}
               </ul>
