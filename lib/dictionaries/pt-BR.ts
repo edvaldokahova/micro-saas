@@ -343,7 +343,7 @@ const dict: Dictionary = {
       template: "Mensagem de cobrança",
       templateHint: "Use {cliente}, {periodo} (ex.: «de setembro de 2026»), {em_falta} (ex.: «3 documentos»), {link} e {escritorio}. Para o cliente abrir o link, a mensagem diz quantos documentos faltam e a página mostra quais ({lista} continua disponível, mas reduz os cliques). Deixe vazio para usar a mensagem padrão.",
       uploadUrl: "Link para enviar arquivos",
-      uploadUrlHint: "Opcional: portal do cliente, pasta do Google Drive, Dropbox ou OneDrive. Aparece como botão na página do cliente.",
+      uploadUrlHint: "Opcional: portal do cliente, pasta do Google Drive, Dropbox ou OneDrive. Aparece como botão na página do cliente, com o nome da plataforma (ex.: «Enviar via Google Drive»).",
       reset: "Restaurar mensagem padrão",
     },
     billing: {
@@ -404,6 +404,7 @@ const dict: Dictionary = {
     instruction: "Envie os documentos pelo canal de sempre e marque aqui o que já enviou.",
     howSent: "Por onde você enviou?",
     sendPortal: "Enviar pelo portal",
+    sendVia: (name: string) => `Enviar via ${name}`,
     yourContact: (name: string) => `Seu contato: ${name}`,
     markSent: "Já enviei",
     sent: "Enviado",

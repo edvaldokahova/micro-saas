@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { CalendarClock, FolderUp, Lock, UserRound } from "lucide-react";
+import { CalendarClock, Lock, UserRound } from "lucide-react";
+import { platformName } from "@/lib/platform";
 import { ChannelLogo } from "@/components/channel-logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, whatsappNumber, type Locale } from "@/lib/i18n";
@@ -161,7 +162,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
               )}
               {req.upload_url && /^https:\/\//.test(req.upload_url) && (
                 <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className={`btn ${waHref || req.office_email ? "btn-secondary" : "btn-primary"} sm:col-span-2`}>
-                  <FolderUp className="h-4 w-4" aria-hidden /> {t.sendPortal}
+                  <ChannelLogo channel="web" className="h-5 w-5" /> {platformName(req.upload_url) ? t.sendVia(platformName(req.upload_url)!) : t.sendPortal}
                 </a>
               )}
             </div>

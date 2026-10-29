@@ -344,7 +344,7 @@ const dict: Dictionary = {
       template: "Mensaje de recordatorio",
       templateHint: "Usa {cliente}, {periodo} (p. ej.: «de septiembre de 2026»), {em_falta} (p. ej.: «3 documentos»), {link} y {escritorio}. Para que el cliente abra el enlace, el mensaje dice cuántos documentos faltan y la página muestra cuáles ({lista} sigue disponible, pero reduce los clics). Déjalo vacío para usar el mensaje por defecto.",
       uploadUrl: "Enlace para enviar archivos",
-      uploadUrlHint: "Opcional: portal del cliente, carpeta de Google Drive, Dropbox u OneDrive. Aparece como botón en la página del cliente.",
+      uploadUrlHint: "Opcional: portal del cliente, carpeta de Google Drive, Dropbox u OneDrive. Aparece como botón en la página del cliente, con el nombre de la plataforma (p. ej.: «Enviar vía Google Drive»).",
       reset: "Restablecer mensaje por defecto",
     },
     billing: {
@@ -405,6 +405,7 @@ const dict: Dictionary = {
     instruction: "Envía los documentos por el canal habitual y marca aquí lo que ya has enviado.",
     howSent: "¿Por dónde lo has enviado?",
     sendPortal: "Enviar por el portal",
+    sendVia: (name: string) => `Enviar vía ${name}`,
     yourContact: (name: string) => `Tu contacto: ${name}`,
     markSent: "Ya lo he enviado",
     sent: "Enviado",

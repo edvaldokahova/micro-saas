@@ -2,7 +2,7 @@ import "server-only";
 
 // Envio de e-mails pelo Resend (só a partir do servidor; a chave vive nas variáveis da Vercel).
 // Os lembretes saem de um endereço nosso, mas com o NOME do escritório e "Responder" para o escritório.
-export const FROM_ADDRESS = "lembretes@mail.bilonai.com";
+export const FROM_ADDRESS = "entrega@mail.bilonai.com";
 
 export type Outgoing = {
   from: string;
@@ -14,7 +14,7 @@ export type Outgoing = {
   headers?: Record<string, string>;
 };
 
-// "Contabilidade Silva" <lembretes@mail.bilonai.com> (sem caracteres que estraguem o cabeçalho)
+// "Contabilidade Silva" <entrega@mail.bilonai.com> (sem caracteres que estraguem o cabeçalho)
 export function fromOffice(name: string): string {
   const clean = name.replace(/["<>\\,;\r\n]/g, " ").replace(/\s+/g, " ").trim() || "Escritório";
   return `"${clean}" <${FROM_ADDRESS}>`;

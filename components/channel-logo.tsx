@@ -1,6 +1,6 @@
-// Logótipos reais do WhatsApp e do e-mail (public/channels).
+// Logótipos reais do WhatsApp, do e-mail e da web (public/channels).
 // Não se arrastam, não se selecionam e não abrem o menu de "guardar imagem" (clique direito ou toque longo).
-export function ChannelLogo({ channel, className = "h-4 w-4" }: { channel: "whatsapp" | "email"; className?: string }) {
+export function ChannelLogo({ channel, className = "h-4 w-4" }: { channel: "whatsapp" | "email" | "web"; className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
