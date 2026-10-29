@@ -1,6 +1,7 @@
 // O painel do Bilonai na versão de computador (1280 × 800 lógicos), para a gravação no portátil.
 // Mesmos textos, marcas e ícones do painel real; os alvos dos cliques têm data-t.
 import { IconClients, IconLedger, IconSettings } from "@/components/icons";
+import { Avatar } from "@/components/avatar";
 import { Wordmark } from "@/components/logo";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { DocMark, DocStrip, type DocState } from "@/components/marks";
@@ -345,14 +346,20 @@ function Clients({ s, t }: { s: DeskState; t: DeskTexts }) {
   const arch = t.clients.map((name, i) => ({ name, i })).filter((c) => s.archived.includes(c.i));
   return (
     <div>
-      <p className={h1}>{u.clientsTitle}</p>
-      <p className="mt-2 text-[13.5px] text-muted">{u.clientsCount}</p>
-      <div className="mt-7 grid grid-cols-[1fr_330px] gap-6">
+      {/* Como no painel real: a lista primeiro e o botão "Adicionar cliente" (abre uma janela) */}
+      <div className="flex items-end justify-between">
+        <div>
+          <p className={h1}>{u.clientsTitle}</p>
+          <p className="mt-2 text-[13.5px] text-muted">{u.clientsCount}</p>
+        </div>
+        <span className="btn btn-primary btn-sm">+ {u.addClient}</span>
+      </div>
+      <div className="mt-7">
         <div>
           <ul className="divide-y divide-line rounded-3xl border border-line bg-ink-2">
             {list.map((c) => (
               <li key={c.name} data-t={`client-${c.i}`} className="flex items-center gap-3.5 px-5 py-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink-3 text-[14px] font-semibold">{c.name.charAt(0)}</span>
+                <Avatar name={c.name} className="h-9 w-9 text-[14px]" />
                 <span className="min-w-0">
                   <span className="block truncate text-[14.5px] font-medium">{c.name}</span>
                   <span className="block text-[12px] text-muted tabular-nums">{t.phones[c.i]}</span>
@@ -369,7 +376,10 @@ function Clients({ s, t }: { s: DeskState; t: DeskTexts }) {
                 <ul className="mt-2 rounded-2xl border border-line">
                   {arch.map((c) => (
                     <li key={c.name} className="flex items-center justify-between px-5 py-3 text-[14px] text-muted">
-                      {c.name}
+                      <span className="flex items-center gap-3.5">
+                        <Avatar name={c.name} className="h-9 w-9 text-[14px] opacity-60" />
+                        {c.name}
+                      </span>
                       <span data-t={`unarchive-${c.i}`} className="btn btn-secondary btn-sm">{u.unarchive}</span>
                     </li>
                   ))}
@@ -377,16 +387,6 @@ function Clients({ s, t }: { s: DeskState; t: DeskTexts }) {
               )}
             </div>
           )}
-        </div>
-        <div className="space-y-3 rounded-3xl border border-line bg-ink-2 p-5">
-          <p className="text-[16px] font-semibold">{u.addClient}</p>
-          {[u.name, u.phone].map((l) => (
-            <label key={l} className="block">
-              <span className="text-[12.5px] font-medium">{l}</span>
-              <span className="mt-1.5 block h-10 rounded-[10px] border border-line-strong" />
-            </label>
-          ))}
-          <span className="btn btn-primary w-full opacity-60">{u.addClient}</span>
         </div>
       </div>
     </div>

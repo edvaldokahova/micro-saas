@@ -113,7 +113,8 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               <ul className="card mt-3 divide-y divide-line">
                 {archived.map((c) => (
                   <li key={c.id}>
-                    <Link href={`/clientes/${c.id}`} className="block px-5 py-3 text-sm text-muted hover:text-ivory">
+                    <Link href={`/clientes/${c.id}`} className="flex items-center gap-3 px-4 py-3 text-sm text-muted hover:text-ivory sm:px-5">
+                      <Avatar name={c.name} className="h-8 w-8 text-[13px] opacity-60" />
                       {c.name}
                     </Link>
                   </li>
