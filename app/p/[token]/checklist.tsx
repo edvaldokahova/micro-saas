@@ -58,9 +58,19 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
 
   return (
     <div>
-      <div className="flex items-center justify-between border-b border-line pb-2 text-[12px] font-medium text-muted">
+      {/* Barra de progresso (0 a 100%), igual à da demonstração na página inicial */}
+      <div className="flex items-center justify-between text-[13px] text-muted">
         <span>{t.progress.replace("{a}", String(handled)).replace("{b}", String(items.length))}</span>
         <span className="tabular-nums text-ivory">{pct}%</span>
+      </div>
+      <div
+        className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-3"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
+      >
+        <div className="h-full rounded-full bg-ivory transition-[width] duration-700 ease-out" style={{ width: `${pct}%` }} />
       </div>
 
       {allDone && (

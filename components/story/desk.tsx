@@ -224,12 +224,9 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
 
       {!s.created ? (
         <div className="mt-8 flex items-center justify-between gap-6 rounded-3xl border border-line bg-ink-2 p-6">
-          <div className="flex items-start gap-3">
-            <DocMark state="pending" className="mt-1 h-4 w-4" />
-            <div>
-              <p className="text-[16px] font-medium">{u.createAll}</p>
-              <p className="mt-1 text-[13.5px] text-muted">{u.createHint}</p>
-            </div>
+          <div>
+            <p className="text-[16px] font-medium">{u.createAll}</p>
+            <p className="mt-1 text-[13.5px] text-muted">{u.createHint}</p>
           </div>
           <span data-t="create" className="btn btn-primary">{u.create}</span>
         </div>

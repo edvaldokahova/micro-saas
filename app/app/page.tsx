@@ -253,12 +253,9 @@ export default async function Painel({
           {canWrite && withoutRequest > 0 && (
             <form action={createMonthRequests} className="card mt-5 flex animate-rise flex-wrap items-center justify-between gap-4 border-ivory/40 p-5">
               <input type="hidden" name="period" value={ym} />
-              <div className="flex items-start gap-3">
-                <DocMark state="pending" className="mt-1 h-3.5 w-3.5" />
-                <div>
-                  <p className="font-medium">{t.createAll(withoutRequest)}</p>
-                  <p className="mt-1 text-sm text-muted">{t.createAllHint}</p>
-                </div>
+              <div>
+                <p className="font-medium">{t.createAll(withoutRequest)}</p>
+                <p className="mt-1 text-sm text-muted">{t.createAllHint}</p>
               </div>
               <div className="flex flex-wrap items-end gap-2">
                 <label className="block">
