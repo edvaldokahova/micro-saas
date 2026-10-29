@@ -18,7 +18,7 @@ export default async function Suporte() {
       <section>
         <a
           href={`mailto:${site.supportEmail}`}
-          className="card inline-flex items-center gap-3 px-5 py-4 no-underline transition hover:border-gold/60 hover:no-underline"
+          className="card inline-flex items-center gap-3 px-5 py-4 no-underline transition hover:border-ivory hover:no-underline"
         >
           <Mail className="h-5 w-5 text-gold" aria-hidden />
           <span className="text-ivory">{site.supportEmail}</span>

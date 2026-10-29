@@ -186,7 +186,7 @@ export function Select({
                     {o.label}
                     {o.hint && <span className="ml-2 text-[12px] font-medium text-muted">{o.hint}</span>}
                   </span>
-                  {selected && <IconTick className="h-4 w-4 shrink-0 text-gold" />}
+                  {selected && <IconTick className="h-4 w-4 shrink-0 text-ivory" />}
                 </li>
               );
             })}

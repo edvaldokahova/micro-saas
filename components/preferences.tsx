@@ -45,7 +45,7 @@ export function LocaleSwitcher({ locale, label }: { locale: Locale; label: strin
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`${label}: ${localeMeta[locale].name}`}
-        className={`flex h-9 items-center gap-1.5 rounded-lg border border-line px-2.5 text-xs font-medium transition hover:border-gold/60 ${pending ? "opacity-60" : ""}`}
+        className={`flex h-9 items-center gap-1.5 rounded-lg border border-line px-2.5 text-xs font-medium transition hover:border-ivory ${open ? "border-ivory" : ""} ${pending ? "opacity-60" : ""}`}
       >
         <Flag locale={locale} className="h-3.5 w-5" />
         <span className="hidden sm:inline">{localeMeta[locale].short}</span>
@@ -68,7 +68,7 @@ export function LocaleSwitcher({ locale, label }: { locale: Locale; label: strin
               >
                 <Flag locale={l} />
                 <span className="flex-1">{localeMeta[l].name}</span>
-                {l === locale && <Check className="h-4 w-4 text-gold" aria-hidden />}
+                {l === locale && <Check className="h-4 w-4 text-ivory" aria-hidden />}
               </button>
             </li>
           ))}

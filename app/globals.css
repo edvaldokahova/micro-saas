@@ -209,7 +209,7 @@ body {
     border-color: var(--color-line-strong);
   }
   .choice:has(:checked) {
-    border-color: var(--color-line-strong);
+    border-color: var(--color-ivory);
     color: var(--color-ivory);
   }
   .choice:has(:focus-visible) {
