@@ -76,8 +76,8 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
           <div className="flex items-start gap-[10px]">
             <span className="relative mt-[1px] shrink-0">
               <span className="grid h-[38px] w-[38px] place-items-center rounded-full bg-gradient-to-b from-[#9aa3b2] to-[#6b7383] text-[14px] font-semibold text-white">CS</span>
-              <span className="absolute -bottom-[3px] -right-[3px] grid h-[18px] w-[18px] place-items-center rounded-[5px] bg-gradient-to-b from-[#5ef08a] to-[#1fbf56] ring-2 ring-white/70">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff" aria-hidden><path d="M12 3.2c-4.9 0-8.8 3.6-8.8 8.1 0 2.5 1.2 4.7 3.1 6.2l-.6 2.9c-.1.4.4.7.7.5l3.2-1.8c.8.2 1.6.3 2.4.3 4.9 0 8.8-3.6 8.8-8.1S16.9 3.2 12 3.2z" /></svg>
+              <span className="absolute -bottom-[3px] -right-[3px] grid h-[18px] w-[18px] place-items-center rounded-[5px] bg-gradient-to-b from-[#5ef08a] to-[#1fbf56]">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff" aria-hidden><path d="M12 3.2c-4.9 0-8.8 3.6-8.8 8.1 0 2.5 1.2 4.7 3.1 6.2l-.6 2.9c-.1.4.4.7.7.5l3.2-1.8c.8.2 1.6.3 2.4.3 4.9 0 8.8-3.6 8.8-8.1S16.9 3.2 12 3.2z" /></svg>
               </span>
             </span>
             <div className="min-w-0 flex-1">
