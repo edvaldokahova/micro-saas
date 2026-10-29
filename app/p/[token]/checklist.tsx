@@ -74,7 +74,7 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
       </div>
 
       {allDone && (
-        <p className="mt-4 flex animate-rise items-center gap-2.5 border-y border-ok/40 py-3 text-sm text-ok">
+        <p className="mt-4 flex animate-rise items-center gap-2.5 border-b border-line py-3 text-sm text-ok">
           <DocMark state="received" className="h-4 w-4" /> {t.allDone}
         </p>
       )}
