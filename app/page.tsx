@@ -178,11 +178,13 @@ export default async function Home() {
                   {h.lead}
                 </p>
                 <div data-hero-rest className="flex flex-col items-start gap-3 md:items-end">
-                  <Link href="/registar" data-magnetic className="btn btn-primary min-h-[3.5rem] flex-col !gap-0.5 px-8 py-2.5 leading-tight">
-                    <span className="text-[15.5px] font-semibold">{h.ctaTime}</span>
-                    <span className="text-[12px] font-normal opacity-70">{d.common.trialFree(site.trialDays)}</span>
+                  <Link href="/registar" data-magnetic className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
+                    {h.ctaTime}
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-ivory" aria-hidden>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" /></svg>
+                    </span>
                   </Link>
-                  <p className="text-[13.5px] text-muted">{d.common.noCard}</p>
+                  <p className="text-[13.5px] text-muted">{h.finalText(site.trialDays)}</p>
                 </div>
               </div>
               <div className="mt-14 flex justify-center lg:absolute lg:right-5 lg:top-24 lg:mt-0 lg:block" data-hero-rest>
@@ -250,9 +252,11 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
             <h2 data-split="chars" className="max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/registar" data-magnetic className="btn btn-primary min-h-[3.5rem] flex-col !gap-0.5 px-8 py-2.5 leading-tight">
-                <span className="text-[15.5px] font-semibold">{h.ctaTime}</span>
-                <span className="text-[12px] font-normal opacity-70">{d.common.trialFree(site.trialDays)}</span>
+              <Link href="/registar" data-magnetic className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
+                {h.ctaTime}
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-ivory" aria-hidden>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" /></svg>
+                </span>
               </Link>
               <p className="text-[14px] text-muted">{h.finalText(site.trialDays)}</p>
             </div>
