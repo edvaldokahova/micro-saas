@@ -65,9 +65,9 @@ const dict: Dictionary = {
   home: {
     metaTitle: "Documentos pendentes dos clientes, sob controle",
     metaDescription: (d: number) =>
-      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e cobre pelo WhatsApp ou por e-mail. ${d} dias grátis, sem cartão.`,
+      `Para escritórios de contabilidade: os clientes enviam os documentos por link ou e-mail e eles chegam organizados por cliente e mês, com cobranças automatizadas para quem falta. ${d} dias grátis, sem cartão.`,
     title: "Pare de correr atrás de documentos pendentes.",
-    lead: "Cada cliente recebe um link com a lista do que falta. No painel você vê quem já entregou e, para quem está atrasado, manda uma cobrança já escrita pelo WhatsApp ou por e-mail.",
+    lead: "Seus clientes enviam como sempre, pelo WhatsApp, por e-mail ou com um toque pelo link. Cada documento chega ao seu painel já organizado por cliente e por mês, e quem está atrasado recebe a cobrança automatizada.",
     mock: {
       month: "Setembro de 2026",
       summary: "2 de 4 clientes completos",
@@ -95,7 +95,7 @@ const dict: Dictionary = {
       points: [
         { title: "O cliente não muda de hábito", text: "Continua enviando pelo WhatsApp ou por e-mail, como sempre. Sem conta, sem aplicativo, sem senha: abre um link e vê o que falta." },
         { title: "Sem implantação", text: "Nada de semanas de configuração nem de treinamento da equipe. Você cadastra os clientes, cria as solicitações do mês e começa no mesmo dia." },
-        { title: "Só o essencial", text: "Uma ferramenta para uma tarefa: saber quem já entregou, o que falta e por onde chegou cada documento. O resto continua no seu sistema de sempre." },
+        { title: "Tudo organizado num lugar só", text: "Cada arquivo chega ao documento certo, com o canal por onde veio. Você baixa tudo do cliente em um ZIP e o resto continua no seu sistema de sempre." },
       ],
     },
     story: {
@@ -138,7 +138,7 @@ const dict: Dictionary = {
     faq: (d: number) => [
       { q: "Preciso de cartão para testar?", a: `Não. São ${d} dias de teste com tudo liberado, sem informar nenhum meio de pagamento. Você só paga se quiser continuar.` },
       { q: "As cobranças podem sair sozinhas?", a: "Sim. Ligue as cobranças automáticas nas Configurações e escolha quando sai a primeira e quantas enviar. O e-mail sai com o nome do escritório, as respostas chegam no seu e-mail e só recebe quem ainda tem documentos pendentes. O envio automático pelo WhatsApp chega em breve." },
-      { q: "Meus clientes precisam se cadastrar?", a: "Não. Eles recebem um link único e privado da solicitação deles. Abrem no celular e marcam o que já enviaram." },
+      { q: "Meus clientes precisam se cadastrar?", a: "Não. Eles recebem um link único e privado. Abrem no celular e enviam os arquivos com um toque, ou respondem ao e-mail com os anexos." },
       { q: "Os documentos ficam armazenados na plataforma?", a: "Só pelo tempo necessário. Os arquivos que os clientes enviam pela página da solicitação ou por e-mail ficam no seu painel, organizados por cliente e documento, por 90 dias, em um armazenamento privado na União Europeia. Depois são excluídos automaticamente. Baixe-os para o seu sistema contábil quando quiser." },
       { q: "E as notas fiscais que já baixo da SEFAZ?", a: "O Bilonai complementa: serve para o que não chega sozinho, como extratos bancários, comprovantes, notas de serviço e folha de cada cliente." },
       { q: "Onde ficam os dados?", a: "Em um banco de dados na União Europeia (Irlanda), com acesso restrito por escritório. Detalhes na política de privacidade." },

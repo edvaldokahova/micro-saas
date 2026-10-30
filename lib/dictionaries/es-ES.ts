@@ -66,9 +66,9 @@ const dict: Dictionary = {
   home: {
     metaTitle: "La documentación pendiente de tus clientes, bajo control",
     metaDescription: (d: number) =>
-      `Para asesorías y gestorías: pide la documentación del trimestre o del mes con un enlace, mira quién no la ha entregado y recuérdaselo por correo o WhatsApp. ${d} días gratis, sin tarjeta.`,
+      `Para asesorías y gestorías: tus clientes envían la documentación por enlace o correo y llega ordenada por cliente y periodo, con recordatorios automatizados a quien falta. ${d} días gratis, sin tarjeta.`,
     title: "Deja de perseguir documentación pendiente.",
-    lead: "Cada cliente recibe un enlace con la lista de lo que falta. En el panel ves quién ha entregado y, a quien va con retraso, le envías un recordatorio ya redactado por correo o WhatsApp.",
+    lead: "Tus clientes envían como siempre, por WhatsApp, correo o con un toque desde el enlace. Cada documento llega a tu panel ya ordenado por cliente y por periodo, y quien va con retraso recibe el recordatorio automatizado.",
     mock: {
       month: "3.er trimestre de 2026",
       summary: "2 de 4 clientes completos",
@@ -96,7 +96,7 @@ const dict: Dictionary = {
       points: [
         { title: "El cliente no cambia de hábitos", text: "Sigue enviando por WhatsApp o por correo, como siempre. Sin cuenta, sin aplicación, sin contraseña: abre un enlace y ve lo que falta." },
         { title: "Sin implantación", text: "Nada de semanas de configuración ni de formar al equipo. Añades los clientes, creas las solicitudes del trimestre y empiezas el mismo día." },
-        { title: "Solo lo esencial", text: "Una herramienta para una tarea: saber quién ha entregado, qué falta y por dónde llegó cada documento. Lo demás sigue en tu programa de siempre." },
+        { title: "Todo ordenado en un sitio", text: "Cada archivo llega al documento correcto, con el canal por el que vino. Descargas todo lo del cliente en un ZIP y lo demás sigue en tu programa de siempre." },
       ],
     },
     story: {
@@ -139,7 +139,7 @@ const dict: Dictionary = {
     faq: (d: number) => [
       { q: "¿Necesito tarjeta para probarlo?", a: `No. Tienes ${d} días de prueba con todo activo y sin indicar ningún medio de pago. Solo pagas si quieres continuar.` },
       { q: "¿Los recordatorios pueden salir solos?", a: "Sí. Activa los recordatorios automáticos en Ajustes y elige cuándo sale el primero y cuántos enviar. El correo sale con el nombre de la asesoría, las respuestas llegan a tu correo y solo lo recibe quien aún tiene documentos pendientes. El envío automático por WhatsApp llegará próximamente." },
-      { q: "¿Mis clientes tienen que crear una cuenta?", a: "No. Reciben un enlace único y privado para su solicitud. Lo abren en el móvil y marcan lo que ya han enviado." },
+      { q: "¿Mis clientes tienen que crear una cuenta?", a: "No. Reciben un enlace único y privado. Lo abren en el móvil y envían los archivos con un toque, o responden al correo con los adjuntos." },
       { q: "¿Los documentos se guardan en la plataforma?", a: "Solo el tiempo necesario. Los archivos que tus clientes envían desde la página de la solicitud o por correo quedan en tu panel, ordenados por cliente y documento, durante 90 días, en un almacenamiento privado en la Unión Europea. Después se eliminan automáticamente. Descárgalos a tu programa de contabilidad cuando quieras." },
       { q: "¿Sirve para cualquier tipo de cliente?", a: "Sí: autónomos, sociedades y particulares. Tú decides qué documentos pide cada uno: facturas, extractos, tickets, nóminas u otros." },
       { q: "¿Y Verifactu? ¿No me llega ya todo?", a: "Verifactu registra las facturas que emite tu cliente. Los extractos bancarios, los tickets y las facturas de gastos siguen teniendo que llegar de él: para eso sirve Bilonai." },

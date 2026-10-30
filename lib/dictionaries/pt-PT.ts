@@ -63,9 +63,9 @@ const dict = {
   home: {
     metaTitle: "Documentos em falta dos clientes, sob controlo",
     metaDescription: (d: number) =>
-      `Para escritórios de contabilidade: peça os documentos do mês por link, veja quem ainda não entregou e lembre por e-mail ou WhatsApp. ${d} dias grátis, sem cartão.`,
+      `Para escritórios de contabilidade: os clientes enviam os documentos por link ou e-mail e eles chegam arrumados por cliente e mês, com lembretes automatizados a quem falta. ${d} dias grátis, sem cartão.`,
     title: "Deixe de perseguir documentos em falta.",
-    lead: "Cada cliente recebe um link com a lista do que falta. No painel vê quem já entregou e, a quem está atrasado, envia um lembrete já escrito por e-mail ou WhatsApp.",
+    lead: "Os seus clientes enviam como sempre, por WhatsApp, e-mail ou num toque pelo link. Cada documento chega ao seu painel já arrumado por cliente e por mês, e quem está atrasado recebe o lembrete automatizado.",
     mock: {
       month: "Setembro de 2026",
       summary: "2 de 4 clientes completos",
@@ -93,7 +93,7 @@ const dict = {
       points: [
         { title: "O cliente não muda de hábitos", text: "Continua a enviar pelo WhatsApp ou pelo e-mail, como sempre. Sem conta, sem aplicação, sem palavra-passe: abre um link e vê o que falta." },
         { title: "Sem implementação", text: "Nada de semanas de configuração nem de formação da equipa. Adiciona os clientes, cria os pedidos do mês e começa no mesmo dia." },
-        { title: "Só o essencial", text: "Uma ferramenta para uma tarefa: saber quem já entregou, o que falta e por onde chegou cada documento. O resto continua no seu programa de sempre." },
+        { title: "Tudo arrumado num sítio", text: "Cada ficheiro chega ao documento certo, com o canal por onde veio. Descarrega tudo do cliente num ZIP e o resto continua no seu programa de sempre." },
       ],
     },
     story: {
@@ -136,7 +136,7 @@ const dict = {
     faq: (d: number) => [
       { q: "Preciso de cartão para experimentar?", a: `Não. Tem ${d} dias de teste com tudo ativo e sem indicar qualquer meio de pagamento. Só paga se quiser continuar.` },
       { q: "Os lembretes podem sair sozinhos?", a: "Sim. Ligue os lembretes automáticos nas Definições e escolha quando sair o primeiro e quantos enviar. O e-mail sai com o nome do escritório, as respostas chegam ao seu e-mail e só recebe quem ainda tem documentos em falta. O envio automático por WhatsApp chega brevemente." },
-      { q: "Os meus clientes precisam de criar conta?", a: "Não. Recebem um link único e privado para o pedido deles. Abrem no telemóvel e assinalam o que já enviaram." },
+      { q: "Os meus clientes precisam de criar conta?", a: "Não. Recebem um link único e privado. Abrem no telemóvel e enviam os ficheiros num toque, ou respondem ao e-mail com os anexos." },
       { q: "Os documentos ficam guardados na plataforma?", a: "Só o tempo necessário. Os ficheiros que os clientes enviam pela página do pedido ou por e-mail ficam no seu painel, arrumados por cliente e documento, durante 90 dias, num armazenamento privado na União Europeia. Depois são apagados automaticamente. Descarregue-os para o seu programa de contabilidade quando quiser." },
       { q: "E o e-fatura? Já recebo as faturas por lá.", a: "O Bilonai complementa o e-fatura: serve para o que não chega por lá, como extratos bancários, recibos e outros documentos de cada cliente." },
       { q: "Onde ficam os dados?", a: "Numa base de dados na União Europeia (Irlanda), com acesso restrito por escritório. Detalhes na política de privacidade." },
