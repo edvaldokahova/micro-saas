@@ -39,12 +39,23 @@ export function DocsArt({ docs, client, labels }: { docs: string[]; client: stri
       const sent = card.querySelector("[data-m='sent']");
       const rec = card.querySelector("[data-m='received']");
       const pill = card.querySelector("[data-pill]");
+      const dl = card.querySelector("[data-dl]");
+      const arrow = card.querySelector("[data-dl-arrow]");
+      const check = card.querySelector("[data-dl-check]");
       const label = `c${i}`;
       tl.addLabel(label)
         .fromTo(card, { x: 70, y: 18, rotation: 9, autoAlpha: 0, scale: 0.92 }, { x: 0, y: 0, rotation: (i - 1) * -3, autoAlpha: 1, scale: 1, duration: 0.9 }, label)
         .fromTo(sent, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(3)" }, `${label}+=1.1`)
         .fromTo(rec, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(3)" }, `${label}+=2`)
         .fromTo(pill, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, `${label}+=2.05`)
+        // Descarregar: o ficheiro fica no painel, pronto a baixar (o botão é «carregado» e passa a visto)
+        .set(arrow, { autoAlpha: 1 }, label)
+        .set(check, { autoAlpha: 0, scale: 0.5 }, label)
+        .fromTo(dl, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)" }, `${label}+=2.2`)
+        .to(dl, { scale: 0.86, duration: 0.12, ease: "power2.in" }, `${label}+=2.75`)
+        .to(dl, { scale: 1, duration: 0.3, ease: "back.out(3)" }, `${label}+=2.87`)
+        .to(arrow, { autoAlpha: 0, y: 4, duration: 0.2 }, `${label}+=2.87`)
+        .to(check, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, `${label}+=2.95`)
         .to(card, { x: -60, y: -26, rotation: -10, autoAlpha: 0, scale: 0.9, duration: 0.8 }, `${label}+=3.4`);
     });
     return tl;
@@ -75,6 +86,10 @@ export function DocsArt({ docs, client, labels }: { docs: string[]; client: stri
           <span data-pill className="absolute bottom-4 left-5 inline-flex items-center gap-1.5 rounded-full bg-ivory px-3 py-1 text-[11.5px] font-medium text-ink opacity-0">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5.3l2 2L8.2 3" /></svg>
             {labels.received}
+          </span>
+          <span data-dl className="absolute bottom-3.5 right-4 grid h-9 w-9 place-items-center rounded-full border border-line-strong bg-ink-2 text-ivory opacity-0">
+            <svg data-dl-arrow className="absolute" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2.5v8M4.8 7.5L8 10.7l3.2-3.2M3 13.5h10" /></svg>
+            <svg data-dl-check className="absolute opacity-0" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 8.4l3 3L12.5 5" /></svg>
           </span>
         </div>
       ))}
