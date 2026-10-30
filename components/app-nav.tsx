@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconBilling, IconClients, IconLedger, IconSettings } from "@/components/icons";
+import { IconBilling, IconClients, IconDocs, IconLedger, IconSettings } from "@/components/icons";
 
 const items = [
   { href: "/", key: "dashboard", icon: IconLedger },
   { href: "/clientes", key: "clients", icon: IconClients },
+  { href: "/documentos", key: "documents", icon: IconDocs },
   { href: "/definicoes", key: "settings", icon: IconSettings },
   { href: "/assinatura", key: "billing", icon: IconBilling },
 ] as const;

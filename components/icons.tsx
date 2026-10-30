@@ -40,6 +40,18 @@ export function IconClients({ className = "h-5 w-5", active = false }: N) {
   );
 }
 
+// Documentos: uma folha com o canto dobrado e duas linhas de texto
+export function IconDocs({ className = "h-5 w-5", active = false }: N) {
+  const inner = active ? hole : "currentColor";
+  return (
+    <svg {...base} className={className}>
+      <path d="M5.75 2.75h5.75l4 4v9a1.8 1.8 0 0 1-1.8 1.8H5.75a1.8 1.8 0 0 1-1.8-1.8v-11.2a1.8 1.8 0 0 1 1.8-1.8z" fill={active ? "currentColor" : "none"} />
+      <path d="M11.5 2.75v2.5a1.5 1.5 0 0 0 1.5 1.5h2.5" stroke={inner} />
+      <path d="M7.25 11h5.5M7.25 14h3.5" stroke={inner} />
+    </svg>
+  );
+}
+
 // Definições: três réguas com cursores redondos
 export function IconSettings({ className = "h-5 w-5", active = false }: N) {
   const f = active ? "currentColor" : hole;

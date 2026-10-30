@@ -10,6 +10,8 @@ import { dashboardMonth, getSession } from "@/lib/office";
 import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
 import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { deleteRequest, markAllReceived, setItemStatus } from "../../actions";
+import { DocList, OfficeDrop, ZipButton } from "@/components/doc-files";
+import { DOC_COLUMNS, docTexts, docView, type DocRow } from "@/lib/doc-view";
 
 export const metadata: Metadata = { title: "Pedido" };
 
@@ -36,7 +38,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const { supabase, office, locale, d } = await getSession();
   const t = d.app.request;
 
-  const [{ data: r }, { data: it }, { data: noteRow }] = await Promise.all([
+  const [{ data: r }, { data: it }, { data: noteRow }, { data: dr }] = await Promise.all([
     supabase
       .from("requests_overview")
       .select("id, client_id, client_name, client_phone, client_email, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items")
@@ -44,11 +46,18 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       .maybeSingle(),
     supabase.from("request_items").select("id, label, status, client_marked_at, sent_via").eq("request_id", id).order("position").order("created_at"),
     supabase.from("requests").select("note").eq("id", id).maybeSingle(),
+    supabase.from("documents").select(DOC_COLUMNS).eq("request_id", id).gt("expires_at", new Date().toISOString()).order("created_at"),
   ]);
   if (!r) notFound();
   const req = r as Req;
   const items = (it ?? []) as Item[];
   const note = (noteRow as { note: string | null } | null)?.note;
+  // Ficheiros recebidos: por documento do pedido, e os que ainda estão por confirmar
+  const docs = ((dr ?? []) as DocRow[]).map((row) => docView(row, locale));
+  const loose = docs.filter((f) => !f.itemId);
+  const byItem = (itemId: string) => docs.filter((f) => f.itemId === itemId);
+  const dt = docTexts(d);
+  const itemOptions = items.map((i) => ({ id: i.id, label: i.label }));
   const done = req.total_items > 0 && req.received_items === req.total_items;
   const pct = req.total_items ? Math.round((req.received_items / req.total_items) * 100) : 0;
   const pendingLabels = items.filter((i) => i.status === "pending").map((i) => i.label);
@@ -124,6 +133,19 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
         </section>
       )}
 
+      {/* Ficheiros por confirmar (a Bilonai não teve a certeza de onde os arrumar) */}
+      {loose.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-[15px] font-semibold">
+            {d.app.docs.review} <span className="font-normal text-muted">· {d.app.docs.files(loose.length)}</span>
+          </h2>
+          <p className="mt-1 text-[13px] text-muted">{d.app.docs.reviewHint}</p>
+          <div className="mt-3">
+            <DocList docs={loose} items={itemOptions} t={dt} review />
+          </div>
+        </section>
+      )}
+
       {/* Documentos */}
       <ul className="mt-8 border-t border-line">
         {items.map((i) => (
@@ -147,9 +169,19 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
                 {i.status === "received" ? t.undo : t.markReceived}
               </SubmitButton>
             </form>
+            {byItem(i.id).length > 0 && (
+              <div className="w-full pl-7">
+                <DocList docs={byItem(i.id)} items={itemOptions} t={dt} />
+              </div>
+            )}
           </li>
         ))}
       </ul>
+
+      <div className="mt-6 space-y-3">
+        <OfficeDrop requestId={req.id} t={dt} />
+        <ZipButton ids={docs.map((f) => f.id)} name={`${req.client_name} - ${periodLabel}`} t={dt} />
+      </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         {!done && items.length > 0 ? (

@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { office, locale, d, role } = await getSession();
-  // Colaboradores: só Painel e Clientes. Administradores: também Definições. Assinatura: só o dono da conta.
-  type NavKey = "dashboard" | "clients" | "settings" | "billing";
-  const show: NavKey[] = ["dashboard", "clients"];
+  // Colaboradores: Painel, Clientes e Documentos. Administradores: também Definições. Assinatura: só o dono da conta.
+  type NavKey = "dashboard" | "clients" | "documents" | "settings" | "billing";
+  const show: NavKey[] = ["dashboard", "clients", "documents"];
   if (role !== "member") show.push("settings");
   if (role === "owner") show.push("billing");
   const access = officeAccess(office);

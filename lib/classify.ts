@@ -1,6 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { BUCKET } from "@/lib/documents";
+import { BUCKET, markReceived } from "@/lib/documents";
 
 // Arrumação automática: a IA (Gemini, plano pago — os dados não treinam modelos) vê o ficheiro
 // e diz a que documento do pedido pertence. Só arruma sozinha quando tem confiança alta;
@@ -91,8 +91,7 @@ async function classifyOne(admin: ReturnType<typeof createAdminClient>, key: str
       .is("item_id", null)
       .select("id");
     if (moved?.length) {
-      const via = d.channel === "page" || d.channel === "email" || d.channel === "whatsapp" ? d.channel : "other";
-      await admin.from("request_items").update({ status: "received", sent_via: via }).eq("id", item.id).neq("status", "received");
+      await markReceived(item.id, d.channel === "page" || d.channel === "email" || d.channel === "whatsapp" ? d.channel : "other");
     }
   } else {
     await admin.from("documents").update({ ai_confidence: conf }).eq("id", d.id).is("item_id", null);
