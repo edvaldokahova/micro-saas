@@ -1,5 +1,6 @@
 // O que o cliente do escritório vê, num iPhone 17 desenhado em HTML (nítido em qualquer ecrã).
 // Ecrã lógico 393 × 852; a moldura, a Dynamic Island e os botões laterais ficam à volta.
+import { ChannelLogo } from "@/components/channel-logo";
 import { DocMark, type DocState } from "@/components/marks";
 import type { Step } from "./engine";
 
@@ -138,8 +139,14 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
                     <div className="mt-3 animate-fade [animation-duration:.25s]">
                       <p className="text-[13px] text-muted">{t.howSent}</p>
                       <div className="mt-2 grid grid-cols-2 gap-2">
-                        <span className="rounded-full border border-line-strong py-2 text-center text-[14px]">{t.vias.whatsapp}</span>
-                        <span data-t="via-email" className="rounded-full border border-line-strong py-2 text-center text-[14px]">{t.vias.email}</span>
+                        <span className="flex items-center justify-center gap-2 rounded-full border border-line-strong py-2 text-[14px]">
+                          <ChannelLogo channel="whatsapp" className="h-[18px] w-[18px]" />
+                          {t.vias.whatsapp}
+                        </span>
+                        <span data-t="via-email" className="flex items-center justify-center gap-2 rounded-full border border-line-strong py-2 text-[14px]">
+                          <ChannelLogo channel="email" className="h-[18px] w-[18px]" />
+                          {t.vias.email}
+                        </span>
                       </div>
                     </div>
                   )}
