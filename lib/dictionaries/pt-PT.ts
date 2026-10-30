@@ -5,7 +5,7 @@ const dict = {
   common: {
     perMonth: "/mês",
     upToClients: (c: number) => `Até ${c} clientes`,
-    upToTeam: (n: number) => `Até ${n} responsáveis com contactos próprios`,
+    upToTeam: (n: number) => `Até ${n} responsáveis, cada um com os seus clientes`,
     trialFree: (d: number) => `Testar ${d} dias grátis`,
     noCard: "Sem cartão. Cancele quando quiser.",
     save: "Guardar",
@@ -128,7 +128,7 @@ const dict = {
     pricingTitle: "Preço simples, por escritório",
     pricingLead: (d: number) =>
       `Comece com ${d} dias grátis. Mensal ou anual; os impostos aplicáveis são calculados no checkout, consoante o país.`,
-    features: ["Pedidos ilimitados, mensais ou trimestrais", "Link curto e privado para cada cliente", "Painel do que falta e de quem está atrasado", "Lembretes por e-mail ou WhatsApp, já escritos", "Lembretes automáticos por e-mail, em nome do escritório"],
+    features: ["Pedidos ilimitados, mensais ou trimestrais", "Link privado para o cliente enviar os documentos num toque", "Anexos das respostas por e-mail recolhidos automaticamente", "Documentos arrumados por cliente e mês, com descarga em ZIP", "Lembretes automáticos por e-mail, em nome do escritório", "Painel do que falta e de quem está atrasado"],
     popular: "Melhor preço por cliente",
     perDay: (price: string) => `Cerca de ${price} por dia.`,
     planFor: { starter: "Para quem trabalha sozinho ou com uma pequena equipa.", office: "Para escritórios com mais clientes e vários responsáveis." },

@@ -39,7 +39,7 @@ export function formatPrice(locale: Locale, plan: PlanKey, interval: "month" | "
   return formatMoney(locale, interval === "year" ? (brl ? p.yearBrl : p.yearEur) : brl ? p.priceBrl : p.priceEur);
 }
 
-// Equivalente mensal do plano anual (ex.: 89 € / 12 = 7,42 €)
+// Equivalente mensal do plano anual (ex.: 150 € / 12 = 12,50 €)
 export function formatYearlyPerMonth(locale: Locale, plan: PlanKey): string {
   const p = site.plans[plan];
   const total = localeMeta[locale].currency === "BRL" ? p.yearBrl : p.yearEur;
