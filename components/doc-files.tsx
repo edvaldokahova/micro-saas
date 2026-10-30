@@ -224,7 +224,8 @@ export function ZipButton({ ids, name, t }: { ids: string[]; name: string; t: Do
       const url = URL.createObjectURL(makeZip(files));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${name.replace(/[\\/:*?"<>|]+/g, "-")}.zip`;
+      // Nome como um ficheiro real: Clínica_Sol_setembro_de_2026.zip
+      a.download = `${name.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+-\s+/g, "_").replace(/\s+/g, "_")}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();

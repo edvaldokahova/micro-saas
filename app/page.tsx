@@ -107,7 +107,7 @@ export default async function Home() {
         delivered: dl.delivered,
         showDocs: d.app.dashboard.showDocs,
         zip: d.app.docs.zip(h.demo.docs.length),
-        zipDone: `${clients[1]}.zip`,
+        zipDone: `${clients[1].replace(/\s+/g, "_")}.zip`,
         filedBy: d.app.docs.by.ai,
         files: h.demo.files,
         docStatus: d.app.request.status,

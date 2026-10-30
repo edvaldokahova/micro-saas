@@ -89,7 +89,7 @@ const dict = {
     ctaTime: "Devolve-me o meu tempo",
     statement: "Todos os meses, a mesma lista de documentos, as mesmas mensagens e os mesmos clientes atrasados. O Bilonai trata dessa parte e devolve-lhe tempo para a contabilidade.",
     fit: {
-      title: "Para o escritório que não quer obrigar os clientes a usar um portal.",
+      title: "Para o escritório que não quer obrigar os clientes a usar um portal complicado.",
       points: [
         { title: "O cliente não muda de hábitos", text: "Continua a enviar pelo WhatsApp ou pelo e-mail, como sempre. Sem conta, sem aplicação, sem palavra-passe: abre um link e vê o que falta." },
         { title: "Sem implementação", text: "Nada de semanas de configuração nem de formação da equipa. Adiciona os clientes, cria os pedidos do mês e começa no mesmo dia." },

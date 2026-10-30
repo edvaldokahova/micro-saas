@@ -319,10 +319,15 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
                         </ul>
                         <span className="mt-2.5 flex items-center gap-3">
                           <span data-t="zip" className={`btn btn-secondary btn-sm transition-opacity ${s.confirmed ? "opacity-100" : "opacity-40"}`}>{u.zip}</span>
+                          {/* Como a descarga aparece no navegador: ícone do ZIP, nome do ficheiro e tamanho */}
                           {s.zipped && (
-                            <span className="flex animate-rise items-center gap-1.5 text-[12px] text-ok">
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2.5 6.3l2.2 2.2L9.5 3.6" /></svg>
-                              {u.zipDone}
+                            <span className="flex animate-rise items-center gap-2 rounded-lg border border-line bg-ink-2 py-1 pl-1.5 pr-2.5 shadow-[0_6px_16px_-10px_rgba(18,19,22,0.35)]">
+                              <span className="grid h-6 w-5 place-items-center rounded-[4px] bg-[#f4c542] font-mono text-[7px] font-bold text-[#5c4300]">ZIP</span>
+                              <span className="leading-tight">
+                                <span className="block text-[11.5px] font-medium">{u.zipDone}</span>
+                                <span className="block text-[10px] text-muted">2,4 MB</span>
+                              </span>
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ok" aria-hidden><path d="M2.5 6.3l2.2 2.2L9.5 3.6" /></svg>
                             </span>
                           )}
                           {s.confirmed && !s.zipped && <span className="animate-fade text-[11.5px] text-muted">{u.filedBy}</span>}
