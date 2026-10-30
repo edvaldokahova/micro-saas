@@ -2,14 +2,11 @@
 
 // Passo 2 da página do pedido: o que falta enviar.
 // Cada documento em falta tem «Enviar» (escolher ficheiros/foto para esse documento: fica logo recebido).
-// Quem já enviou por WhatsApp ou e-mail pode dizê-lo em «Já enviei por outro meio» (opcional).
-import { useEffect, useState, useTransition } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { DocMark } from "@/components/marks";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
-import { markSent } from "./actions";
 import { uploadFiles, type UploadIssue } from "./upload";
 
 type Item = { id: string; label: string; status: "pending" | "sent" | "received"; via: Channel | null; files: number };
@@ -17,32 +14,23 @@ export type ChecklistTexts = {
   sent: string;
   received: string;
   pending: string;
-  undo: string;
   allDone: string;
   error: string;
   progress: string;
-  howSent: string;
-  cancel: string;
   via: Record<Channel, string>;
   sentVia: string; // "Enviado via {canal}"
   uploadItem: string;
-  otherWay: string;
   files: string; // "{n} ficheiros"
   fileOne: string;
   issue: Record<UploadIssue["reason"], string>; // "{name}"
 };
 
-// Canais que o cliente pode indicar à mão (a página regista-se sozinha quando envia daqui)
-const channels: Channel[] = ["whatsapp", "email", "other"];
 
 export function Checklist({ token, initial, closed, t }: { token: string; initial: Item[]; closed: boolean; t: ChecklistTexts }) {
   const [items, setItems] = useState(initial);
-  const [asking, setAsking] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
   const [progress, setProgress] = useState<{ id: string; a: number; b: number } | null>(null);
   const [issues, setIssues] = useState<{ id: string; list: UploadIssue[] } | null>(null);
   const [error, setError] = useState("");
-  const [, start] = useTransition();
 
   // Quando a página é atualizada (por exemplo, depois de a IA arrumar ficheiros), segue o servidor
   useEffect(() => setItems(initial), [initial]);
@@ -52,25 +40,8 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
   const allDone = items.length > 0 && handled === items.length;
   const filesText = (n: number) => (n === 1 ? t.fileOne : t.files.replace("{n}", String(n)));
 
-  function save(item: Item, sent: boolean, via: Channel | null) {
-    setAsking(null);
-    setError("");
-    setBusy(item.id);
-    const next = sent ? "sent" : "pending";
-    setItems((list) => list.map((i) => (i.id === item.id ? { ...i, status: next, via: sent ? via : null } : i)));
-    start(async () => {
-      const res = await markSent(token, item.id, sent, via === "whatsapp" || via === "email" || via === "other" ? via : null);
-      if (res !== next) {
-        setItems((list) => list.map((i) => (i.id === item.id ? item : i)));
-        setError(t.error);
-      }
-      setBusy(null);
-    });
-  }
-
   async function send(item: Item, files: File[]) {
     if (!files.length || progress) return;
-    setAsking(null);
     setIssues(null);
     setError("");
     setProgress({ id: item.id, a: 0, b: files.length });
@@ -110,7 +81,6 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
         {items.map((i, idx) => {
           const received = i.status === "received";
           const sent = i.status === "sent";
-          const open = asking === i.id;
           const uploading = progress?.id === i.id;
           return (
             <li key={i.id} className="animate-rise border-b border-line" style={{ animationDelay: `${idx * 40}ms` }}>
@@ -124,16 +94,6 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                       {received ? t.received : i.via ? t.sentVia.replace("{canal}", t.via[i.via]) : t.sent}
                       {i.files > 0 && <span>· {filesText(i.files)}</span>}
                     </span>
-                  )}
-                  {!received && !sent && !closed && !uploading && (
-                    <button
-                      type="button"
-                      onClick={() => setAsking((cur) => (cur === i.id ? null : i.id))}
-                      aria-expanded={open}
-                      className="mt-1 text-[12.5px] text-muted underline decoration-line-strong underline-offset-4 hover:text-ivory"
-                    >
-                      {t.otherWay}
-                    </button>
                   )}
                 </div>
                 {!received && !closed &&
@@ -172,36 +132,6 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                 </div>
               )}
 
-              {/* Mini-menu: por onde enviou? */}
-              {open && (
-                <div className="mb-3 animate-rise rounded-xl border border-line bg-ink-2 px-3.5 py-3 [animation-duration:.2s]">
-                  <div className="flex items-center justify-between">
-                    <p className="mono-label">{t.howSent}</p>
-                    <button type="button" onClick={() => setAsking(null)} className="grid h-7 w-7 place-items-center text-muted hover:text-ivory" aria-label={t.cancel}>
-                      <X className="h-4 w-4" aria-hidden />
-                    </button>
-                  </div>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
-                    {channels.map((c) => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => save(i, true, c)}
-                        disabled={busy === i.id}
-                        className="flex flex-col items-center gap-1.5 rounded-lg border border-line-strong px-2 py-3 text-xs font-medium transition hover:border-ivory active:bg-ink-3"
-                      >
-                        <ChannelIcon via={c} className="h-5 w-5" />
-                        {t.via[c]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {sent && !closed && (
-                <button type="button" onClick={() => save(i, false, null)} className="-mt-2 mb-3 ml-8 text-xs text-muted underline-offset-4 hover:underline">
-                  {t.undo}
-                </button>
-              )}
             </li>
           );
         })}

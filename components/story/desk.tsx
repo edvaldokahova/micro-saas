@@ -135,7 +135,7 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
 }
 
 // Canais na demonstração (o último é o ficheiro que o cliente envia no telemóvel, pela página do pedido)
-const DEMO_VIA: Channel[] = ["whatsapp", "email", "page"];
+const DEMO_VIA: Channel[] = ["page", "email", "page"];
 
 const h1 = "text-[38px] font-semibold leading-none tracking-[-0.03em] [font-variation-settings:'wdth'_84]";
 const small = "text-[12.5px] font-medium";

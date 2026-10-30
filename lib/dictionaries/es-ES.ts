@@ -68,7 +68,7 @@ const dict: Dictionary = {
     metaDescription: (d: number) =>
       `Para asesorías y gestorías: tus clientes envían la documentación por enlace o correo y llega ordenada por cliente y periodo, con recordatorios automatizados a quien falta. ${d} días gratis, sin tarjeta.`,
     title: "Deja de perseguir documentación pendiente.",
-    lead: "Tus clientes envían como siempre, por WhatsApp, correo o con un toque desde el enlace. Cada documento llega a tu panel ya ordenado por cliente y por periodo, y quien va con retraso recibe el recordatorio automatizado.",
+    lead: "Tus clientes envían con un toque desde el enlace, o responden al recordatorio con los adjuntos. Cada documento llega a tu panel ya ordenado por cliente y por periodo, y quien va con retraso recibe el recordatorio automatizado.",
     mock: {
       month: "3.er trimestre de 2026",
       summary: "2 de 4 clientes completos",
@@ -94,7 +94,7 @@ const dict: Dictionary = {
     fit: {
       title: "Para el despacho que no quiere obligar a sus clientes a usar un portal complicado.",
       points: [
-        { title: "El cliente no cambia de hábitos", text: "Sigue enviando por WhatsApp o por correo, como siempre. Sin cuenta, sin aplicación, sin contraseña: abre un enlace y ve lo que falta." },
+        { title: "Envía con un toque, o responde al correo", text: "El cliente abre el enlace y sube las fotos o los PDF, sin cuenta ni contraseña. Si prefiere responder al correo de recordatorio con los documentos adjuntos, Bilonai los recoge y los lleva a tu panel." },
         { title: "Sin implantación", text: "Nada de semanas de configuración ni de formar al equipo. Añades los clientes, creas las solicitudes del trimestre y empiezas el mismo día." },
         { title: "Todo ordenado en un sitio", text: "Cada archivo llega al documento correcto, con el canal por el que vino. Descargas todo lo del cliente en un ZIP y lo demás sigue en tu programa de siempre." },
       ],
@@ -187,7 +187,7 @@ const dict: Dictionary = {
       removeConfirm: "¿Eliminar este archivo? No se podrá recuperar.",
       zip: (n: number) => `Descargar todo (${n})`,
       zipping: "Preparando…",
-      drop: "Arrastra aquí los archivos que te llegaron por WhatsApp",
+      drop: "Arrastra aquí archivos que te llegaron por otro medio",
       dropHint: "O toca para elegirlos. Bilonai coloca cada uno en el documento correcto.",
       empty: "Todavía no ha llegado ningún archivo. Cuando tus clientes los envíen desde la página de la solicitud (o por correo), aparecerán aquí, ya ordenados.",
       files: (n: number) => (n === 1 ? "1 archivo" : `${n} archivos`),

@@ -16,7 +16,7 @@ async function ownRequest(requestId: string) {
   return r && r.office_id === office.id ? r : null;
 }
 
-/* ---------- Ficheiros que o escritório recebeu noutro lado (ex.: WhatsApp) ---------- */
+/* ---------- Ficheiros que o escritório recebeu por outro meio ---------- */
 
 export async function startOfficeUpload(requestId: string, files: InFile[], itemId: string | null): Promise<Slot[] | null> {
   const r = await ownRequest(requestId);
@@ -27,7 +27,7 @@ export async function startOfficeUpload(requestId: string, files: InFile[], item
 export async function finishOfficeUpload(requestId: string, done: DoneFile[], itemId: string | null): Promise<{ saved: number } | null> {
   const r = await ownRequest(requestId);
   if (!r || !(await itemInRequest(r.id, itemId))) return null;
-  const saved = await registerUploads({ officeId: r.office_id, requestId: r.id, itemId, done, channel: "whatsapp", addedBy: "office" });
+  const saved = await registerUploads({ officeId: r.office_id, requestId: r.id, itemId, done, channel: "other", addedBy: "office" });
   if (!itemId && saved.length) after(() => classifyDocuments(saved));
   return { saved: saved.length };
 }

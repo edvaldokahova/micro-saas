@@ -65,7 +65,7 @@ const dict = {
     metaDescription: (d: number) =>
       `Para escritórios de contabilidade: os clientes enviam os documentos por link ou e-mail e eles chegam arrumados por cliente e mês, com lembretes automatizados a quem falta. ${d} dias grátis, sem cartão.`,
     title: "Deixe de perseguir documentos em falta.",
-    lead: "Os seus clientes enviam como sempre, por WhatsApp, e-mail ou num toque pelo link. Cada documento chega ao seu painel já arrumado por cliente e por mês, e quem está atrasado recebe o lembrete automatizado.",
+    lead: "Os seus clientes enviam num toque pelo link, ou respondem ao lembrete com os anexos. Cada documento chega ao seu painel já arrumado por cliente e por mês, e quem está atrasado recebe o lembrete automatizado.",
     mock: {
       month: "Setembro de 2026",
       summary: "2 de 4 clientes completos",
@@ -91,7 +91,7 @@ const dict = {
     fit: {
       title: "Para o escritório que não quer obrigar os clientes a usar um portal complicado.",
       points: [
-        { title: "O cliente não muda de hábitos", text: "Continua a enviar pelo WhatsApp ou pelo e-mail, como sempre. Sem conta, sem aplicação, sem palavra-passe: abre um link e vê o que falta." },
+        { title: "Envia num toque, ou responde ao e-mail", text: "O cliente abre o link e carrega as fotos ou os PDF, sem conta nem palavra-passe. Se preferir responder ao e-mail de lembrete com os documentos em anexo, o Bilonai apanha-os e põe-nos no seu painel." },
         { title: "Sem implementação", text: "Nada de semanas de configuração nem de formação da equipa. Adiciona os clientes, cria os pedidos do mês e começa no mesmo dia." },
         { title: "Tudo arrumado num sítio", text: "Cada ficheiro chega ao documento certo, com o canal por onde veio. Descarrega tudo do cliente num ZIP e o resto continua no seu programa de sempre." },
       ],
@@ -174,7 +174,7 @@ const dict = {
       title: "Documentos",
       hint: "Tudo o que os clientes enviaram, arrumado por cliente e por documento. Cada ficheiro fica disponível 90 dias.",
       review: "Por confirmar",
-      reviewHint: "A Bilonai não teve a certeza de onde arrumar estes ficheiros. Escolha o documento certo.",
+      reviewHint: "O Bilonai não teve a certeza de onde arrumar estes ficheiros. Escolha o documento certo.",
       fileTo: "Arrumar em…",
       move: "Mover para…",
       view: "Ver",
@@ -183,12 +183,12 @@ const dict = {
       removeConfirm: "Apagar este ficheiro? Não é possível recuperá-lo.",
       zip: (n: number) => `Descarregar tudo (${n})`,
       zipping: "A preparar…",
-      drop: "Arraste para aqui os ficheiros que recebeu pelo WhatsApp",
-      dropHint: "Ou toque para escolher. A Bilonai arruma cada um no documento certo.",
+      drop: "Arraste para aqui ficheiros que recebeu por outro meio",
+      dropHint: "Ou toque para escolher. O Bilonai arruma cada um no documento certo.",
       empty: "Ainda não chegou nenhum ficheiro. Quando os clientes enviarem pela página do pedido (ou por e-mail), aparecem aqui, já arrumados.",
       files: (n: number) => (n === 1 ? "1 ficheiro" : `${n} ficheiros`),
       until: (date: string) => `Disponível até ${date}`,
-      by: { ai: "Arrumado pela Bilonai", client: "Escolhido pelo cliente", office: "Arrumado pelo escritório" },
+      by: { ai: "Arrumado pelo Bilonai", client: "Escolhido pelo cliente", office: "Arrumado pelo escritório" },
       error: "Não foi possível concluir. Tente de novo.",
       openRequest: "Abrir pedido",
     },

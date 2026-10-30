@@ -133,7 +133,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
   );
 }
 
-// Ficheiros que o escritório recebeu noutro lado (ex.: WhatsApp Web/Desktop): arrastar ou escolher.
+// Ficheiros que o escritório recebeu por outro meio: arrastar ou escolher.
 export function OfficeDrop({ requestId, t }: { requestId: string; t: DocTexts }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
@@ -179,7 +179,9 @@ export function OfficeDrop({ requestId, t }: { requestId: string; t: DocTexts })
         } ${busy ? "pointer-events-none" : ""}`}
       >
         <input ref={input} type="file" multiple accept={ACCEPT} className="sr-only" onChange={(e) => send(e.target.files ? Array.from(e.target.files) : [])} />
-        <ChannelIcon via="whatsapp" className="h-6 w-6" />
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink-3 text-ivory" aria-hidden>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10.5v-8M4.8 5.5L8 2.3l3.2 3.2M3 10v2.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V10" /></svg>
+        </span>
         <span className="min-w-0">
           {busy ? (
             <span className="flex items-center gap-2 text-[14px] font-medium">
