@@ -25,16 +25,15 @@ function P({ d, s = 0, e = 1, className, strokeWidth }: { d: string; s?: number;
   return <path d={d} pathLength={1} data-s={s} data-e={e} className={className} strokeWidth={strokeWidth} strokeDasharray="1" />;
 }
 
-// Mensagem e e-mail: os canais de sempre, lado a lado
+// Internet (o link) e e-mail: as duas formas de o cliente enviar
 function IconChannels() {
   return (
     <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <P s={0} e={0.55} d="M10.5 6h12a3.5 3.5 0 0 1 3.5 3.5v7a3.5 3.5 0 0 1-3.5 3.5H15.5L10.5 24v-4A3.5 3.5 0 0 1 7 16.5v-7A3.5 3.5 0 0 1 10.5 6z" />
-      <P s={0.3} e={0.85} d="M21.5 21h10a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5h-10A2.5 2.5 0 0 1 19 29.5v-6a2.5 2.5 0 0 1 2.5-2.5z" />
-      <P s={0.7} e={1} d="M19.8 23.4l6.7 4.8 6.7-4.8" />
-      {[13, 16.5, 20].map((x, i) => (
-        <circle key={x} cx={x} cy="13" r="1.15" fill="currentColor" stroke="none" data-pop={0.78 + i * 0.07} />
-      ))}
+      <P s={0} e={0.45} d="M14 5a8 8 0 1 1 0 16a8 8 0 1 1 0-16z" />
+      <P s={0.25} e={0.6} d="M14 5c-2.4 2.2-3.6 4.9-3.6 8s1.2 5.8 3.6 8c2.4-2.2 3.6-4.9 3.6-8s-1.2-5.8-3.6-8z" />
+      <P s={0.4} e={0.65} d="M6 13h16" />
+      <P s={0.45} e={0.85} d="M21.5 21h10a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5h-10A2.5 2.5 0 0 1 19 29.5v-6a2.5 2.5 0 0 1 2.5-2.5z" />
+      <P s={0.75} e={1} d="M19.8 23.4l6.7 4.8 6.7-4.8" />
     </svg>
   );
 }
