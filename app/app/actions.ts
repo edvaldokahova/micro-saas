@@ -232,18 +232,15 @@ export async function updateSettings(formData: FormData) {
   const email = text(formData.get("contact_email"), 254);
   const locale = formData.get("locale");
   const template = text(formData.get("reminder_template"), 1000);
-  const uploadUrl = text(formData.get("upload_url"), 500);
   if (!name) redirect("/definicoes?erro=name");
   if (p === "invalid") redirect("/definicoes?erro=phone");
   if (email && !email.includes("@")) redirect("/definicoes?erro=generic");
-  if (uploadUrl && !/^https:\/\/\S+$/.test(uploadUrl)) redirect("/definicoes?erro=url");
 
   const update: Record<string, string | null> = {
     name,
     contact_phone: p,
     contact_email: email,
     reminder_template: template,
-    upload_url: uploadUrl,
   };
   if (isLocale(locale)) update.locale = locale;
   const { error } = await supabase.from("offices").update(update).eq("id", office.id);

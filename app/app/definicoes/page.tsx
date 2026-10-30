@@ -58,11 +58,6 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
             <input name="contact_email" type="email" maxLength={254} defaultValue={office.contact_email ?? ""} className="field" />
           </label>
           <p className="-mt-2 text-xs text-muted sm:col-span-2">{t.contactHint}</p>
-          <label className="block sm:col-span-2">
-            <span className="label">{t.uploadUrl}</span>
-            <input name="upload_url" type="url" inputMode="url" maxLength={500} placeholder="https://" defaultValue={office.upload_url ?? ""} className="field" />
-            <span className="mt-1.5 block text-xs text-muted">{t.uploadUrlHint}</span>
-          </label>
         </div>
 
         <fieldset>

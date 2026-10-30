@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { CalendarClock, Lock, UserRound } from "lucide-react";
-import { platformName } from "@/lib/platform";
-import { ChannelLogo } from "@/components/channel-logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
@@ -166,12 +164,6 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
             <div className="mt-4">
               <Uploader token={token} t={upTexts} />
             </div>
-            {/* Só a plataforma que o escritório indicou nas Definições (se indicou); o envio normal é aqui mesmo */}
-            {req.upload_url && /^https:\/\//.test(req.upload_url) && (
-              <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary mt-3 w-full min-h-[3.1rem]">
-                <ChannelLogo channel="web" className="h-5 w-5" /> {platformName(req.upload_url) ? t.sendVia(platformName(req.upload_url)!) : t.sendPortal}
-              </a>
-            )}
           </section>
         )}
 
