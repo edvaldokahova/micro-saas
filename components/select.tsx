@@ -21,8 +21,13 @@ export function Select({
   emptyText,
   searchFrom = 8,
   id,
+  onPick,
+  action = false,
+  label,
+  tone = "field",
+  className = "",
 }: {
-  name: string;
+  name?: string;
   options: SelectOption[];
   defaultValue?: string;
   placeholder?: string;
@@ -32,6 +37,14 @@ export function Select({
   emptyText?: string;
   searchFrom?: number;
   id?: string;
+  /** Chamado a cada escolha (para menus que fazem uma ação em vez de ir num formulário) */
+  onPick?: (value: string) => void;
+  /** Menu de ação: depois de escolher, volta a mostrar o placeholder */
+  action?: boolean;
+  label?: string;
+  /** "field" = campo de formulário; "pill" / "pill-strong" = botão redondo pequeno */
+  tone?: "field" | "pill" | "pill-strong";
+  className?: string;
 }) {
   const uid = useId();
   const listId = `${uid}-list`;
@@ -65,8 +78,9 @@ export function Select({
     if (focus) button.current?.focus();
   }
   function choose(o: SelectOption) {
-    setValue(o.value);
+    if (!action) setValue(o.value);
     close();
+    onPick?.(o.value);
   }
 
   // Fecha ao tocar fora
@@ -114,8 +128,9 @@ export function Select({
   }
 
   return (
-    <div ref={root} className="relative" onKeyDown={onKey}>
+    <div ref={root} className={`relative ${className}`} onKeyDown={onKey}>
       {/* Campo real que vai no formulário; o "required" usa a validação do próprio navegador */}
+      {name && (
       <input
         name={name}
         value={value}
@@ -126,6 +141,7 @@ export function Select({
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px opacity-0"
       />
+      )}
       <button
         ref={button}
         id={id}
@@ -135,13 +151,20 @@ export function Select({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
-        className={`field flex items-center justify-between gap-3 text-left disabled:cursor-not-allowed disabled:opacity-60 ${open ? "!border-ivory" : ""}`}
+        aria-label={label}
+        className={`flex w-full items-center justify-between gap-3 text-left disabled:cursor-not-allowed disabled:opacity-60 ${
+          tone === "field"
+            ? `field ${open ? "!border-ivory" : ""}`
+            : tone === "pill-strong"
+              ? "h-8 rounded-full border border-ivory bg-ivory px-3.5 text-[12.5px] font-medium text-ink"
+              : `h-8 rounded-full border px-3.5 text-[12.5px] text-muted transition hover:text-ivory ${open ? "border-ivory" : "border-line-strong"}`
+        }`}
       >
-        <span className={`min-w-0 truncate ${current ? "" : "text-muted/80"}`}>
+        <span className={`min-w-0 truncate ${current || tone !== "field" ? "" : "text-muted/80"}`}>
           {current ? current.label : placeholder}
           {current?.hint && <span className="ml-2 text-[12px] font-medium text-muted">{current.hint}</span>}
         </span>
-        <svg viewBox="0 0 20 20" className={`h-4 w-4 shrink-0 text-muted transition ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
+        <svg viewBox="0 0 20 20" className={`h-4 w-4 shrink-0 transition ${tone === "pill-strong" ? "" : "text-muted"} ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden>
           <path d="M5.5 8l4.5 4.5L14.5 8" />
         </svg>
       </button>
@@ -149,7 +172,7 @@ export function Select({
       {open && (
         <div
           style={{ animationDuration: "140ms" }}
-          className={`absolute inset-x-0 z-40 animate-fade overflow-hidden rounded-xl border border-line-strong bg-ink-2 shadow-[0_16px_40px_-16px_rgba(18,19,22,0.3)] ${up ? "bottom-full mb-1" : "top-full mt-1"}`}
+          className={`absolute z-40 animate-fade ${tone === "field" ? "inset-x-0" : "right-0 w-max min-w-full max-w-[min(20rem,calc(100vw-2.5rem))]"} overflow-hidden rounded-xl border border-line-strong bg-ink-2 shadow-[0_16px_40px_-16px_rgba(18,19,22,0.3)] ${up ? "bottom-full mb-1" : "top-full mt-1"}`}
         >
           {searchable && (
             <div className="border-b border-line p-2">

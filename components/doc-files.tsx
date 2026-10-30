@@ -5,6 +5,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
+import { Select } from "@/components/select";
 import { Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
 import { uploadFiles, type UploadIssue } from "@/lib/upload-client";
@@ -88,25 +89,16 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
             </span>
             <span className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:shrink-0">
               {items.length > 0 && (
-                <select
-                  aria-label={review ? t.fileTo : t.move}
-                  value=""
+                <Select
+                  label={review ? t.fileTo : t.move}
+                  placeholder={review ? t.fileTo : t.move}
+                  action
+                  tone={review ? "pill-strong" : "pill"}
                   disabled={busy === f.id}
-                  onChange={(e) => {
-                    const item = e.target.value;
-                    if (item) run(f.id, () => fileDocument(f.id, item));
-                  }}
-                  className={`h-8 min-w-0 flex-1 rounded-full border px-3 text-[12.5px] sm:max-w-[11rem] sm:flex-none ${review ? "border-ivory bg-ivory font-medium text-ink" : "border-line-strong bg-transparent text-muted"}`}
-                >
-                  <option value="">{review ? t.fileTo : t.move}</option>
-                  {items
-                    .filter((it) => it.id !== f.itemId)
-                    .map((it) => (
-                      <option key={it.id} value={it.id}>
-                        {it.label}
-                      </option>
-                    ))}
-                </select>
+                  options={items.filter((it) => it.id !== f.itemId).map((it) => ({ value: it.id, label: it.label }))}
+                  onPick={(item) => item && run(f.id, () => fileDocument(f.id, item))}
+                  className="min-w-0 flex-1 sm:max-w-[11rem] sm:flex-none"
+                />
               )}
               <a href={`/ficheiro/${f.id}?dl=1`} className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-ink-3 hover:text-ivory" aria-label={t.download} title={t.download}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -5,6 +5,7 @@
 // Mostra o que vai ser importado antes de confirmar.
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Select } from "@/components/select";
 import { Spinner } from "@/components/spinner";
 import { importClients, type ImportRow } from "@/app/app/actions";
 
@@ -142,17 +143,14 @@ export function ClientImport({ t, room, team, assignee: at }: { t: ImportTexts; 
 
       {/* Responsável de todos (os colaboradores só veem os clientes que lhes estão atribuídos) */}
       {team.length > 0 && (
-        <label className="block">
+        <div>
           <span className="label">{at.label}</span>
-          <select value={assignee} onChange={(e) => setAssignee(e.target.value)} className="field">
-            <option value="">{at.general}</option>
-            {team.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            options={[{ value: "", label: at.general }, ...team.map((m) => ({ value: m.id, label: m.name }))]}
+            onPick={setAssignee}
+            label={at.label}
+          />
+        </div>
       )}
 
       {error && (
