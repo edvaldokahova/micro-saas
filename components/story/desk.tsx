@@ -1,6 +1,6 @@
 // O painel do Bilonai na versão de computador (1280 × 800 lógicos), para a gravação no portátil.
 // Mesmos textos, marcas e ícones do painel real; os alvos dos cliques têm data-t.
-import { IconClients, IconLedger, IconSettings } from "@/components/icons";
+import { IconClients, IconDocs, IconLedger, IconSettings } from "@/components/icons";
 import { Avatar } from "@/components/avatar";
 import { Wordmark } from "@/components/logo";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
@@ -17,7 +17,7 @@ export type DeskTexts = {
   docs: string[]; // 3
   member: { name: string; email: string; existing: string };
   ui: {
-    nav: { dashboard: string; clients: string; settings: string };
+    nav: { dashboard: string; clients: string; documents: string; settings: string };
     periodEyebrow: string;
     month: string;
     collected: string;
@@ -34,7 +34,10 @@ export type DeskTexts = {
     awaiting: string;
     delivered: string;
     showDocs: string;
-    confirm: string;
+    zip: string;
+    zipDone: string;
+    filedBy: string;
+    files: string[];
     docStatus: Record<DocState, string>;
     to: string;
     send: string;
@@ -73,6 +76,7 @@ export type DeskState = {
   reminded: boolean;
   expanded: boolean;
   confirmed: boolean;
+  zipped: boolean;
   openClient: number | null;
   archived: number[];
   showArchived: boolean;
@@ -84,7 +88,7 @@ export type DeskState = {
 };
 
 const BASE: DeskState = {
-  tab: "dash", created: true, fresh: false, modal: false, reminded: false, expanded: false, confirmed: false,
+  tab: "dash", created: true, fresh: false, modal: false, reminded: false, expanded: false, confirmed: false, zipped: false,
   openClient: null, archived: [], showArchived: false, focus: null, name: "", email: "", access: "none", invited: false,
 };
 
@@ -101,7 +105,8 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
     },
     {
       start: { ...BASE, reminded: true },
-      steps: [{ tap: "docs", set: { expanded: true }, zoom: 1.6 }, { wait: 1.4 }, { tap: "confirm", set: { confirmed: true }, zoom: 1.9 }, { wait: 0.5 }],
+      // Os ficheiros chegam arrumados (o último, enviado agora pela página do pedido) e descarrega-se tudo num ZIP
+      steps: [{ tap: "docs", set: { expanded: true }, zoom: 1.6 }, { wait: 1.1 }, { set: { confirmed: true } }, { wait: 1.2 }, { tap: "zip", set: { zipped: true }, zoom: 1.7 }, { wait: 0.9 }],
     },
     {
       start: { ...BASE, reminded: true, confirmed: true },
@@ -129,8 +134,8 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
   ];
 }
 
-// Canais de envio na demonstração (o último é o que o cliente escolhe no telemóvel: e-mail)
-const DEMO_VIA: Channel[] = ["whatsapp", "whatsapp", "email"];
+// Canais na demonstração (o último é o ficheiro que o cliente envia no telemóvel, pela página do pedido)
+const DEMO_VIA: Channel[] = ["whatsapp", "email", "page"];
 
 const h1 = "text-[38px] font-semibold leading-none tracking-[-0.03em] [font-variation-settings:'wdth'_84]";
 const small = "text-[12.5px] font-medium";
@@ -147,6 +152,7 @@ export function DeskScreen({ s, t }: { s: DeskState; t: DeskTexts }) {
               [
                 ["dash", u.nav.dashboard, IconLedger],
                 ["clients", u.nav.clients, IconClients],
+                ["docs", u.nav.documents, IconDocs],
                 ["settings", u.nav.settings, IconSettings],
               ] as const
             ).map(([k, label, Icon]) => (
@@ -196,7 +202,7 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
         { name: t.clients[0], phone: t.phones[0], got: 1, sent: 0, status: u.late, tone: "text-bad" },
         s.confirmed
           ? { name: t.clients[1], phone: t.phones[1], got: n, sent: 0, status: u.delivered, tone: "text-ok" }
-          : { name: t.clients[1], phone: t.phones[1], got: n - 1, sent: 1, status: u.awaiting, tone: "text-gold" },
+          : { name: t.clients[1], phone: t.phones[1], got: n - 1, sent: 0, status: u.pending, tone: "text-muted" },
         { name: t.clients[2], phone: t.phones[2], got: 2, sent: 0, status: u.pending, tone: "text-muted" },
         { name: t.clients[3], phone: t.phones[3], got: n, sent: 0, status: u.delivered, tone: "text-ok" },
         { name: t.clients[4], phone: t.phones[4], got: 0, sent: 0, status: u.pending, tone: "text-muted" },
@@ -280,31 +286,48 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
                   <>
                     <span data-t="docs" className="mt-2 inline-block text-[12.5px] text-muted underline decoration-line-strong underline-offset-2">{u.showDocs}</span>
                     {s.expanded && (
-                      <ul className="mt-2.5 grid grid-cols-3 gap-2">
-                        {t.docs.map((d, k) => {
-                          const st: DocState = k < n - 1 || s.confirmed ? "received" : "sent";
-                          return (
-                            <li key={d} className="rounded-xl bg-ink-3/70 px-3 py-2 text-[13px]">
-                              <span className="flex min-w-0 items-center gap-2">
-                                <DocMark state={st} animate={k === n - 1 && s.confirmed} />
-                                <span className="truncate">{d}</span>
-                              </span>
-                              <span className="mt-1.5 flex items-center justify-between gap-2.5 pl-6">
-                                {/* Por onde o cliente enviou: fica registado em cada documento */}
-                                <span className="flex items-center gap-1 text-[11.5px] text-muted">
-                                  <ChannelIcon via={DEMO_VIA[k % DEMO_VIA.length]} className="h-3 w-3" />
-                                  {u.channels[DEMO_VIA[k % DEMO_VIA.length]]}
+                      <>
+                        <ul className="mt-2.5 grid grid-cols-3 gap-2">
+                          {t.docs.map((d, k) => {
+                            const arrived = k < n - 1 || s.confirmed;
+                            const via = DEMO_VIA[k % DEMO_VIA.length];
+                            return (
+                              <li key={d} className="rounded-xl bg-ink-3/70 px-3 py-2 text-[13px]">
+                                <span className="flex min-w-0 items-center gap-2">
+                                  <DocMark state={arrived ? "received" : "pending"} animate={k === n - 1 && s.confirmed} />
+                                  <span className="truncate">{d}</span>
                                 </span>
-                                {st === "sent" ? (
-                                  <span data-t="confirm" className="btn btn-primary btn-sm !min-h-0 !px-3 !py-1 !text-[12px]">{u.confirm}</span>
+                                {/* O ficheiro chega já arrumado no documento certo, com o canal por onde veio */}
+                                {arrived ? (
+                                  <span key={`f${k}`} className={`mt-1.5 flex items-center gap-2 rounded-lg border border-line bg-ink-2 px-2 py-1.5 ${k === n - 1 ? "animate-rise" : ""}`}>
+                                    <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-ink-3 font-mono text-[8px] font-semibold text-muted">
+                                      {(u.files[k] ?? "").split(".").pop()?.toUpperCase()}
+                                    </span>
+                                    <span className="min-w-0">
+                                      <span className="block truncate text-[11.5px] font-medium">{u.files[k]}</span>
+                                      <span className="flex items-center gap-1 text-[10.5px] text-muted">
+                                        <ChannelIcon via={via} className="h-2.5 w-2.5" /> {u.channels[via]}
+                                      </span>
+                                    </span>
+                                  </span>
                                 ) : (
-                                  <span className="text-[11.5px] text-ok">{u.docStatus[st]}</span>
+                                  <span className="mt-1.5 block pl-6 text-[11.5px] text-muted">{u.docStatus.pending}</span>
                                 )}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                        <span className="mt-2.5 flex items-center gap-3">
+                          <span data-t="zip" className={`btn btn-secondary btn-sm transition-opacity ${s.confirmed ? "opacity-100" : "opacity-40"}`}>{u.zip}</span>
+                          {s.zipped && (
+                            <span className="flex animate-rise items-center gap-1.5 text-[12px] text-ok">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M2.5 6.3l2.2 2.2L9.5 3.6" /></svg>
+                              {u.zipDone}
+                            </span>
+                          )}
+                          {s.confirmed && !s.zipped && <span className="animate-fade text-[11.5px] text-muted">{u.filedBy}</span>}
+                        </span>
+                      </>
                     )}
                   </>
                 )}

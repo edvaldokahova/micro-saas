@@ -84,6 +84,8 @@ const dict: Dictionary = {
       clientView: "Lo que ve tu cliente",
       live: "En directo",
       docs: ["Extractos bancarios", "Facturas de gastos", "Tickets y recibos"],
+      files: ["extracto_julio.pdf", "factura_repsol_0712.pdf", "IMG_2041.jpg"],
+      sheet: ["Fototeca", "Hacer foto o vídeo", "Seleccionar archivo"],
       toast: "Recordatorio enviado por WhatsApp",
       confirmed: "Documentos confirmados",
     },
@@ -103,7 +105,7 @@ const dict: Dictionary = {
       chapters: [
         { title: "Crear las solicitudes del periodo", text: "Un clic crea la solicitud de cada cliente, con la lista de documentos del periodo anterior." },
         { title: "Recordar a quien va con retraso", text: "Activa los recordatorios automáticos y el correo sale solo, en nombre de la asesoría. O envíalo a mano, por correo o WhatsApp, con el mensaje ya escrito." },
-        { title: "Confirmar lo que ha llegado", text: "Ves por dónde llegó cada documento, WhatsApp o correo, y sabes dónde buscarlo. Lo confirmas con un clic." },
+        { title: "Recibirlo todo ordenado", text: "Cada archivo entra en el documento correcto, con el canal por el que llegó. Descarga todo lo del cliente en un ZIP, listo para tu programa." },
         { title: "Archivar y reactivar un cliente", text: "Quien deja de ser cliente sale de las solicitudes y del límite del plan. El historial se conserva y reactivarlo es un clic." },
         { title: "Invitar a un colaborador", text: "Recibe una invitación por correo, entra sin contraseña y solo ve los clientes que le asignes." },
       ],
@@ -112,11 +114,11 @@ const dict: Dictionary = {
       to: "Para",
       phone: {
         title: "Para el cliente, es un enlace y dos toques.",
-        lead: "Sin cuenta ni aplicación: lo abre en el móvil, marca lo que ha enviado y tu panel se actualiza.",
+        lead: "Sin cuenta ni aplicación: lo abre en el móvil, envía los archivos con un toque y tu panel se actualiza.",
         chapters: [
           { title: "Recibe el mensaje", text: "En nombre de tu asesoría, por correo o WhatsApp: dice cuántos documentos faltan y lleva al enlace." },
           { title: "Abre el enlace", text: "Ve el nombre del despacho, el plazo y cada documento pedido." },
-          { title: "Marca lo que ha enviado", text: "Indica por dónde lo envió. En tu panel, el documento queda por confirmar." },
+          { title: "Lo envía desde aquí, con un toque", text: "Elige la foto o el PDF en el móvil. El documento llega a la asesoría ya ordenado, sin marcar nada." },
         ],
         date: "Mié., 21 oct.",
         now: "ahora",

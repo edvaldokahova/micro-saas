@@ -83,6 +83,8 @@ const dict: Dictionary = {
       clientView: "O que o cliente vê",
       live: "Ao vivo",
       docs: ["Extratos bancários", "Informações da folha", "Recibos e comprovantes"],
+      files: ["extrato_setembro.pdf", "folha_setembro.xlsx", "IMG_2041.jpg"],
+      sheet: ["Fototeca", "Tirar Foto ou Gravar Vídeo", "Escolher Arquivo"],
       toast: "Cobrança enviada pelo WhatsApp",
       confirmed: "Documentos confirmados",
     },
@@ -102,7 +104,7 @@ const dict: Dictionary = {
       chapters: [
         { title: "Criar as solicitações do mês", text: "Um clique cria a solicitação de cada cliente, com a lista de documentos do período anterior." },
         { title: "Cobrar quem está atrasado", text: "Ligue as cobranças automáticas e o e-mail sai sozinho, em nome do escritório. Ou envie manualmente, pelo WhatsApp ou e-mail, com a mensagem já escrita." },
-        { title: "Conferir o que chegou", text: "Você vê por onde chegou cada documento, WhatsApp ou e-mail, e já sabe onde procurar. Confirma com um clique." },
+        { title: "Receber tudo organizado", text: "Cada arquivo entra no documento certo, com o canal por onde chegou. Baixe tudo do cliente em um ZIP, pronto para o seu sistema." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai das solicitações e do limite do plano. O histórico fica guardado e reativar é um clique." },
         { title: "Convidar um colaborador", text: "Ele recebe um convite por e-mail, entra sem senha e vê só os clientes que você atribuir." },
       ],
@@ -111,11 +113,11 @@ const dict: Dictionary = {
       to: "Para",
       phone: {
         title: "Para o cliente, é um link e dois toques.",
-        lead: "Sem conta nem aplicativo: abre no celular, marca o que enviou e o seu painel se atualiza.",
+        lead: "Sem conta nem aplicativo: abre no celular, envia os arquivos com um toque e o seu painel se atualiza.",
         chapters: [
           { title: "Recebe a mensagem", text: "Em nome do seu escritório, pelo WhatsApp ou e-mail: diz quantos documentos faltam e leva ao link." },
           { title: "Abre o link", text: "Vê o nome do escritório, o prazo e cada documento pedido." },
-          { title: "Marca o que enviou", text: "Diz por onde enviou. No seu painel, o documento fica para conferir." },
+          { title: "Envia daqui, com um toque", text: "Escolhe a foto ou o PDF no celular. O documento chega ao escritório já organizado, sem marcar nada." },
         ],
         date: "Qua., 21 de out.",
         now: "agora",

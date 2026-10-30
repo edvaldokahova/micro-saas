@@ -81,6 +81,8 @@ const dict = {
       clientView: "O que o cliente vê",
       live: "Ao vivo",
       docs: ["Extratos bancários", "Faturas de despesas", "Recibos e talões"],
+      files: ["extrato_setembro.pdf", "fatura_galp_0912.pdf", "IMG_2041.jpg"],
+      sheet: ["Fototeca", "Tirar fotografia ou gravar vídeo", "Escolher ficheiro"],
       toast: "Lembrete enviado por WhatsApp",
       confirmed: "Documentos confirmados",
     },
@@ -100,7 +102,7 @@ const dict = {
       chapters: [
         { title: "Criar os pedidos do mês", text: "Um clique cria o pedido de cada cliente, com a lista de documentos do período anterior." },
         { title: "Lembrar quem está atrasado", text: "Ligue os lembretes automáticos e o e-mail sai sozinho, em nome do escritório. Ou envie à mão, por e-mail ou WhatsApp, com a mensagem já escrita." },
-        { title: "Confirmar o que chegou", text: "Vê por onde chegou cada documento, WhatsApp ou e-mail, e sabe logo onde o procurar. Confirma com um clique." },
+        { title: "Receber tudo arrumado", text: "Cada ficheiro entra no documento certo, com o canal por onde chegou. Descarregue tudo do cliente num ZIP, pronto para o seu programa." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai dos pedidos e do limite do plano. O histórico fica guardado e reativar é um clique." },
         { title: "Convidar um colaborador", text: "Recebe um convite por e-mail, entra sem palavra-passe e vê só os clientes que lhe atribuir." },
       ],
@@ -109,11 +111,11 @@ const dict = {
       to: "Para",
       phone: {
         title: "Do lado do cliente, é um link e dois toques.",
-        lead: "Sem conta nem aplicação: abre no telemóvel, assinala o que enviou e o seu painel atualiza-se.",
+        lead: "Sem conta nem aplicação: abre no telemóvel, envia os ficheiros num toque e o seu painel atualiza-se.",
         chapters: [
           { title: "Recebe a mensagem", text: "Em nome do seu escritório, por e-mail ou WhatsApp: diz quantos documentos faltam e leva ao link." },
           { title: "Abre o link", text: "Vê o nome do escritório, o prazo e cada documento pedido." },
-          { title: "Assinala o que enviou", text: "Diz por onde enviou. No seu painel, o documento fica por confirmar." },
+          { title: "Envia daqui, num toque", text: "Escolhe a foto ou o PDF no telemóvel. O documento chega ao escritório já arrumado, sem assinalar nada." },
         ],
         date: "Qua., 21 de out.",
         now: "agora",

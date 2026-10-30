@@ -20,22 +20,28 @@ export type PhoneTexts = {
   due: string;
   progress: [string, string]; // antes e depois de assinalar
   docs: string[];
-  markSent: string;
-  howSent: string;
-  vias: { whatsapp: string; email: string };
-  sentVia: string;
+  upload: string; // "Enviar"
+  sheet: [string, string, string]; // menu do iOS ao escolher ficheiro: Fototeca, câmara, ficheiros
+  uploading: string; // "A enviar 1 de 1…"
+  file: string; // nome da foto escolhida
+  fileOne: string; // "1 ficheiro"
+  pageVia: string; // "Página do pedido"
   received: string;
   pending: string;
   thanks: string;
 };
 
-export type PhoneState = { stage: "lock" | "page"; banner: boolean; step: 0 | 1 | 2 };
+// step: 0 lista · 1 menu do iOS aberto · 2 a enviar · 3 recebido
+export type PhoneState = { stage: "lock" | "page"; banner: boolean; step: 0 | 1 | 2 | 3 };
 
 export function phoneScript(): { start: PhoneState; steps: Step<PhoneState>[] }[] {
   return [
     { start: { stage: "lock", banner: false, step: 0 }, steps: [{ wait: 0.5 }, { set: { banner: true } }, { wait: 1.4 }] },
     { start: { stage: "lock", banner: true, step: 0 }, steps: [{ tap: "banner", set: { stage: "page", banner: false } }, { wait: 1.2 }] },
-    { start: { stage: "page", banner: false, step: 0 }, steps: [{ tap: "mark", set: { step: 1 } }, { tap: "via-email", set: { step: 2 } }, { wait: 1.2 }] },
+    {
+      start: { stage: "page", banner: false, step: 0 },
+      steps: [{ tap: "upload", set: { step: 1 } }, { tap: "pick", set: { step: 2 } }, { wait: 0.9 }, { set: { step: 3 } }, { wait: 1.3 }],
+    },
   ];
 }
 
@@ -112,49 +118,63 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
           <p className="mt-7 text-[30px] font-semibold leading-[1.05] tracking-[-0.03em] [font-variation-settings:'wdth'_84]">{t.hello}</p>
           <p className="mt-2.5 text-[15px] leading-[1.45] text-muted">{t.intro}</p>
           <div className="mt-6 flex items-center justify-between text-[13px]">
-            <span className="text-muted">{t.progress[s.step === 2 ? 1 : 0]}</span>
-            <span className="tabular-nums">{s.step === 2 ? "100%" : "67%"}</span>
+            <span className="text-muted">{t.progress[s.step === 3 ? 1 : 0]}</span>
+            <span className="tabular-nums">{s.step === 3 ? "100%" : "67%"}</span>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-3">
-            <div className="h-full rounded-full bg-ivory transition-[width] duration-700 ease-out" style={{ width: s.step === 2 ? "100%" : "67%" }} />
+            <div className="h-full rounded-full bg-ivory transition-[width] duration-700 ease-out" style={{ width: s.step === 3 ? "100%" : "67%" }} />
           </div>
-          <ul className="mt-6 divide-y divide-line rounded-3xl border border-line">
+          <ul className="relative mt-6 divide-y divide-line rounded-3xl border border-line">
             {t.docs.map((d, i) => {
               const last = i === t.docs.length - 1;
-              const state: DocState = !last ? "received" : s.step === 2 ? "sent" : "pending";
+              const state: DocState = !last || s.step === 3 ? "received" : "pending";
               return (
-                <li key={d} className="px-4 py-3.5">
+                <li key={d} className="relative px-4 py-3.5">
                   <div className="flex items-center justify-between gap-3">
                     <span className="flex min-w-0 items-center gap-3 text-[15px]">
-                      <DocMark state={state} className="h-[18px] w-[18px]" animate={state === "sent"} />
+                      <DocMark state={state} className="h-[18px] w-[18px]" animate={last && s.step === 3} />
                       <span className="truncate">{d}</span>
                     </span>
-                    {state === "received" && <span className="shrink-0 text-[12.5px] font-medium text-ok">{t.received}</span>}
-                    {state === "sent" && <span className="shrink-0 text-[12.5px] font-medium text-gold">{t.sentVia}</span>}
-                    {state === "pending" && s.step === 0 && (
-                      <span data-t="mark" className="btn btn-primary btn-sm shrink-0">{t.markSent}</span>
+                    {state === "received" && !last && <span className="shrink-0 text-[12.5px] font-medium text-ok">{t.received}</span>}
+                    {last && (s.step === 0 || s.step === 1) && (
+                      <span data-t="upload" className="btn btn-primary btn-sm shrink-0">{t.upload}</span>
                     )}
                   </div>
-                  {state === "pending" && s.step === 1 && (
-                    <div className="mt-3 animate-fade [animation-duration:.25s]">
-                      <p className="text-[13px] text-muted">{t.howSent}</p>
-                      <div className="mt-2 grid grid-cols-2 gap-2">
-                        <span className="flex items-center justify-center gap-2 rounded-full border border-line-strong py-2 text-[14px]">
-                          <ChannelLogo channel="whatsapp" className="h-[18px] w-[18px]" />
-                          {t.vias.whatsapp}
-                        </span>
-                        <span data-t="via-email" className="flex items-center justify-center gap-2 rounded-full border border-line-strong py-2 text-[14px]">
-                          <ChannelLogo channel="email" className="h-[18px] w-[18px]" />
-                          {t.vias.email}
-                        </span>
+                  {/* A enviar e, depois, recebido com o ficheiro e o canal (página do pedido) */}
+                  {last && s.step === 2 && (
+                    <div className="mt-2.5 animate-fade pl-[30px] [animation-duration:.2s]">
+                      <p className="text-[12.5px] text-muted">{t.uploading}</p>
+                      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-ink-3">
+                        <div className="h-full w-full origin-left animate-[grow_.9s_ease-out_both] rounded-full bg-ivory" />
                       </div>
+                    </div>
+                  )}
+                  {last && s.step === 3 && (
+                    <p className="mt-1 flex animate-fade items-center gap-1.5 pl-[30px] text-[12.5px] text-muted">
+                      <ChannelLogo channel="web" className="h-3.5 w-3.5" />
+                      <span className="font-medium text-ok">{t.received}</span> · {t.fileOne} · {t.file}
+                    </p>
+                  )}
+                  {/* Menu do iOS ao tocar num botão de envio de ficheiros */}
+                  {last && s.step === 1 && (
+                    <div className="absolute bottom-[calc(100%-8px)] right-3 z-10 w-[268px] animate-fade overflow-hidden rounded-[14px] bg-white/90 text-[#121316] shadow-[0_12px_40px_-8px_rgba(0,0,0,0.35)] ring-1 ring-black/5 backdrop-blur-xl [animation-duration:.18s]">
+                      {t.sheet.map((label, k) => (
+                        <span key={label} data-t={k === 0 ? "pick" : undefined} className={`flex items-center justify-between gap-3 px-4 py-[11px] text-[15px] ${k ? "border-t border-black/10" : ""}`}>
+                          {label}
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                            {k === 0 && <><rect x="2.5" y="4" width="15" height="12" rx="2.5" /><circle cx="7.5" cy="8.5" r="1.5" /><path d="M17.5 13l-4-4-6.5 7" /></>}
+                            {k === 1 && <><path d="M2.5 7a2 2 0 0 1 2-2h2l1.4-2h4.2L13.5 5h2a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z" /><circle cx="10" cy="10.5" r="3" /></>}
+                            {k === 2 && <path d="M2.5 6a2 2 0 0 1 2-2h3.5l2 2h5.5a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z" />}
+                          </svg>
+                        </span>
+                      ))}
                     </div>
                   )}
                 </li>
               );
             })}
           </ul>
-          {s.step === 2 && <p className="mt-5 animate-fade text-center text-[14px] text-ok">{t.thanks}</p>}
+          {s.step === 3 && <p className="mt-5 animate-fade text-center text-[14px] text-ok">{t.thanks}</p>}
         </div>
         {/* Barra do Safari (em baixo, como no iOS) */}
         <div className="absolute inset-x-0 bottom-0 h-[92px] bg-gradient-to-t from-ink-2 via-ink-2/95 to-ink-2/0 px-4 pt-3">
