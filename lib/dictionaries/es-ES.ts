@@ -241,7 +241,7 @@ const dict: Dictionary = {
     },
     team: {
       title: "Equipo y responsables",
-      hint: "Asigna cada cliente a un responsable: la página del cliente muestra el WhatsApp y el correo de esa persona. Con acceso al panel, cada responsable entra con su propio correo y gestiona sus clientes.",
+      hint: "Asigna cada cliente a un responsable: la página del cliente muestra el nombre de esa persona y las respuestas y dudas de los recordatorios van a su correo. Con acceso al panel, cada responsable entra con su propio correo y gestiona sus clientes y sus documentos.",
       add: "Añadir responsable",
       name: "Nombre",
       phone: "WhatsApp",

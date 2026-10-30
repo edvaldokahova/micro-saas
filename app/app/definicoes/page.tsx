@@ -166,11 +166,6 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{m.name}</p>
                       <p className="flex flex-wrap gap-x-3 font-mono text-[11px] text-muted">
-                        {m.phone && (
-                          <span className="inline-flex items-center gap-1">
-                            <ChannelLogo channel="whatsapp" className="h-3 w-3" /> {m.phone}
-                          </span>
-                        )}
                         {m.email && (
                           <span className="inline-flex items-center gap-1">
                             <ChannelLogo channel="email" className="h-3 w-3" /> {m.email}
@@ -220,9 +215,8 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         {team.length < teamLimit ? (
           <form action={addTeamMember} className="mt-6 space-y-4 border-t border-line pt-5">
             <p className="font-medium">{tm.add}</p>
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
               <input name="name" required maxLength={120} placeholder={tm.name} className="field" />
-              <input name="phone" type="tel" inputMode="tel" maxLength={24} placeholder={tm.phone} className="field" />
               <input name="email" type="email" maxLength={254} placeholder={tm.email} className="field" />
             </div>
             <AccessFields idPrefix="novo" t={tm} />

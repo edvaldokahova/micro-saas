@@ -47,11 +47,12 @@ export function parseClients(text: string): ImportRow[] {
   return rows.filter((r) => r.name);
 }
 
-export function ClientImport({ t, room }: { t: ImportTexts; room: number }) {
+export function ClientImport({ t, room, team, assignee: at }: { t: ImportTexts; room: number; team: { id: string; name: string }[]; assignee: { label: string; general: string } }) {
   const router = useRouter();
   const file = useRef<HTMLInputElement>(null);
   const [text, setText] = useState("");
   const [cadence, setCadence] = useState<"monthly" | "quarterly">("monthly");
+  const [assignee, setAssignee] = useState("");
   const [result, setResult] = useState<string[] | null>(null);
   const [error, setError] = useState(false);
   const [busy, start] = useTransition();
@@ -60,7 +61,7 @@ export function ClientImport({ t, room }: { t: ImportTexts; room: number }) {
   function submit() {
     setError(false);
     start(async () => {
-      const res = await importClients(rows.slice(0, 500), cadence).catch(() => null);
+      const res = await importClients(rows.slice(0, 500), cadence, assignee || null).catch(() => null);
       if (!res || !res.ok) {
         setError(true);
         return;
@@ -138,6 +139,21 @@ export function ClientImport({ t, room }: { t: ImportTexts; room: number }) {
           ))}
         </div>
       </div>
+
+      {/* Responsável de todos (os colaboradores só veem os clientes que lhes estão atribuídos) */}
+      {team.length > 0 && (
+        <label className="block">
+          <span className="label">{at.label}</span>
+          <select value={assignee} onChange={(e) => setAssignee(e.target.value)} className="field">
+            <option value="">{at.general}</option>
+            {team.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       {error && (
         <p className="text-sm text-bad" role="alert">

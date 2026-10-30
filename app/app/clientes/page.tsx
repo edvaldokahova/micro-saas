@@ -141,7 +141,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
       {isManager && (
         <>
         <Dialog id="importar-clientes" title={t.importBtn} closeLabel={d.common.cancel}>
-          <ClientImport t={t.import} room={Math.max(0, limit - active.length)} />
+          <ClientImport t={t.import} room={Math.max(0, limit - active.length)} team={team} assignee={{ label: d.app.team.assignee, general: d.app.team.general }} />
         </Dialog>
         <Dialog key={`${sp.ok ?? ""}-${sp.erro ?? ""}`} id="novo-cliente" title={t.add} closeLabel={d.common.cancel} openOnLoad={Boolean(sp.erro)}>
           {sp.erro && <Flash d={d} error={sp.erro} />}

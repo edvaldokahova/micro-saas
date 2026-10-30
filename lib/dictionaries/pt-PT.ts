@@ -237,7 +237,7 @@ const dict = {
     },
     team: {
       title: "Equipa e responsáveis",
-      hint: "Atribua cada cliente a um responsável: a página do cliente mostra o WhatsApp e o e-mail dessa pessoa. Com acesso ao painel, cada responsável entra com o próprio e-mail e trata dos seus clientes.",
+      hint: "Atribua cada cliente a um responsável: a página do cliente mostra o nome dessa pessoa e as respostas e dúvidas dos lembretes vão para o e-mail dela. Com acesso ao painel, cada responsável entra com o próprio e-mail e trata dos seus clientes e dos documentos deles.",
       add: "Adicionar responsável",
       name: "Nome",
       phone: "WhatsApp",
