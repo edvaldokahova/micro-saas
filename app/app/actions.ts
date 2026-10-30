@@ -234,17 +234,14 @@ export async function updateSettings(formData: FormData) {
   const { supabase, office, user, isManager } = await getSession();
   if (!isManager) redirect("/");
   const name = text(formData.get("name"), 120);
-  const p = phone(formData.get("contact_phone"));
   const email = text(formData.get("contact_email"), 254);
   const locale = formData.get("locale");
   const template = text(formData.get("reminder_template"), 1000);
   if (!name) redirect("/definicoes?erro=name");
-  if (p === "invalid") redirect("/definicoes?erro=phone");
   if (email && !email.includes("@")) redirect("/definicoes?erro=generic");
 
   const update: Record<string, string | null> = {
     name,
-    contact_phone: p,
     contact_email: email,
     reminder_template: template,
   };

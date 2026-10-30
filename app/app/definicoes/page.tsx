@@ -48,17 +48,11 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
           <span className="label">{t.officeName}</span>
           <input name="name" required maxLength={120} defaultValue={office.name} className="field" />
         </label>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block">
-            <span className="label">{t.contactPhone}</span>
-            <input name="contact_phone" type="tel" inputMode="tel" maxLength={24} defaultValue={office.contact_phone ?? ""} className="field" />
-          </label>
-          <label className="block">
-            <span className="label">{t.contactEmail}</span>
-            <input name="contact_email" type="email" maxLength={254} defaultValue={office.contact_email ?? ""} className="field" />
-          </label>
-          <p className="-mt-2 text-xs text-muted sm:col-span-2">{t.contactHint}</p>
-        </div>
+        <label className="block">
+          <span className="label">{t.contactEmail}</span>
+          <input name="contact_email" type="email" maxLength={254} defaultValue={office.contact_email ?? ""} className="field" />
+          <span className="mt-1.5 block text-xs text-muted">{t.contactHint}</span>
+        </label>
 
         <fieldset>
           <legend className="label">{t.language}</legend>

@@ -393,7 +393,7 @@ const dict: Dictionary = {
       officeName: "Nome do escritório",
       contactPhone: "WhatsApp do escritório",
       contactEmail: "E-mail para receber documentos",
-      contactHint: "Aparecem na página do cliente, com botões para enviar os documentos.",
+      contactHint: "As respostas e dúvidas dos clientes sem responsável atribuído vão para este e-mail.",
       language: "Idioma do painel e das páginas dos clientes",
       docTypes: "Tipos de documento",
       docTypesHint: "A lista base das solicitações. Você pode ajustar cada solicitação separadamente.",
