@@ -337,6 +337,11 @@ const dict: Dictionary = {
       noteLabel: "Mensaje",
     },
     settings: {
+      inbox: {
+        title: "Recibir adjuntos por correo",
+        hint: "Las respuestas a los recordatorios automáticos ya llegan aquí solas. Si también quieres recoger los correos con adjuntos que tus clientes te envían directamente, crea en tu correo una regla para reenviarlos a esta dirección.",
+        note: "Solo se guardan los adjuntos de clientes cuyo correo está registrado. El resto se ignora.",
+      },
       auto: {
         test: "Enviarme una prueba",
         testSent: (email: string) => `Correo de prueba enviado a ${email}.`,

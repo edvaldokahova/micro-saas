@@ -9,6 +9,7 @@ import { formatDate, getDictionary, isLocale, periodOf, type Locale } from "@/li
 import { officeAccess, type Office } from "@/lib/office";
 import { publicLink } from "@/lib/reminder";
 import { emailOk, fromOffice, sendBatch } from "@/lib/mailer";
+import { inboxAddress, named } from "@/lib/inbound";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -27,6 +28,7 @@ type RequestRow = {
   months: number | null;
   due_date: string | null;
   token: string;
+  inbox_code: string | null;
   created_at: string;
   auto_count: number;
   last_auto_at: string | null;
@@ -68,7 +70,7 @@ export async function GET(request: Request) {
   const [{ data: reqData }, { data: teamData }] = await Promise.all([
     admin
       .from("requests")
-      .select("id, office_id, period, months, due_date, token, created_at, auto_count, last_auto_at, last_reminder_at, reminder_count, clients(name, email, archived_at, assignee_id), request_items(status)")
+      .select("id, office_id, period, months, due_date, token, inbox_code, created_at, auto_count, last_auto_at, last_reminder_at, reminder_count, clients(name, email, archived_at, assignee_id), request_items(status)")
       .in("office_id", [...byId.keys()])
       .is("closed_at", null),
     admin.from("team_members").select("id, email").in("office_id", [...byId.keys()]),
@@ -132,11 +134,14 @@ export async function GET(request: Request) {
         subject: o.email_subject,
         message: o.email_message,
       });
-      const reply = await replyTo(o, r.clients!.assignee_id);
+      // Respostas: para o escritório e, com cópia, para o endereço de recolha do pedido (os anexos ficam arrumados)
+      const office = await replyTo(o, r.clients!.assignee_id);
+      const inbox = inboxAddress(r.inbox_code);
+      const reply = [office, inbox ? named(o.name, inbox) : null].filter((v): v is string => !!v);
       return {
         from: fromOffice(o.name),
         to: [r.clients!.email!.trim()],
-        ...(reply ? { reply_to: reply } : {}),
+        ...(reply.length ? { reply_to: reply } : {}),
         subject: mail.subject,
         html: mail.html,
         text: mail.text,

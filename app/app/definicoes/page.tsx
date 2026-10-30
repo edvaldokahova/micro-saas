@@ -5,7 +5,8 @@ import { ChannelLogo } from "@/components/channel-logo";
 import { AccessFields } from "@/components/access-fields";
 import { Avatar } from "@/components/avatar";
 import { AutoEmailSettings } from "@/components/auto-email-settings";
-import { SubmitButton } from "@/components/app-buttons";
+import { CopyButton, SubmitButton } from "@/components/app-buttons";
+import { inboxAddress } from "@/lib/inbound";
 import { Flag } from "@/components/flags";
 import { Flash } from "@/components/flash";
 import { localeMeta, locales } from "@/lib/i18n";
@@ -20,6 +21,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
   const { supabase, office, locale, d, isManager, user } = await getSession();
   if (!isManager) redirect("/");
   const t = d.app.settings;
+  const inbox = inboxAddress(office.inbox_key);
   const [{ data }, { data: teamData }] = await Promise.all([
     supabase.from("document_types").select("id, label").order("position"),
     supabase.from("team_members").select("id, name, phone, email, access, see_all, user_id, joined_at").order("created_at"),
@@ -139,6 +141,19 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
           }}
         />
       </section>
+
+      {/* Recolha por e-mail: endereço do escritório para uma regra de reencaminhamento (opcional) */}
+      {inbox && (
+        <section id="recolha" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
+          <h2 className="font-display text-lg">{t.inbox.title}</h2>
+          <p className="mt-1 text-sm leading-6 text-muted">{t.inbox.hint}</p>
+          <code className="mt-4 block truncate border-y border-line py-2.5 font-mono text-[13px]">{inbox}</code>
+          <div className="mt-3">
+            <CopyButton value={inbox} label={d.common.copy} done={d.common.copied} />
+          </div>
+          <p className="mt-3 text-xs leading-5 text-muted">{t.inbox.note}</p>
+        </section>
+      )}
 
       <section id="equipa" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
         <h2 className="font-display text-lg">{tm.title}</h2>

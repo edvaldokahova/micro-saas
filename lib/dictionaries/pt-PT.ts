@@ -333,6 +333,11 @@ const dict = {
       noteLabel: "Mensagem",
     },
     settings: {
+      inbox: {
+        title: "Receber anexos por e-mail",
+        hint: "As respostas aos lembretes automáticos já chegam aqui sozinhas. Se quiser apanhar também os e-mails com anexos que os clientes lhe enviam diretamente, crie no seu e-mail uma regra para reencaminhar esses e-mails para este endereço.",
+        note: "Só ficam guardados os anexos de clientes cujo e-mail está registado. O resto é ignorado.",
+      },
       auto: {
         test: "Enviar um teste para mim",
         testSent: (email: string) => `E-mail de teste enviado para ${email}.`,

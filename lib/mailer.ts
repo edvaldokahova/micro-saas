@@ -7,7 +7,7 @@ export const FROM_ADDRESS = "entrega@mail.bilonai.com";
 export type Outgoing = {
   from: string;
   to: string[];
-  reply_to?: string;
+  reply_to?: string | string[];
   subject: string;
   html: string;
   text: string;

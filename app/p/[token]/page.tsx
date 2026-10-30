@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import { CalendarClock, Lock, UserRound } from "lucide-react";
 import { platformName } from "@/lib/platform";
+import { inboxAddress } from "@/lib/inbound";
 import { ChannelLogo } from "@/components/channel-logo";
 import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, whatsappNumber, type Locale } from "@/lib/i18n";
@@ -21,6 +22,7 @@ type PublicRequest = {
   office_email: string | null;
   contact_name: string | null;
   upload_url: string | null;
+  inbox_code: string | null;
   period: string;
   months: number | null;
   due_date: string | null;
@@ -83,6 +85,8 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
   const wa = whatsappNumber(req.office_phone, locale);
   const waHref = wa ? `https://wa.me/${wa}?text=${encodeURIComponent(t.waText(ofPeriod, req.client_name))}` : null;
   const canSend = !req.closed;
+  // Cópia para o endereço de recolha: os anexos ficam guardados e arrumados no painel do escritório
+  const inbox = inboxAddress(req.inbox_code);
   const hasChannels = Boolean(wa || req.office_email || (req.upload_url && /^https:\/\//.test(req.upload_url)));
   const initials = req.office_name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
   const st = deadlineState(req.due_date, req.items.length > 0 && req.items.every((i) => i.status === "received"));
@@ -181,7 +185,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
               )}
               {req.office_email && (
                 <a
-                  href={`mailto:${req.office_email}?subject=${encodeURIComponent(`${t.emailSubject(ofPeriod)} · ${req.client_name}`)}`}
+                  href={`mailto:${req.office_email}?${inbox ? `cc=${encodeURIComponent(inbox)}&` : ""}subject=${encodeURIComponent(`${t.emailSubject(ofPeriod)} · ${req.client_name}`)}`}
                   className={`btn btn-secondary ${!waHref && !req.upload_url ? "sm:col-span-2" : ""}`}
                 >
                   <ChannelLogo channel="email" className="h-5 w-5" /> {t.sendEmail}
