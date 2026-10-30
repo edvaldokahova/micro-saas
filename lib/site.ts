@@ -23,7 +23,7 @@ export const site = {
     taxId: "023173713LA056" as string, // NIF (Angola)
     address: "Rua Simeone Mukune, bairro São José Canjaia, Huambo, Angola" as string,
   },
-  lastUpdated: "19 de outubro de 2026",
+  lastUpdated: "30 de outubro de 2026",
 };
 
 export type PlanKey = keyof typeof site.plans;
