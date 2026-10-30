@@ -141,7 +141,10 @@ export async function GET(request: Request) {
       const locale: Locale = isLocale(o.locale) ? o.locale : "pt-PT";
       const d = getDictionary(locale);
       const items = r.request_items;
+      // Respostas: para o escritório e, com cópia, para o endereço de recolha do pedido (os anexos ficam arrumados)
+      const office = await replyTo(o, r.clients!.assignee_id);
       const mail = buildReminderEmail(d.autoEmail, {
+        contact: office,
         office: o.name,
         client: r.clients!.name,
         period: periodOf(r.period, locale, r.months ?? 1),
@@ -152,8 +155,6 @@ export async function GET(request: Request) {
         subject: o.email_subject,
         message: o.email_message,
       });
-      // Respostas: para o escritório e, com cópia, para o endereço de recolha do pedido (os anexos ficam arrumados)
-      const office = await replyTo(o, r.clients!.assignee_id);
       const inbox = inboxAddress(r.inbox_code);
       const reply = [office, inbox ? named(o.name, inbox) : null].filter((v): v is string => !!v);
       return {

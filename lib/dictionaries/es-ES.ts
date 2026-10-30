@@ -418,14 +418,16 @@ const dict: Dictionary = {
   },
   autoEmail: {
     subject: "Documentos {periodo}",
-    message: "Hola, {cliente}:\n\nPara cerrar la contabilidad {periodo}, todavía necesitamos {em_falta}. Lo tienes todo en una página solo para ti: ves lo que falta y marcas lo que ya has enviado, en un minuto.\n\nGracias,\n{escritorio}",
+    message: "Hola, {cliente}:\n\nPara cerrar la contabilidad {periodo}, todavía necesitamos {em_falta}. Lo tienes todo en una página solo para ti: ves lo que falta y envías los archivos desde ahí mismo, en un minuto.\n\nGracias,\n{escritorio}",
     missingOne: "1 documento",
     missingMany: "{n} documentos",
     status: "{a} de {b} documentos por enviar",
     due: "Plazo: {data}",
     button: "Ver lo que falta",
     buttonHint: "Se abre en el móvil, sin cuenta ni contraseña.",
-    footer: "Mensaje automático enviado en nombre de {escritorio} a través de Bilonai, la herramienta que la asesoría usa para pedir documentos. Para hablar con la asesoría, responde a este correo. Nunca te pediremos contraseñas, datos bancarios ni pagos.",
+    contact: "Para dudas o asuntos de tu contabilidad, escribe directamente a {email}.",
+    contactReply: "Para hablar con la asesoría, responde a este correo.",
+    footer: "Mensaje automático enviado en nombre de {escritorio} a través de Bilonai, la herramienta que la asesoría usa para pedir documentos. {contacto} Nunca te pediremos contraseñas, datos bancarios ni pagos.",
   },
   public: {
     metaTitle: (period: string, office: string) => `Documentación ${period} · ${office}`,

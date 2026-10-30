@@ -66,8 +66,9 @@ export function AutoEmailSettings({
         link: sample.link,
         subject,
         message,
+        contact: replyTo,
       }),
-    [email, office, sample, subject, message],
+    [email, office, sample, subject, message, replyTo],
   );
 
   return (

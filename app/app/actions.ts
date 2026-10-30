@@ -257,7 +257,9 @@ export async function sendTestEmail(formData: FormData) {
   if ((count ?? 0) >= 5) redirect("/definicoes?erro=teste#automatico");
 
   const sample = d.app.settings.auto.sample;
+  const reply = emailOk(office.contact_email) ? office.contact_email.trim() : user.email;
   const mail = buildReminderEmail(d.autoEmail, {
+    contact: reply,
     office: office.name,
     client: sample.client,
     period: sample.period,
@@ -268,7 +270,6 @@ export async function sendTestEmail(formData: FormData) {
     subject: text(formData.get("email_subject"), 160),
     message: text(formData.get("email_message"), 1500),
   });
-  const reply = emailOk(office.contact_email) ? office.contact_email.trim() : user.email;
   const result = await sendOne({ from: fromOffice(office.name), to: [user.email], reply_to: reply, subject: mail.subject, html: mail.html, text: mail.text });
   await admin.from("auto_email_log").insert({
     office_id: office.id,

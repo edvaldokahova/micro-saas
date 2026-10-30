@@ -17,7 +17,9 @@ export type EmailTexts = {
   due: string; // "Prazo: {data}"
   button: string; // "Ver o que falta"
   buttonHint: string; // "Abre no telemóvel, sem conta nem palavra-passe."
-  footer: string; // identificador discreto, com {escritorio}
+  footer: string; // identificador discreto, com {escritorio} e {contacto}
+  contact: string; // "Para dúvidas… escreva diretamente para {email}."
+  contactReply: string; // sem e-mail do escritório: "basta responder a este e-mail"
 };
 
 export type EmailData = {
@@ -30,6 +32,7 @@ export type EmailData = {
   link: string;
   subject?: string | null; // personalizado pelo escritório
   message?: string | null; // personalizado pelo escritório
+  contact?: string | null; // e-mail do escritório ou do responsável (aparece como link no rodapé)
 };
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -46,7 +49,14 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
   const message = fill(x.message?.trim() || t.message, values).trim();
   const status = fill(t.status, { a: String(x.missing), b: String(x.total) });
   const due = x.dueLabel ? fill(t.due, { data: x.dueLabel }) : "";
-  const footer = fill(t.footer, { escritorio: x.office });
+  // Rodapé: assuntos da contabilidade vão diretamente para o escritório (o e-mail aparece como link)
+  const contact = x.contact?.trim() || null;
+  const footer = fill(t.footer, { escritorio: x.office, contacto: contact ? t.contact : t.contactReply });
+  const footerHtml = esc(footer).replace(
+    "{email}",
+    contact ? `<a href="mailto:${esc(contact)}" style="color:#2563eb;text-decoration:underline">${esc(contact)}</a>` : "",
+  );
+  const footerText = footer.replace("{email}", contact ?? "");
   const pct = x.total ? Math.round(((x.total - x.missing) / x.total) * 100) : 0;
   const font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
@@ -73,12 +83,12 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
     <p style="margin:10px 0 0;font-size:12.5px;color:#6b6e76">${esc(t.buttonHint)}</p>
   </td></tr></table>
 </td></tr>
-<tr><td style="padding:36px 0 0;font-size:11.5px;line-height:1.6;color:#9a9da5">${esc(footer)}</td></tr>
+<tr><td style="padding:36px 0 0;font-size:11.5px;line-height:1.6;color:#9a9da5">${footerHtml}</td></tr>
 </table></td></tr></table>`;
   const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:#ffffff">
 ${body}</body></html>`;
 
-  const text = `${message}\n\n${status}${due ? ` · ${due}` : ""}\n${t.button}: ${x.link}\n${t.buttonHint}\n\n—\n${footer}`;
+  const text = `${message}\n\n${status}${due ? ` · ${due}` : ""}\n${t.button}: ${x.link}\n${t.buttonHint}\n\n—\n${footerText}`;
   return { subject, html, text, body };
 }
