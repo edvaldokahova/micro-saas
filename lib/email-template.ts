@@ -48,8 +48,6 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
   const due = x.dueLabel ? fill(t.due, { data: x.dueLabel }) : "";
   const footer = fill(t.footer, { escritorio: x.office });
   const pct = x.total ? Math.round(((x.total - x.missing) / x.total) * 100) : 0;
-  // Iniciais do escritório num círculo, como na página do cliente
-  const initials = x.office.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
   const font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
   const paragraphs = message
@@ -61,12 +59,7 @@ export function buildReminderEmail(t: EmailTexts, x: EmailData): { subject: stri
   const body = `<div style="display:none;max-height:0;overflow:hidden">${esc(status)}${due ? ` · ${esc(due)}` : ""}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff"><tr><td align="center" style="padding:32px 20px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;font-family:${font}">
-<tr><td style="padding:0 0 28px">
-  <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate"><tr>
-    <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;border-radius:50%;background:#121316;color:#ffffff;font-size:14px;font-weight:600;line-height:40px;text-align:center">${esc(initials)}</td>
-    <td style="padding-left:12px;font-size:15px;font-weight:600;color:#121316">${esc(x.office)}</td>
-  </tr></table>
-</td></tr>
+<tr><td style="padding:0 0 28px;font-size:15px;font-weight:600;color:#121316">${esc(x.office)}</td></tr>
 <tr><td>${paragraphs}</td></tr>
 <tr><td style="padding:8px 0 0">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e6e7ea;border-radius:14px;border-collapse:separate">
