@@ -139,6 +139,7 @@ const dict: Dictionary = {
       { q: "¿Mis clientes tienen que crear una cuenta?", a: "No. Reciben un enlace único y privado para su solicitud. Lo abren en el móvil y marcan lo que ya han enviado." },
       { q: "¿Los documentos se guardan en la plataforma?", a: "No. Bilonai sigue el estado de cada documento (pendiente, enviado, recibido); los archivos siguen llegando por el canal que ya usas, como correo o WhatsApp. Menos datos guardados, menos riesgo." },
       { q: "¿Sirve para cualquier tipo de cliente?", a: "Sí: autónomos, sociedades y particulares. Tú decides qué documentos pide cada uno: facturas, extractos, tickets, nóminas u otros." },
+      { q: "¿Y Verifactu? ¿No me llega ya todo?", a: "Verifactu registra las facturas que emite tu cliente. Los extractos bancarios, los tickets y las facturas de gastos siguen teniendo que llegar de él: para eso sirve Bilonai." },
       { q: "¿Dónde están los datos?", a: "En una base de datos en la Unión Europea (Irlanda), con acceso restringido por despacho. Detalles en la política de privacidad." },
       { q: "¿Puedo cancelar cuando quiera?", a: "Sí. Sin permanencia. Cancelas en cualquier momento y mantienes el acceso hasta el final del periodo ya pagado." },
     ],

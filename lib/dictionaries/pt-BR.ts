@@ -82,7 +82,7 @@ const dict: Dictionary = {
       officeView: "Seu painel",
       clientView: "O que o cliente vê",
       live: "Ao vivo",
-      docs: ["Extratos bancários", "Notas fiscais de entrada", "Recibos e comprovantes"],
+      docs: ["Extratos bancários", "Informações da folha", "Recibos e comprovantes"],
       toast: "Cobrança enviada pelo WhatsApp",
       confirmed: "Documentos confirmados",
     },
