@@ -110,6 +110,16 @@ export default function Termos() {
           suspender o envio automático em caso de abuso, queixas ou risco para a entrega de e-mails. Não garantimos a
           entrega de cada mensagem, que depende também dos serviços de e-mail dos destinatários.
         </p>
+        <p>
+          <strong>Receção de ficheiros:</strong> os clientes do escritório podem enviar ficheiros pela página do pedido ou
+          responder por e-mail para o endereço de recolha, e o escritório pode adicionar ficheiros que recebeu noutros
+          canais. O serviço guarda-os de forma privada durante 90 dias e apaga-os automaticamente depois disso: não é um
+          arquivo. O escritório deve descarregar e conservar os documentos nos seus próprios sistemas, conforme as suas
+          obrigações legais. A arrumação automática de cada ficheiro no documento do pedido é feita por análise automática
+          e pode falhar; o escritório deve confirmar os ficheiros antes de os usar. O escritório é responsável pelo
+          fundamento legal para tratar os documentos dos seus clientes e não deve pedir, através do serviço, dados que não
+          sejam necessários.
+        </p>
       </section>
 
       <section>
@@ -117,7 +127,8 @@ export default function Termos() {
         <p>
           Esforçamo-nos por manter o serviço disponível, mas pode haver interrupções para manutenção ou por falhas de
           terceiros. Não garantimos disponibilidade ininterrupta. O serviço acompanha o estado dos documentos e não
-          substitui o seu programa de contabilidade nem o arquivo dos documentos originais.
+          substitui o seu programa de contabilidade nem o arquivo dos documentos originais (os ficheiros recebidos são
+          apagados ao fim de 90 dias).
         </p>
       </section>
 

@@ -4,6 +4,7 @@
 // Remetente: o nome do escritório; "Responder" vai para o e-mail do escritório (ou do responsável do cliente).
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { BUCKET } from "@/lib/documents";
 import { buildReminderEmail } from "@/lib/email-template";
 import { formatDate, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { officeAccess, type Office } from "@/lib/office";
@@ -38,15 +39,32 @@ type RequestRow = {
   request_items: { status: string }[];
 };
 
+async function purgeExpired(admin: ReturnType<typeof createAdminClient>) {
+  for (let round = 0; round < 10; round++) {
+    const { data } = await admin.from("documents").select("id, storage_path").lt("expires_at", new Date().toISOString()).limit(200);
+    const rows = (data ?? []) as { id: string; storage_path: string }[];
+    if (!rows.length) return;
+    // Primeiro o ficheiro; só depois a ficha (se o armazenamento falhar, tenta-se outra vez amanhã)
+    const { error } = await admin.storage.from(BUCKET).remove(rows.map((r) => r.storage_path));
+    if (error) return;
+    await admin.from("documents").delete().in("id", rows.map((r) => r.id));
+    if (rows.length < 200) return;
+  }
+}
+
 export async function GET(request: Request) {
   // Só a tarefa agendada (ou quem tem o segredo) pode correr isto
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  const admin = createAdminClient();
+
+  // Ficheiros recebidos com mais de 90 dias: apagados do armazenamento e da base de dados (todos os dias, antes de tudo)
+  await purgeExpired(admin).catch((e) => console.error("purge", e instanceof Error ? e.message : e));
+
   if (!process.env.RESEND_API_KEY) return NextResponse.json({ error: "RESEND_API_KEY em falta" }, { status: 500 });
 
-  const admin = createAdminClient();
   const now = Date.now();
   const today = new Date(now).toISOString().slice(0, 10);
 
