@@ -9,6 +9,7 @@ import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/de
 import { getLocale } from "@/lib/prefs";
 import { createClient } from "@/lib/supabase/server";
 import { Checklist, type ChecklistTexts } from "./checklist";
+import { Uploader, type UploaderTexts } from "./uploader";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,8 @@ type PublicRequest = {
   due_date: string | null;
   note: string | null;
   closed: boolean;
-  items: { id: string; label: string; status: "pending" | "sent" | "received"; via: "whatsapp" | "email" | "other" | null }[];
+  loose: number;
+  items: { id: string; label: string; status: "pending" | "sent" | "received"; via: "whatsapp" | "email" | "page" | "other" | null; files: number }[];
 };
 
 // Links curtos (12) e antigos (32). Uma só consulta por visita: os metadados e a página partilham-na.
@@ -80,12 +82,28 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
   const ofPeriod = periodOf(req.period, locale, months);
   const wa = whatsappNumber(req.office_phone, locale);
   const waHref = wa ? `https://wa.me/${wa}?text=${encodeURIComponent(t.waText(ofPeriod, req.client_name))}` : null;
-  const canSend = !req.closed && Boolean(wa || req.office_email || (req.upload_url && /^https:\/\//.test(req.upload_url)));
+  const canSend = !req.closed;
+  const hasChannels = Boolean(wa || req.office_email || (req.upload_url && /^https:\/\//.test(req.upload_url)));
   const initials = req.office_name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
   const st = deadlineState(req.due_date, req.items.length > 0 && req.items.every((i) => i.status === "received"));
   const dl = deadlineLabel(st, d);
+  const issue = {
+    type: t.issue.type("{name}"),
+    size: t.issue.size("{name}"),
+    duplicate: t.issue.duplicate("{name}"),
+    limit: t.issue.limit("{name}"),
+    failed: t.issue.failed("{name}"),
+  };
+  const upTexts: UploaderTexts = {
+    button: t.uploadButton,
+    hint: t.uploadHint(req.office_name),
+    drop: t.uploadDrop,
+    uploading: t.uploading(-1, -2).replace("-1", "{a}").replace("-2", "{b}"),
+    done: t.uploadedLoose(2).replace("2", "{n}"),
+    doneOne: t.uploadedLoose(1),
+    issue,
+  };
   const texts: ChecklistTexts = {
-    markSent: t.markSent,
     sent: t.sent,
     received: t.received,
     pending: t.pending,
@@ -97,6 +115,11 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
     cancel: d.common.cancel,
     via: d.common.via,
     sentVia: d.common.sentVia("{canal}"),
+    uploadItem: t.uploadItem,
+    otherWay: t.otherWay,
+    files: t.files(2).replace("2", "{n}"),
+    fileOne: t.files(1),
+    issue,
   };
 
   return (
@@ -146,22 +169,26 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
                 <UserRound className="h-4 w-4 text-gold" aria-hidden /> {t.yourContact(req.contact_name)}
               </p>
             )}
-            <div className="mt-4 grid gap-2 sm:grid-cols-2 [&_.btn]:min-h-[3.1rem]">
+            <div className="mt-4">
+              <Uploader token={token} t={upTexts} />
+            </div>
+            {hasChannels && <p className="mt-6 text-[13.5px] text-muted">{t.orChannels}</p>}
+            <div className="mt-2.5 grid gap-2 sm:grid-cols-2 [&_.btn]:min-h-[3.1rem]">
               {waHref && (
-                <a href={waHref} target="_blank" rel="noopener noreferrer" className={`btn btn-whatsapp ${!req.office_email && !req.upload_url ? "sm:col-span-2" : ""}`}>
+                <a href={waHref} target="_blank" rel="noopener noreferrer" className={`btn btn-secondary ${!req.office_email && !req.upload_url ? "sm:col-span-2" : ""}`}>
                   <ChannelLogo channel="whatsapp" className="h-5 w-5" /> {t.sendWhatsapp}
                 </a>
               )}
               {req.office_email && (
                 <a
                   href={`mailto:${req.office_email}?subject=${encodeURIComponent(`${t.emailSubject(ofPeriod)} · ${req.client_name}`)}`}
-                  className={`btn ${waHref ? "btn-secondary" : "btn-primary"} ${!waHref && !req.upload_url ? "sm:col-span-2" : ""}`}
+                  className={`btn btn-secondary ${!waHref && !req.upload_url ? "sm:col-span-2" : ""}`}
                 >
                   <ChannelLogo channel="email" className="h-5 w-5" /> {t.sendEmail}
                 </a>
               )}
               {req.upload_url && /^https:\/\//.test(req.upload_url) && (
-                <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className={`btn ${waHref || req.office_email ? "btn-secondary" : "btn-primary"} sm:col-span-2`}>
+                <a href={req.upload_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary sm:col-span-2">
                   <ChannelLogo channel="web" className="h-5 w-5" /> {platformName(req.upload_url) ? t.sendVia(platformName(req.upload_url)!) : t.sendPortal}
                 </a>
               )}
