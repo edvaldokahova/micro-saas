@@ -84,6 +84,7 @@ const dict = {
       toast: "Lembrete enviado por WhatsApp",
       confirmed: "Documentos confirmados",
     },
+    ctaTime: "Devolve-me o meu tempo",
     statement: "Todos os meses, a mesma lista de documentos, as mesmas mensagens e os mesmos clientes atrasados. O Bilonai trata dessa parte e devolve-lhe tempo para a contabilidade.",
     fit: {
       title: "Para o escritório que não quer obrigar os clientes a usar um portal.",

@@ -86,6 +86,7 @@ const dict: Dictionary = {
       toast: "Cobrança enviada pelo WhatsApp",
       confirmed: "Documentos confirmados",
     },
+    ctaTime: "Quero meu tempo de volta",
     statement: "Todo mês, a mesma lista de documentos, as mesmas mensagens e os mesmos clientes atrasados. O Bilonai cuida dessa parte e devolve seu tempo para a contabilidade.",
     fit: {
       title: "Para o escritório que não quer obrigar os clientes a usar um portal.",
