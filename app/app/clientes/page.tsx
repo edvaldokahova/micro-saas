@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Phone, Plus, UserPlus } from "lucide-react";
+import { ChevronRight, FileSpreadsheet, Phone, Plus, UserPlus } from "lucide-react";
+import { ClientImport } from "@/components/client-import";
 import { Avatar } from "@/components/avatar";
 import { Dialog, OpenDialog } from "@/components/dialog";
 import { CadenceField } from "@/components/cadence-field";
@@ -41,9 +42,14 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
           {isManager && <p className="mt-2 text-sm text-muted">{t.count(active.length, limit)}</p>}
         </div>
         {isManager && active.length > 0 && (
-          <OpenDialog target="novo-cliente" className="btn btn-primary">
-            <Plus className="h-4 w-4" aria-hidden /> {t.add}
-          </OpenDialog>
+          <div className="flex flex-wrap gap-2">
+            <OpenDialog target="importar-clientes" className="btn btn-secondary">
+              <FileSpreadsheet className="h-4 w-4" aria-hidden /> {t.importBtn}
+            </OpenDialog>
+            <OpenDialog target="novo-cliente" className="btn btn-primary">
+              <Plus className="h-4 w-4" aria-hidden /> {t.add}
+            </OpenDialog>
+          </div>
         )}
       </div>
 
@@ -58,9 +64,14 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
               <p className="mt-5 font-display text-xl">{t.empty}</p>
               {isManager && <p className="mt-2 max-w-sm text-sm text-muted">{t.emptyHint}</p>}
               {isManager && (
-                <OpenDialog target="novo-cliente" className="btn btn-primary mt-6">
-                  <Plus className="h-4 w-4" aria-hidden /> {t.add}
-                </OpenDialog>
+                <div className="mt-6 flex flex-wrap justify-center gap-2">
+                  <OpenDialog target="importar-clientes" className="btn btn-primary">
+                    <FileSpreadsheet className="h-4 w-4" aria-hidden /> {t.importBtn}
+                  </OpenDialog>
+                  <OpenDialog target="novo-cliente" className="btn btn-secondary">
+                    <Plus className="h-4 w-4" aria-hidden /> {t.add}
+                  </OpenDialog>
+                </div>
               )}
             </div>
           ) : (
@@ -128,6 +139,10 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
 
       {/* Adicionar (só dono e administradores): janela modal aberta pelo botão */}
       {isManager && (
+        <>
+        <Dialog id="importar-clientes" title={t.importBtn} closeLabel={d.common.cancel}>
+          <ClientImport t={t.import} room={Math.max(0, limit - active.length)} />
+        </Dialog>
         <Dialog key={`${sp.ok ?? ""}-${sp.erro ?? ""}`} id="novo-cliente" title={t.add} closeLabel={d.common.cancel} openOnLoad={Boolean(sp.erro)}>
           {sp.erro && <Flash d={d} error={sp.erro} />}
           <form action={addClient} className="space-y-4">
@@ -174,6 +189,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
             )}
           </form>
         </Dialog>
+        </>
       )}
     </div>
   );

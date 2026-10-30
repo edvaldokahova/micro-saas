@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/office";
+import { clientLimit, getSession, officeAccess } from "@/lib/office";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildReminderEmail } from "@/lib/email-template";
 import { emailOk, fromOffice, sendOne } from "@/lib/mailer";
@@ -61,6 +61,47 @@ export async function addClient(formData: FormData) {
   revalidatePath("/app", "layout");
   // Valor único: a janela de "Adicionar cliente" fecha-se e o aviso de sucesso aparece outra vez
   redirect(`/clientes?ok=${Date.now().toString(36)}`);
+}
+
+// Importar vários clientes de uma vez (lista colada do Excel/Google Sheets ou CSV).
+// Ignora linhas sem nome, telefones inválidos (fica sem telefone) e repetidos; respeita o limite do plano.
+export type ImportRow = { name: string; phone: string; email: string };
+export type ImportResult = { ok: true; added: number; skipped: number; limited: number } | { ok: false; error: string };
+
+export async function importClients(rows: ImportRow[], cadenceValue: string): Promise<ImportResult> {
+  const { supabase, office, isManager } = await getSession();
+  if (!isManager) return { ok: false, error: "generic" };
+  if (!officeAccess(office).canWrite) return { ok: false, error: "inactive" };
+  if (!Array.isArray(rows) || rows.length === 0 || rows.length > 500) return { ok: false, error: "generic" };
+
+  const { data } = await supabase.from("clients").select("name, email, archived_at");
+  const existing = (data ?? []) as { name: string; email: string | null; archived_at: string | null }[];
+  const names = new Set(existing.map((c) => c.name.trim().toLowerCase()));
+  const emails = new Set(existing.map((c) => c.email?.trim().toLowerCase()).filter(Boolean) as string[]);
+  const room = Math.max(0, clientLimit(office) - existing.filter((c) => !c.archived_at).length);
+
+  const list: { office_id: string; name: string; phone: string | null; email: string | null; cadence: string }[] = [];
+  let skipped = 0;
+  for (const r of rows) {
+    const name = typeof r?.name === "string" ? r.name.replace(/\s+/g, " ").trim().slice(0, 160) : "";
+    const mail = typeof r?.email === "string" ? r.email.trim().toLowerCase() : "";
+    const email = /^[^\s@,;<>"]+@[^\s@,;<>"]+\.[^\s@,;<>"]+$/.test(mail) && mail.length <= 254 ? mail : null;
+    const p = phone(typeof r?.phone === "string" ? r.phone : null);
+    if (!name || names.has(name.toLowerCase()) || (email && emails.has(email))) {
+      skipped++;
+      continue;
+    }
+    names.add(name.toLowerCase());
+    if (email) emails.add(email);
+    list.push({ office_id: office.id, name, phone: p === "invalid" ? null : p, email, cadence: cadence(cadenceValue) });
+  }
+  const accepted = list.slice(0, room);
+  if (accepted.length) {
+    const { error } = await supabase.from("clients").insert(accepted);
+    if (error) return { ok: false, error: errorCode(error.message, error.code) };
+  }
+  revalidatePath("/app", "layout");
+  return { ok: true, added: accepted.length, skipped, limited: list.length - accepted.length };
 }
 
 export async function updateClient(formData: FormData) {
