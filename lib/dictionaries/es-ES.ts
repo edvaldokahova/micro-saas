@@ -186,6 +186,7 @@ const dict: Dictionary = {
       download: "Descargar",
       remove: "Eliminar",
       removeConfirm: "¿Eliminar este archivo? No se podrá recuperar.",
+      share: "Compartir",
       zip: (n: number) => `Descargar todo (${n})`,
       zipping: "Preparando…",
       drop: "Arrastra aquí archivos que te llegaron por otro medio",

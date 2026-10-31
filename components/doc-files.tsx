@@ -2,7 +2,7 @@
 
 // Ficheiros recebidos, no painel do escritório: lista (ver, descarregar, arrumar/mover, apagar),
 // zona para largar ficheiros que chegaram pelo WhatsApp e «Descarregar tudo» em ZIP.
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Select } from "@/components/select";
@@ -26,6 +26,7 @@ export type DocTexts = {
   download: string;
   remove: string;
   removeConfirm: string;
+  share: string;
   fileTo: string;
   move: string;
   by: { ai: string; client: string; office: string };
@@ -100,6 +101,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
                   className="min-w-0 flex-1 sm:max-w-[11rem] sm:flex-none"
                 />
               )}
+              <ShareButton id={f.id} name={f.filename} label={t.share} />
               <a href={`/ficheiro/${f.id}?dl=1`} className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-ink-3 hover:text-ivory" aria-label={t.download} title={t.download}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M8 2.5v8M4.8 7.5L8 10.7l3.2-3.2M3 13.5h10" />
@@ -243,5 +245,61 @@ export function ZipButton({ ids, name, t }: { ids: string[]; name: string; t: Do
       </button>
       {error && <span className="mt-1 text-[12px] text-bad">{t.error}</span>}
     </span>
+  );
+}
+
+// Partilhar o próprio ficheiro pela folha de partilha do aparelho (WhatsApp, e-mail, AirDrop…).
+// Só aparece onde o navegador sabe partilhar ficheiros. O ficheiro é descarregado primeiro; se o
+// navegador recusar partilhar depois da espera, o botão fica pronto e o toque seguinte partilha logo.
+function ShareButton({ id, name, label }: { id: string; name: string; label: string }) {
+  // Decide-se só no navegador (no servidor não há navigator): evita diferenças na hidratação
+  const [supported, setSupported] = useState(false);
+  useEffect(() => setSupported(typeof navigator.canShare === "function"), []);
+  const [state, setState] = useState<"idle" | "loading" | "ready">("idle");
+  const file = useRef<File | null>(null);
+  if (!supported) return null;
+
+  async function share() {
+    try {
+      if (!file.current) {
+        setState("loading");
+        const res = await fetch(`/ficheiro/${id}`);
+        if (!res.ok) throw new Error("fetch");
+        const blob = await res.blob();
+        file.current = new File([blob], name, { type: blob.type || "application/octet-stream" });
+      }
+      const data = { files: [file.current], title: name };
+      if (!navigator.canShare(data)) {
+        window.open(`/ficheiro/${id}`, "_blank", "noopener");
+        setState("idle");
+        return;
+      }
+      setState("ready");
+      await navigator.share(data);
+      setState("idle");
+    } catch (e) {
+      // Cancelado pela pessoa, ou o navegador pede um novo toque: fica pronto
+      setState(file.current ? "ready" : "idle");
+      if (e instanceof Error && e.name === "AbortError") setState("idle");
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={share}
+      disabled={state === "loading"}
+      className={`grid h-8 w-8 place-items-center rounded-full transition hover:bg-ink-3 hover:text-ivory ${state === "ready" ? "bg-ink-3 text-ivory" : "text-muted"}`}
+      aria-label={label}
+      title={label}
+    >
+      {state === "loading" ? (
+        <Spinner className="h-3.5 w-3.5" />
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M8 9.5V2.5M5.2 5.2L8 2.4l2.8 2.8M4.5 7.5H4a1.5 1.5 0 0 0-1.5 1.5v3.5A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 12 7.5h-.5" />
+        </svg>
+      )}
+    </button>
   );
 }

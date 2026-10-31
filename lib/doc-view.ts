@@ -26,6 +26,7 @@ export function docTexts(d: Dictionary): DocTexts {
     download: x.download,
     remove: x.remove,
     removeConfirm: x.removeConfirm,
+    share: x.share,
     fileTo: x.fileTo,
     move: x.move,
     by: x.by,

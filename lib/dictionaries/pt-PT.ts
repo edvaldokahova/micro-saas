@@ -182,6 +182,7 @@ const dict = {
       download: "Descarregar",
       remove: "Apagar",
       removeConfirm: "Apagar este ficheiro? Não é possível recuperá-lo.",
+      share: "Partilhar",
       zip: (n: number) => `Descarregar tudo (${n})`,
       zipping: "A preparar…",
       drop: "Arraste para aqui ficheiros que recebeu por outro meio",
