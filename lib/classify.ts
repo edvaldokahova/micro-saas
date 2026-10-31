@@ -11,7 +11,7 @@ const MIN_CONFIDENCE = 0.75;
 const INLINE_MAX = 14 * 1024 * 1024; // o pedido à API tem limite de 20 MB (base64 aumenta ~33%)
 const VISUAL = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "text/plain", "text/csv"]);
 
-type Doc = { id: string; request_id: string | null; item_id: string | null; state: string; filename: string; mime: string; size_bytes: number; storage_path: string; channel: string; subject: string | null };
+type Doc = { id: string; office_id: string; request_id: string | null; item_id: string | null; state: string; filename: string; mime: string; size_bytes: number; storage_path: string; channel: string; subject: string | null };
 
 export async function classifyDocuments(ids: string[]) {
   const key = process.env.GEMINI_API_KEY;
@@ -19,7 +19,7 @@ export async function classifyDocuments(ids: string[]) {
   const admin = createAdminClient();
   const { data: docs } = await admin
     .from("documents")
-    .select("id, request_id, item_id, state, filename, mime, size_bytes, storage_path, channel, subject")
+    .select("id, office_id, request_id, item_id, state, filename, mime, size_bytes, storage_path, channel, subject")
     .in("id", ids.slice(0, 40));
   for (const d of (docs ?? []) as Doc[]) {
     if (d.state !== "review" || d.item_id || !d.request_id) continue;
@@ -70,7 +70,12 @@ async function classifyOne(admin: ReturnType<typeof createAdminClient>, key: str
     }),
   });
   if (!res.ok) throw new Error(`gemini ${res.status}`);
-  const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+  const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[]; usageMetadata?: { totalTokenCount?: number } };
+  // Consumo por escritório (para o painel administrativo); nunca bloqueia a arrumação
+  await admin.rpc("track_ai_usage", { p_office: d.office_id, p_tokens: body.usageMetadata?.totalTokenCount ?? 0 }).then(
+    () => null,
+    () => null,
+  );
   const text = body.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
   let out: { item?: number; confidence?: number } = {};
   try {

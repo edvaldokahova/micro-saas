@@ -5,6 +5,8 @@ import { NextResponse, type NextRequest } from "next/server";
 const MAIN = "www.bilonai.com";
 const APP = "app.bilonai.com";
 const CLIENT = "entrega.bilonai.com";
+// Painel administrativo da plataforma (só para os e-mails em ADMIN_EMAILS)
+const ADMIN = "admin.bilonai.com";
 // Entrada e autenticação (no domínio do painel)
 const AUTH_PATHS = ["/entrar", "/registar", "/auth", "/pagamento"];
 // Páginas públicas que vivem só em www.bilonai.com
@@ -26,19 +28,25 @@ export async function middleware(request: NextRequest) {
   const isMain = host === MAIN || host === "bilonai.com";
   const go = (domain: string, pathname = path) => NextResponse.redirect(`https://${domain}${pathname}${request.nextUrl.search}`, 308);
 
+  // admin.bilonai.com serve as páginas /admin/... com endereços curtos; noutros domínios, /admin não existe
+  const isAdminPath = under(path, ["/admin"]);
+  if (host === ADMIN && isAdminPath) return go(ADMIN, path.replace(/^\/admin(?=\/|$)/, "") || "/");
+  if (host !== ADMIN && isAdminPath) return go(MAIN, "/");
   if (host === CLIENT && !isClient) return go(isAuth || isPanel ? APP : MAIN, short(path));
   if ((isMain || host === APP) && isClient) return go(CLIENT);
   if (isMain && (isAuth || isPanel)) return go(APP, short(path));
 
   // No domínio do painel, as rotas internas /app/... ficam escondidas atrás de endereços curtos
   let internal = path;
-  if (host === APP) {
+  if (host === ADMIN) {
+    internal = path === "/" ? "/admin" : `/admin${path}`;
+  } else if (host === APP) {
     if (isPanel) return go(APP, short(path));
     if (under(path, MARKETING_PATHS)) return go(MAIN);
     if (!isAuth) internal = path === "/" ? "/app" : `/app${path}`;
   }
 
-  const needsSession = internal.startsWith("/app") || path === "/entrar" || path === "/registar";
+  const needsSession = internal.startsWith("/app") || internal.startsWith("/admin") || path === "/entrar" || path === "/registar";
   if (!needsSession) return NextResponse.next();
 
   const target = new URL(`${internal}${request.nextUrl.search}`, request.url);
