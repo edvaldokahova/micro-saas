@@ -155,7 +155,7 @@ const dict: Dictionary = {
     signupLead: "Sin tarjeta. Recibirás un enlace de acceso por correo.",
     haveAccount: "¿Ya tienes cuenta?",
     signInTitle: "Entrar",
-    signInLead: "Te enviamos un enlace de acceso a tu correo. Sin contraseña.",
+    signInLead: "Te enviamos un enlace de acceso a tu correo, o entra con tu contraseña si la has definido.",
     linkError: "Ese enlace ha caducado o ya se ha usado. Pide uno nuevo abajo.",
     noAccount: "¿Aún no tienes cuenta?",
     officeName: "Nombre del despacho",

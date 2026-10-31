@@ -151,7 +151,7 @@ const dict = {
     signupLead: "Sem cartão. Receberá um link de acesso por e-mail.",
     haveAccount: "Já tem conta?",
     signInTitle: "Entrar",
-    signInLead: "Enviamos um link de acesso para o seu e-mail. Sem palavra-passe.",
+    signInLead: "Enviamos um link de acesso para o seu e-mail, ou entre com a sua palavra-passe se já definiu uma.",
     linkError: "Esse link expirou ou já foi usado. Peça um novo abaixo.",
     noAccount: "Ainda não tem conta?",
     officeName: "Nome do escritório",

@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { localeMeta, locales, type Locale } from "@/lib/locales";
+import type { Locale } from "@/lib/locales";
+import type { LoginExtraTexts } from "@/lib/account-texts";
 import { BusyLabel } from "@/components/spinner";
 
 type Mode = "login" | "signup";
@@ -26,10 +27,13 @@ export type AuthTexts = {
   rateLimit: string;
 };
 
-export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts; initialLocale: Locale }) {
+export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: AuthTexts; initialLocale: Locale; extra?: LoginExtraTexts }) {
   const [email, setEmail] = useState("");
   const [officeName, setOfficeName] = useState("");
-  const [locale, setLocale] = useState<Locale>(initialLocale);
+  // O idioma da conta fica o da página; o país (no questionário de boas-vindas) acerta-o depois
+  const locale = initialLocale;
+  const [withPassword, setWithPassword] = useState(false);
+  const [password, setPassword] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -38,6 +42,18 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
     e.preventDefault();
     setState("sending");
     const supabase = createClient();
+    // Entrada com palavra-passe (para quem a definiu em Conta); com dois passos ativos, pede o código a seguir
+    if (mode === "login" && withPassword) {
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+      if (error) {
+        setState("error");
+        setMessage(error.code === "over_request_rate_limit" ? t.rateLimit : extra?.wrongPassword ?? t.rateLimit);
+        return;
+      }
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      window.location.assign(aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2" ? "/entrar/codigo" : "/");
+      return;
+    }
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: {
@@ -83,20 +99,6 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
               autoComplete="organization"
             />
           </label>
-          <fieldset>
-            <legend className="label">{t.language}</legend>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {locales.map((l) => (
-                <label
-                  key={l}
-                  className="choice flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm"
-                >
-                  <input type="radio" name="locale" value={l} checked={locale === l} onChange={() => setLocale(l)} className="sr-only" />
-                  <span className="leading-tight">{localeMeta[l].name}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
         </>
       )}
       <label className="block">
@@ -127,12 +129,30 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
           </span>
         </label>
       )}
+      {mode === "login" && withPassword && (
+        <label className="block">
+          <span className="label">{extra?.password}</span>
+          <input className="field" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+        </label>
+      )}
       {state === "error" && <p className="text-sm text-bad">{message}</p>}
       <button type="submit" disabled={state === "sending"} aria-busy={state === "sending"} className="btn btn-primary w-full py-3.5">
         <BusyLabel busy={state === "sending"} text={t.sending}>
-          {mode === "signup" ? t.submitSignup : t.submitLogin}
+          {mode === "signup" ? t.submitSignup : withPassword ? extra?.submitPassword : t.submitLogin}
         </BusyLabel>
       </button>
+      {mode === "login" && extra && (
+        <button
+          type="button"
+          onClick={() => {
+            setWithPassword((v) => !v);
+            setState("idle");
+          }}
+          className="mx-auto block text-[14px] text-muted underline decoration-line-strong underline-offset-4 hover:text-ivory"
+        >
+          {withPassword ? extra.useLink : extra.usePassword}
+        </button>
+      )}
     </form>
   );
 }

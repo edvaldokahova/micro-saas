@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Building2, LogOut } from "lucide-react";
+import { Building2, UserRound } from "lucide-react";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
 import { NavProgress } from "@/components/nav-progress";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getSession, officeAccess } from "@/lib/office";
-import { signOut } from "./actions";
+import { Welcome } from "@/components/welcome";
+import { accountTexts } from "@/lib/account-texts";
 
 export const metadata: Metadata = { robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -18,6 +19,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const show: NavKey[] = ["dashboard", "clients", "documents"];
   if (role !== "member") show.push("settings");
   if (role === "owner") show.push("billing");
+  // Primeira entrada do dono: questionário de boas-vindas antes do painel
+  if (role === "owner" && !office.onboarded_at) return <Welcome t={accountTexts(locale).welcome} office={office.name} />;
   const access = officeAccess(office);
   const b = d.app.banner;
 
@@ -52,15 +55,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2 self-center">
             <LocaleSwitcher locale={locale} label={d.common.language} />
             <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
-            <form action={signOut}>
-              <button
-                className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
-                aria-label={d.common.signOut}
-                title={d.common.signOut}
-              >
-                <LogOut className="h-4 w-4" aria-hidden />
-              </button>
-            </form>
+            {/* Conta: e-mail, palavra-passe, dois passos e sair */}
+            <Link
+              href="/conta"
+              className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
+              aria-label={accountTexts(locale).account.title}
+              title={accountTexts(locale).account.title}
+            >
+              <UserRound className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </div>
       </header>

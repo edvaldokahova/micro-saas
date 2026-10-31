@@ -27,13 +27,15 @@ export type Office = {
   email_subject: string | null;
   email_message: string | null;
   inbox_key: string;
+  country: string | null;
+  onboarded_at: string | null;
 };
 
 // Papel de quem está na sessão: dono da conta (paga a assinatura), administrador ou colaborador
 export type Role = "owner" | "admin" | "member";
 
 const columns =
-  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id, auto_remind, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, inbox_key";
+  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id, auto_remind, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, inbox_key, country, onboarded_at";
 
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {
@@ -46,7 +48,12 @@ export const getSession = cache(async () => {
     { data },
   ] = await Promise.all([supabase.auth.getUser(), supabase.from("offices").select(columns).maybeSingle()]);
   if (!user) redirect("/entrar");
-  if (!data) redirect("/entrar?erro=acesso");
+  if (!data) {
+    // Com verificação em dois passos ativa, a base de dados só mostra dados depois do código
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") redirect("/entrar/codigo");
+    redirect("/entrar?erro=acesso");
+  }
   const office = data as Office;
   const locale: Locale = isLocale(office.locale) ? office.locale : "pt-PT";
   // Dono: sem consulta extra. Responsáveis: o acesso vem da equipa (a RLS aplica o mesmo na base de dados)

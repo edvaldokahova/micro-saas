@@ -118,6 +118,7 @@ export default function Privacidade() {
           <li>Enquanto a conta estiver ativa.</li>
           <li>Ficheiros recebidos: apagados automaticamente 90 dias depois de recebidos, ou antes, se o escritório os apagar ou a conta for eliminada.</li>
           <li>Após o cancelamento ou fim do teste, apagamos os dados da conta e dos clientes do escritório até 30 dias depois, salvo pedido de eliminação mais cedo.</li>
+          <li>O dono da conta pode apagá-la a qualquer momento, em Conta: o escritório, os clientes, os pedidos e os ficheiros são apagados de imediato.</li>
           <li>O registo dos lembretes automáticos (data e pedido a que respeitam, sem o conteúdo do e-mail) segue a mesma regra dos dados do escritório.</li>
           <li>Os registos de faturação são conservados pelo prazo exigido por lei.</li>
         </ul>

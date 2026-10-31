@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-chrome";
 import { authTexts } from "@/lib/auth-texts";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
+import { accountTexts } from "@/lib/account-texts";
 
 export const metadata: Metadata = { title: "Entrar", robots: { index: false } };
 
@@ -25,7 +26,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
           <p className="mt-5 rounded-xl border border-bad/40 bg-bad/10 px-4 py-3 text-sm text-bad">{d.auth.linkError}</p>
         )}
         <div className="mt-8 animate-rise [animation-delay:160ms]">
-          <AuthForm mode="login" t={authTexts(d)} initialLocale={locale} />
+          <AuthForm mode="login" t={authTexts(d)} initialLocale={locale} extra={accountTexts(locale).login} />
         </div>
         <p className="mt-6 text-sm text-muted">
           {d.auth.noAccount} <Link className="text-gold hover:underline" href="/registar">{d.nav.tryFree}</Link>
