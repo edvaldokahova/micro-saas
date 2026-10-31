@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { Building2, LogOut } from "lucide-react";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
 import { NavProgress } from "@/components/nav-progress";
-import { Logo } from "@/components/logo";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getSession, officeAccess } from "@/lib/office";
 import { signOut } from "./actions";
@@ -40,9 +39,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </Suspense>
       <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-stretch justify-between gap-3 px-4 sm:px-5">
-          <div className="flex items-stretch gap-8">
-            <Link href="/" aria-label={d.app.nav.dashboard} className="flex shrink-0 items-center">
-              <Logo />
+          <div className="flex min-w-0 items-stretch gap-8">
+            {/* Dentro da conta: o nome do escritório (com ícone de empresa) no lugar do logótipo */}
+            <Link href="/" aria-label={d.app.nav.dashboard} title={office.name} className="flex min-w-0 items-center gap-2.5">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line-strong text-ivory" aria-hidden>
+                <Building2 className="h-4 w-4" strokeWidth={1.6} />
+              </span>
+              <span className="max-w-[44vw] truncate text-[15px] font-semibold tracking-[-0.01em] sm:max-w-[16rem]">{office.name}</span>
             </Link>
             <AppNav labels={d.app.nav} show={show} />
           </div>

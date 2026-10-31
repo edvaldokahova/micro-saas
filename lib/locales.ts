@@ -20,7 +20,7 @@ type Meta = {
 };
 
 export const localeMeta: Record<Locale, Meta> = {
-  "pt-PT": { name: "Português (Portugal)", short: "PT", country: "PT", currency: "EUR", og: "pt_PT", paddle: "pt", dialCode: "351" },
-  "es-ES": { name: "Español (España)", short: "ES", country: "ES", currency: "EUR", og: "es_ES", paddle: "es", dialCode: "34" },
-  "pt-BR": { name: "Português (Brasil)", short: "BR", country: "BR", currency: "BRL", og: "pt_BR", paddle: "pt", dialCode: "55" },
+  "pt-PT": { name: "Português (PT)", short: "PT", country: "PT", currency: "EUR", og: "pt_PT", paddle: "pt", dialCode: "351" },
+  "es-ES": { name: "Español (ES)", short: "ES", country: "ES", currency: "EUR", og: "es_ES", paddle: "es", dialCode: "34" },
+  "pt-BR": { name: "Português (BR)", short: "BR", country: "BR", currency: "BRL", og: "pt_BR", paddle: "pt", dialCode: "55" },
 };

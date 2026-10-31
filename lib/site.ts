@@ -8,7 +8,7 @@ export const site = {
   clientUrl: "https://entrega.bilonai.com",
   owner: "A Bilonai Group",
   supportEmail: "suporte@bilonai.com",
-  trialDays: 5,
+  trialDays: 7,
   // Euros para Portugal e Espanha; reais para o Brasil (na Paddle: preço por país no mesmo produto)
   plans: {
     // Anual: abaixo de 10 mensalidades (mais de 2 meses grátis), com preço psicológico

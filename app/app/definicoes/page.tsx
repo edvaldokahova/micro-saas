@@ -7,7 +7,6 @@ import { Avatar } from "@/components/avatar";
 import { AutoEmailSettings } from "@/components/auto-email-settings";
 import { CopyButton, SubmitButton } from "@/components/app-buttons";
 import { inboxAddress } from "@/lib/inbound";
-import { Flag } from "@/components/flags";
 import { Flash } from "@/components/flash";
 import { localeMeta, locales } from "@/lib/i18n";
 import { getSession } from "@/lib/office";
@@ -63,7 +62,6 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
                 className="choice flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm"
               >
                 <input type="radio" name="locale" value={l} defaultChecked={l === locale} className="sr-only" />
-                <Flag locale={l} />
                 {localeMeta[l].name}
               </label>
             ))}

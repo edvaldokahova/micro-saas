@@ -109,6 +109,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
     via: d.common.via,
     sentVia: d.common.sentVia("{canal}"),
     uploadItem: t.uploadItem,
+    uploadMore: t.uploadMore,
     files: t.files(2).replace("2", "{n}"),
     fileOne: t.files(1),
     issue,

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MailCheck } from "lucide-react";
-import { Flag } from "@/components/flags";
 import { createClient } from "@/lib/supabase/client";
 import { localeMeta, locales, type Locale } from "@/lib/locales";
 import { BusyLabel } from "@/components/spinner";
@@ -93,7 +92,6 @@ export function AuthForm({ mode, t, initialLocale }: { mode: Mode; t: AuthTexts;
                   className="choice flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm"
                 >
                   <input type="radio" name="locale" value={l} checked={locale === l} onChange={() => setLocale(l)} className="sr-only" />
-                  <Flag locale={l} />
                   <span className="leading-tight">{localeMeta[l].name}</span>
                 </label>
               ))}

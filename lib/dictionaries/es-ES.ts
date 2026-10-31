@@ -490,6 +490,7 @@ const dict: Dictionary = {
     uploadedLoose: (n: number) => `${n === 1 ? "1 archivo recibido" : `${n} archivos recibidos`}. Cada uno va al documento correcto.`,
     orChannels: "¿Prefieres enviarlos por WhatsApp o por correo?",
     uploadItem: "Enviar",
+    uploadMore: "Añadir",
     otherWay: "Ya lo envié por otro medio",
     files: (n: number) => (n === 1 ? "1 archivo" : `${n} archivos`),
     issue: {

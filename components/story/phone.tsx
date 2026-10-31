@@ -21,6 +21,7 @@ export type PhoneTexts = {
   progress: [string, string]; // antes e depois de assinalar
   docs: string[];
   upload: string; // "Enviar"
+  more: string; // "Adicionar" (mais ficheiros no mesmo documento)
   sheet: [string, string, string]; // menu do iOS ao escolher ficheiro: Fototeca, câmara, ficheiros
   uploading: string; // "A enviar 1 de 1…"
   file: string; // nome da foto escolhida
@@ -138,6 +139,14 @@ export function PhoneScreen({ s, t }: { s: PhoneState; t: PhoneTexts }) {
                     {state === "received" && !last && <span className="shrink-0 text-[12.5px] font-medium text-ok">{t.received}</span>}
                     {last && (s.step === 0 || s.step === 1) && (
                       <span data-t="upload" className="btn btn-primary btn-sm shrink-0">{t.upload}</span>
+                    )}
+                    {last && s.step === 3 && (
+                      <span className="flex shrink-0 animate-fade items-center gap-1 rounded-full border border-line-strong px-2.5 py-1 text-[12px] font-medium text-muted [animation-delay:.5s] [animation-fill-mode:both]">
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden>
+                          <path d="M6 2v8M2 6h8" />
+                        </svg>
+                        {t.more}
+                      </span>
                     )}
                   </div>
                   {/* A enviar e, depois, recebido com o ficheiro e o canal (página do pedido) */}

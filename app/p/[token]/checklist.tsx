@@ -2,6 +2,7 @@
 
 // Passo 2 da página do pedido: o que falta enviar.
 // Cada documento em falta tem «Enviar» (escolher ficheiros/foto para esse documento: fica logo recebido).
+// Depois de recebido, «+ Adicionar» junta mais ficheiros ao mesmo documento (ex.: várias faturas de despesas).
 import { useEffect, useState } from "react";
 import { DocMark } from "@/components/marks";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
@@ -20,6 +21,7 @@ export type ChecklistTexts = {
   via: Record<Channel, string>;
   sentVia: string; // "Enviado via {canal}"
   uploadItem: string;
+  uploadMore: string; // depois de recebido: juntar mais ficheiros ao mesmo documento
   files: string; // "{n} ficheiros"
   fileOne: string;
   issue: Record<UploadIssue["reason"], string>; // "{name}"
@@ -96,15 +98,19 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                     </span>
                   )}
                 </div>
-                {!received && !closed &&
+                {!closed &&
                   (uploading ? (
                     <span className="flex shrink-0 items-center gap-2 text-[13px] tabular-nums text-muted">
                       <Spinner className="h-3.5 w-3.5" /> {progress.a}/{progress.b}
                     </span>
                   ) : (
                     <label
-                      className={`shrink-0 cursor-pointer rounded-full px-4 py-2 text-[13.5px] font-medium transition-opacity ${
-                        sent ? "border border-line-strong" : "bg-ivory text-ink hover:opacity-90"
+                      className={`shrink-0 cursor-pointer rounded-full font-medium transition ${
+                        received
+                          ? "flex items-center gap-1 border border-line-strong px-3 py-1.5 text-[12.5px] text-muted hover:border-ivory hover:text-ivory"
+                          : sent
+                            ? "border border-line-strong px-4 py-2 text-[13.5px]"
+                            : "bg-ivory px-4 py-2 text-[13.5px] text-ink hover:opacity-90"
                       } ${progress ? "pointer-events-none opacity-50" : ""}`}
                     >
                       <input
@@ -118,7 +124,16 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
                           send(i, files);
                         }}
                       />
-                      {t.uploadItem}
+                      {received ? (
+                        <>
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden>
+                            <path d="M6 2v8M2 6h8" />
+                          </svg>
+                          {t.uploadMore}
+                        </>
+                      ) : (
+                        t.uploadItem
+                      )}
                     </label>
                   ))}
                 {closed && !received && <span className="shrink-0 text-[13px] text-muted">{t.pending}</span>}

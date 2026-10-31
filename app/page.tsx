@@ -156,6 +156,7 @@ export default async function Home() {
       progress: [d.public.progress(2, 3), d.public.progress(3, 3)],
       docs: h.demo.docs,
       upload: d.public.uploadItem,
+      more: d.public.uploadMore,
       sheet: h.demo.sheet as [string, string, string],
       uploading: d.public.uploading(1, 1),
       file: h.demo.files[2],
