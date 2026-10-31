@@ -74,9 +74,37 @@ export type CodeTexts = {
   signOut: string;
 };
 
-type Pack = { welcome: WelcomeTexts; account: AccountTexts; login: LoginExtraTexts; code: CodeTexts };
+export type GuideTexts = {
+  title: string;
+  lead: string;
+  progress: string; // "{a} de {b}"
+  hide: string;
+  sampleName: string;
+  steps: { title: string; text: string; action: string }[];
+  orOwn: string;
+  doneTitle: string;
+  doneText: string;
+};
+
+type Pack = { welcome: WelcomeTexts; account: AccountTexts; login: LoginExtraTexts; code: CodeTexts; guide: GuideTexts };
 
 const ptPT: Pack = {
+  guide: {
+    title: "Primeiros passos",
+    lead: "Quatro passos curtos, com um cliente de exemplo. No fim, já sabe usar o Bilonai.",
+    progress: "{a} de {b}",
+    hide: "Ocultar guia",
+    sampleName: "Cliente de exemplo",
+    steps: [
+      { title: "Crie um cliente de exemplo", text: "Com o seu e-mail e o pedido do mês já feito, para ver tudo a funcionar sem incomodar ninguém.", action: "Criar exemplo" },
+      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer.", action: "Abrir a página do cliente" },
+      { title: "Veja o ficheiro chegar arrumado", text: "Em Documentos, o ficheiro aparece no cliente e no documento certos.", action: "Ver Documentos" },
+      { title: "Adicione os seus clientes", text: "Um a um, ou colados do Excel de uma só vez. Pode apagar o cliente de exemplo quando quiser.", action: "Adicionar clientes" },
+    ],
+    orOwn: "Prefere começar já com os seus clientes?",
+    doneTitle: "Já sabe o essencial.",
+    doneText: "É assim todos os meses: os clientes enviam pelo link (ou respondem ao lembrete com anexos) e o Bilonai arruma. Pode apagar o cliente de exemplo em Clientes.",
+  },
   welcome: {
     step: "{a} de {b}",
     back: "Voltar",
@@ -185,6 +213,22 @@ const ptPT: Pack = {
 };
 
 const esES: Pack = {
+  guide: {
+    title: "Primeros pasos",
+    lead: "Cuatro pasos cortos, con un cliente de ejemplo. Al terminar, ya sabrás usar Bilonai.",
+    progress: "{a} de {b}",
+    hide: "Ocultar guía",
+    sampleName: "Cliente de ejemplo",
+    steps: [
+      { title: "Crea un cliente de ejemplo", text: "Con tu correo y la solicitud del mes ya hecha, para verlo todo funcionando sin molestar a nadie.", action: "Crear ejemplo" },
+      { title: "Sé tu cliente por un minuto", text: "Abre la página que recibe el cliente y envía una foto o un PDF cualquiera.", action: "Abrir la página del cliente" },
+      { title: "Mira el archivo llegar ordenado", text: "En Documentos, el archivo aparece en el cliente y el documento correctos.", action: "Ver Documentos" },
+      { title: "Añade tus clientes", text: "Uno a uno, o pegados desde Excel de una vez. Puedes borrar el cliente de ejemplo cuando quieras.", action: "Añadir clientes" },
+    ],
+    orOwn: "¿Prefieres empezar ya con tus clientes?",
+    doneTitle: "Ya sabes lo esencial.",
+    doneText: "Así cada mes: los clientes envían por el enlace (o responden al recordatorio con adjuntos) y Bilonai lo ordena. Puedes borrar el cliente de ejemplo en Clientes.",
+  },
   welcome: {
     step: "{a} de {b}",
     back: "Volver",
@@ -293,6 +337,22 @@ const esES: Pack = {
 };
 
 const ptBR: Pack = {
+  guide: {
+    title: "Primeiros passos",
+    lead: "Quatro passos curtos, com um cliente de exemplo. No fim, você já sabe usar o Bilonai.",
+    progress: "{a} de {b}",
+    hide: "Ocultar guia",
+    sampleName: "Cliente de exemplo",
+    steps: [
+      { title: "Crie um cliente de exemplo", text: "Com o seu e-mail e o pedido do mês já feito, para ver tudo funcionando sem incomodar ninguém.", action: "Criar exemplo" },
+      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer.", action: "Abrir a página do cliente" },
+      { title: "Veja o arquivo chegar organizado", text: "Em Documentos, o arquivo aparece no cliente e no documento certos.", action: "Ver Documentos" },
+      { title: "Adicione os seus clientes", text: "Um a um, ou colados do Excel de uma vez. Você pode excluir o cliente de exemplo quando quiser.", action: "Adicionar clientes" },
+    ],
+    orOwn: "Prefere começar já com os seus clientes?",
+    doneTitle: "Você já sabe o essencial.",
+    doneText: "É assim todo mês: os clientes enviam pelo link (ou respondem ao lembrete com anexos) e o Bilonai organiza. Você pode excluir o cliente de exemplo em Clientes.",
+  },
   welcome: {
     step: "{a} de {b}",
     back: "Voltar",

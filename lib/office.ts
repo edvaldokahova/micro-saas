@@ -29,13 +29,15 @@ export type Office = {
   inbox_key: string;
   country: string | null;
   onboarded_at: string | null;
+  guide_docs_at: string | null;
+  guide_done_at: string | null;
 };
 
 // Papel de quem está na sessão: dono da conta (paga a assinatura), administrador ou colaborador
 export type Role = "owner" | "admin" | "member";
 
 const columns =
-  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id, auto_remind, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, inbox_key, country, onboarded_at";
+  "id, name, locale, plan, plan_status, trial_ends_at, current_period_end, paddle_subscription_id, paddle_customer_id, contact_phone, contact_email, upload_url, billing_interval, reminder_template, owner_id, auto_remind, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, inbox_key, country, onboarded_at, guide_docs_at, guide_done_at";
 
 // Sessão + escritório, uma só vez por pedido (o layout e a página partilham o resultado)
 export const getSession = cache(async () => {

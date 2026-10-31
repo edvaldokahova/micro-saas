@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronLeft, ChevronRight, Plus, UserPlus } from "lucide-react";
 import { DocMark, DocStrip, orderStates } from "@/components/marks";
@@ -11,6 +12,8 @@ import { getSession, isQuarterEnd, officeAccess, quarterStart, resolvePeriod, sh
 import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, suggestedDue, type Deadline } from "@/lib/deadline";
 import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests, setItemStatus } from "./actions";
+import { FirstSteps } from "@/components/first-steps";
+import { accountTexts } from "@/lib/account-texts";
 
 export const metadata: Metadata = { title: "Painel" };
 
@@ -45,6 +48,8 @@ export default async function Painel({
 }) {
   const sp = await searchParams;
   const { supabase, office, locale, d, isManager } = await getSession();
+  // Primeiros passos: só para quem gere a conta, até concluir ou ocultar
+  const showGuide = isManager && !office.guide_done_at;
   const t = d.app.dashboard;
   const period = resolvePeriod(sp.mes);
   const ym = period.slice(0, 7);
@@ -65,7 +70,7 @@ export default async function Painel({
         "id, client_id, client_name, client_phone, client_email, assignee_id, assignee_name, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items, sent_items",
       )
       .or(periodFilter),
-    supabase.from("clients").select("id, cadence").is("archived_at", null),
+    supabase.from("clients").select("id, cadence, is_sample").is("archived_at", null),
     supabase.from("team_members").select("id, name").order("name"),
     // Documentos em falta ou enviados deste mês (para a mensagem de WhatsApp e os canais)
     supabase
@@ -78,7 +83,27 @@ export default async function Painel({
   const resp = team.some((m) => m.id === sp.resp) ? sp.resp : undefined;
   const allRows = (reqData ?? []) as Row[];
   const byPerson = resp ? allRows.filter((r) => r.assignee_id === resp) : allRows;
-  const clients = (clientData ?? []) as { id: string; cadence: string }[];
+  const clients = (clientData ?? []) as { id: string; cadence: string; is_sample: boolean }[];
+  let guide: ReactNode = null;
+  if (showGuide) {
+    const sample = clients.find((c) => c.is_sample) ?? null;
+    const [{ data: sampleReq }, { count: files }] = await Promise.all([
+      sample
+        ? supabase.from("requests").select("token").eq("client_id", sample.id).order("created_at", { ascending: false }).limit(1).maybeSingle()
+        : Promise.resolve({ data: null }),
+      supabase.from("documents").select("id", { count: "exact", head: true }),
+    ]);
+    guide = (
+      <FirstSteps
+        t={accountTexts(locale).guide}
+        sampleToken={(sampleReq as { token: string } | null)?.token ?? null}
+        hasSample={!!sample}
+        hasFiles={(files ?? 0) > 0}
+        sawDocs={!!office.guide_docs_at}
+        realClients={clients.filter((c) => !c.is_sample).length}
+      />
+    );
+  }
   const activeClients = clients.length;
   const withRequest = new Set(allRows.map((r) => r.client_id));
   // Clientes que deviam ter pedido neste painel: os mensais e, no fim do trimestre, os trimestrais
@@ -166,7 +191,10 @@ export default async function Painel({
         </div>
       </div>
 
+      {guide}
+
       {activeClients === 0 && rows.length === 0 ? (
+        guide ? null : (
         <div className="mt-10 animate-rise border-t border-line py-14 text-center">
           <DocStrip states={["pending", "pending", "pending"]} className="justify-center" />
           <h2 className="mt-5 font-display text-2xl">{t.noClientsTitle}</h2>
@@ -175,6 +203,7 @@ export default async function Painel({
             <UserPlus className="h-4 w-4" aria-hidden /> {t.addClients}
           </Link>
         </div>
+        )
       ) : (
         <>
           {isManager && team.length > 0 && (

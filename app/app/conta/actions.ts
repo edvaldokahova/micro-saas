@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { paddleApi } from "@/lib/paddle/server";
 import { BUCKET } from "@/lib/documents";
 import { site } from "@/lib/site";
+import { accountTexts } from "@/lib/account-texts";
 
 // Questionário de boas-vindas (só o dono). A base de dados valida os valores e muda o idioma pelo país.
 export async function finishWelcome(country: string, profession: string, clients: string): Promise<boolean> {
@@ -62,4 +63,43 @@ export async function deleteAccount(confirmName: string): Promise<boolean> {
   if (error) return false;
   await supabase.auth.signOut().catch(() => null);
   redirect(`${site.url}/?conta=apagada`);
+}
+
+/* ---------- Primeiros passos (guia com cliente de exemplo) ---------- */
+
+// Cria o cliente de exemplo (com o e-mail de quem está a aprender) e o pedido do mês anterior
+export async function createSample(): Promise<void> {
+  const { supabase, user, office, locale, isManager } = await getSession();
+  if (!isManager) redirect("/");
+  const admin = createAdminClient();
+  const { data: existing } = await admin.from("clients").select("id").eq("office_id", office.id).eq("is_sample", true).maybeSingle();
+  let clientId = (existing as { id: string } | null)?.id ?? null;
+  if (!clientId) {
+    const { data: created } = await admin
+      .from("clients")
+      .insert({ office_id: office.id, name: accountTexts(locale).guide.sampleName, email: user.email ?? null, cadence: "monthly", is_sample: true })
+      .select("id")
+      .single();
+    clientId = (created as { id: string } | null)?.id ?? null;
+  }
+  if (!clientId) redirect("/?erro=generic");
+  const { data: hasReq } = await admin.from("requests").select("id").eq("client_id", clientId).limit(1);
+  if (!hasReq?.length) {
+    const { data: types } = await supabase.from("document_types").select("label").order("position");
+    const labels = ((types ?? []) as { label: string }[]).map((x) => x.label).slice(0, 4);
+    const now = new Date();
+    const period = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)).toISOString().slice(0, 10);
+    const due = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);
+    await supabase.rpc("create_request", { p_client: clientId, p_period: period, p_due: due, p_note: null, p_labels: labels.length ? labels : ["Documentos"] });
+  }
+  revalidatePath("/app", "layout");
+  redirect("/#primeiros-passos");
+}
+
+export async function hideGuide(): Promise<void> {
+  const { office, isManager } = await getSession();
+  if (!isManager) redirect("/");
+  await createAdminClient().from("offices").update({ guide_done_at: new Date().toISOString() }).eq("id", office.id);
+  revalidatePath("/app", "layout");
+  redirect("/");
 }

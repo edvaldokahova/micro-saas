@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getSession, dashboardMonth } from "@/lib/office";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPeriod } from "@/lib/i18n";
 import { DocList, ZipButton } from "@/components/doc-files";
 import { DOC_COLUMNS, docTexts, docView, type DocRow } from "@/lib/doc-view";
@@ -11,9 +12,13 @@ type Row = DocRow & { clients: { name: string } | null; requests: { period: stri
 
 // Todos os ficheiros recebidos, num só sítio: primeiro os que estão por confirmar,
 // depois o mês escolhido, por cliente e por documento do pedido.
-export default async function Documentos({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
+export default async function Documentos({ searchParams }: { searchParams: Promise<{ mes?: string; guia?: string }> }) {
   const sp = await searchParams;
-  const { supabase, locale, d } = await getSession();
+  const { supabase, locale, d, office } = await getSession();
+  // Vindo dos primeiros passos: o passo «ver o ficheiro chegar» fica feito
+  if (sp.guia === "1" && !office.guide_docs_at) {
+    await createAdminClient().from("offices").update({ guide_docs_at: new Date().toISOString() }).eq("id", office.id);
+  }
   const x = d.app.docs;
   const dt = docTexts(d);
 
