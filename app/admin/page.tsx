@@ -199,9 +199,10 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         {/* Saudação */}
         <section className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ok">Cockpit</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ivory">Cockpit</p>
             <h1 className="mt-2 font-display text-3xl sm:text-4xl">
-              <span className="text-ok">{hello}, {name}.</span> Bem-vindo ao cockpit.
+              {hello},{" "}
+              <span className="bg-gradient-to-r from-[#38bdf8] via-[#2563eb] to-[#1d4ed8] bg-clip-text text-transparent">{name}.</span> Bem-vindo ao cockpit.
             </h1>
             <ul className="mt-3 space-y-1 text-[15px] text-muted">
               {notes.slice(0, 2).map((n) => (

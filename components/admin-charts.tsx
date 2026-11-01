@@ -36,7 +36,15 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
   const [hover, setHover] = useState<number | null>(null);
   const money = (cents: number) =>
     new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
-  const max = Math.max(1, ...points.map((p) => p.total)) * 1.15;
+  // Escala «redonda» (ex.: 0, 50 €, 100 €, 150 €) para o eixo vertical
+  const top = Math.max(100, ...points.map((p) => p.total));
+  const rough = top / 4;
+  const mag = 10 ** Math.floor(Math.log10(rough));
+  const step = [1, 2, 2.5, 5, 10].map((f) => f * mag).find((v) => v >= rough) ?? 10 * mag;
+  const max = step * Math.ceil(top / step);
+  const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
+  const axis = (cents: number) =>
+    new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, notation: cents >= 1_000_000 ? "compact" : "standard", maximumFractionDigits: 0 }).format(cents / 100);
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
   const x = (i: number) => PAD.left + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW);
@@ -46,6 +54,20 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
   const h = hover != null ? points[hover] : null;
 
   return (
+    <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3">
+      {/* Eixo vertical: valores redondos, alinhados com as linhas da grelha */}
+      <div className="relative w-max min-w-[2.75rem] self-stretch" aria-hidden>
+        {ticks.map((v) => (
+          <span
+            key={v}
+            className="absolute right-0 -translate-y-1/2 whitespace-nowrap font-mono text-[10.5px] tabular-nums text-muted"
+            style={{ top: `${(y(v) / H) * 100}%` }}
+          >
+            {axis(v)}
+          </span>
+        ))}
+        <span className="invisible block whitespace-nowrap font-mono text-[10.5px]">{axis(max)}</span>
+      </div>
     <div className="relative">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full overflow-visible" role="img" aria-label="Receita por mês">
         <defs>
@@ -63,8 +85,8 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
           </filter>
         </defs>
         {/* Grelha discreta */}
-        {[0.25, 0.5, 0.75, 1].map((f) => (
-          <line key={f} x1={PAD.left} x2={W - PAD.right} y1={PAD.top + innerH * (1 - f)} y2={PAD.top + innerH * (1 - f)} stroke="var(--color-line)" strokeDasharray="2 5" />
+        {ticks.slice(1).map((v) => (
+          <line key={v} x1={PAD.left} x2={W - PAD.right} y1={y(v)} y2={y(v)} stroke="var(--color-line)" strokeDasharray="2 5" />
         ))}
         <line x1={PAD.left} x2={W - PAD.right} y1={H - PAD.bottom} y2={H - PAD.bottom} stroke="var(--color-line-strong)" />
         <path d={area} fill={`url(#a${id})`} />
@@ -89,15 +111,14 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
           />
         ))}
       </svg>
-      <div className="mt-2 flex justify-between px-1 font-mono text-[10.5px] uppercase tracking-wider text-muted">
-        {points.map((p) => (
-          <span key={p.label}>{p.label}</span>
-        ))}
-      </div>
       {h && hover != null && (
         <div
-          className="pointer-events-none absolute top-0 z-10 w-max -translate-x-1/2 rounded-xl border border-line bg-ink-2 px-3 py-2 text-[12.5px] shadow-[0_12px_30px_-12px_rgba(18,19,22,0.35)]"
-          style={{ left: `${(x(hover) / W) * 100}%` }}
+          className="pointer-events-none absolute top-0 z-10 w-max rounded-xl border border-line bg-ink-2 px-3 py-2 text-[12.5px] shadow-[0_12px_30px_-12px_rgba(18,19,22,0.35)]"
+          style={{
+            left: `${(x(hover) / W) * 100}%`,
+            // Perto das margens, o aviso abre para dentro do cartão
+            transform: `translateX(${x(hover) / W > 0.62 ? "calc(-100% - 10px)" : x(hover) / W < 0.38 ? "10px" : "-50%"})`,
+          }}
         >
           <p className="font-mono text-[10.5px] uppercase tracking-wider text-muted">{h.label}</p>
           <p className="mt-0.5 font-semibold tabular-nums">{money(h.total)}</p>
@@ -106,6 +127,13 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
           </p>
         </div>
       )}
+    </div>
+      {/* Meses, só por baixo do gráfico (o eixo vertical fica na mesma altura do desenho) */}
+      <div className="col-start-2 mt-2 flex justify-between px-1 font-mono text-[10.5px] uppercase tracking-wider text-muted">
+        {points.map((p) => (
+          <span key={p.label}>{p.label}</span>
+        ))}
+      </div>
     </div>
   );
 }
