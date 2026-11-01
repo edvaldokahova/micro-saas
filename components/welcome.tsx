@@ -34,6 +34,8 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
         setError(true);
         return;
       }
+      window.blTrack?.("CompleteRegistration");
+      window.blTrack?.("StartTrial", { value: 0, currency: answers[0] === "BR" ? "BRL" : "EUR" });
       router.refresh();
     });
   }

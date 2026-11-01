@@ -95,6 +95,7 @@ export default function Privacidade() {
         <h2>6. Onde ficam os dados e quem os trata</h2>
         <p>Recorremos aos seguintes subcontratantes, com contratos de tratamento de dados:</p>
         <ul>
+          <li><strong>Meta (Pixel)</strong>: só na página pública e no registo, e só depois de aceitar os cookies de medição; serve para medir de onde chegam os visitantes e a eficácia dos anúncios. Pode recusar sem perder nenhuma funcionalidade.</li>
           <li><strong>Supabase</strong>: base de dados e autenticação, numa região da União Europeia (Irlanda).</li>
           <li><strong>Vercel</strong>: alojamento da aplicação. Quando aplicável, as transferências para fora do Espaço Económico Europeu apoiam-se em cláusulas contratuais-tipo.</li>
           <li><strong>Supabase Storage</strong>: armazenamento privado e encriptado dos ficheiros recebidos, na mesma região da União Europeia.</li>

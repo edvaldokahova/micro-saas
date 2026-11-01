@@ -232,7 +232,7 @@ const ptPT: Pack = {
 };
 
 const esES: Pack = {
-  menu: { label: "Cuenta", account: "Cuenta y seguridad", billing: "Suscripción", inbox: "Copiar dirección de recepción", inboxCopied: "Dirección copiada", help: "Ayuda y soporte", signOut: "Cerrar sesión" },
+  menu: { label: "Cuenta", account: "Cuenta y seguridad", billing: "Suscripción", inbox: "Copiar correo de recepción", inboxCopied: "Dirección copiada", help: "Ayuda y soporte", signOut: "Cerrar sesión" },
   guide: {
     title: "Primeros pasos",
     lead: "Cuatro pasos cortos, con un cliente de ejemplo. Al terminar, ya sabrás usar Bilonai.",
@@ -365,7 +365,7 @@ const esES: Pack = {
 };
 
 const ptBR: Pack = {
-  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar endereço de recebimento", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
+  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar e-mail de coleta", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
   guide: {
     title: "Primeiros passos",
     lead: "Quatro passos curtos, com um cliente de exemplo. No fim, você já sabe usar o Bilonai.",

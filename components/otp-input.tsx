@@ -3,7 +3,7 @@
 // Código de verificação em caixas (uma por número), como é habitual.
 // Colar o código inteiro em qualquer caixa (ou o preenchimento automático do telemóvel, que põe tudo
 // numa só) distribui os números pelas caixas; apagar recua; as setas mudam de caixa.
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function OtpInput({
   length = 6,
@@ -47,9 +47,20 @@ export function OtpInput({
     const next = join(arr);
     onChange(next);
     focus(Math.min(length - 1, from + nums.length));
-    const clean = next.replace(/\s/g, "");
-    if (clean.length === length && onComplete) onComplete(clean);
   }
+
+  // Assim que as caixas ficam todas preenchidas (escrito, colado ou preenchido pelo telemóvel), entra sozinho
+  const clean = value.replace(/\s/g, "");
+  const fired = useRef("");
+  useEffect(() => {
+    if (clean.length === length && fired.current !== clean) {
+      fired.current = clean;
+      refs.current.forEach((el) => el?.blur());
+      onComplete?.(clean);
+    }
+    if (clean.length < length) fired.current = "";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clean, length]);
 
   return (
     <div className="flex justify-between gap-2 sm:gap-2.5" role="group" aria-label={label}>

@@ -34,7 +34,7 @@ export function AccountMenu({ t, email, office, billing, inbox, helpUrl }: { t: 
     setTimeout(() => setCopied(false), 1800);
   }
 
-  const row = "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[14px] transition hover:bg-ink-3";
+  const row = "flex w-full items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2.5 text-left text-[14px] transition hover:bg-ink-3";
   return (
     <div ref={ref} className="relative">
       <button

@@ -105,6 +105,7 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
       setMessage(t.rateLimit);
       return;
     }
+    if (mode === "signup") window.blTrack?.("Lead");
     setState("sent");
   }
 

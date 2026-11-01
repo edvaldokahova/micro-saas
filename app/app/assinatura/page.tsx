@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TrackOnce } from "@/components/meta-pixel";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { IconSpark } from "@/components/icons";
@@ -54,6 +55,18 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
       <p className="eyebrow">{office.name}</p>
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
 
+      {/* Compra concluída: evento Purchase para o Pixel da Meta (se ligado e com consentimento) */}
+      {ok && (
+        <TrackOnce
+          event="Purchase"
+          params={(() => {
+            const p = site.plans[office.plan === "office" ? "office" : "starter"];
+            const brl = localeMeta[locale].currency === "BRL";
+            const value = currentInterval === "year" ? (brl ? p.yearBrl : p.yearEur) : brl ? p.priceBrl : p.priceEur;
+            return { value, currency: brl ? "BRL" : "EUR" };
+          })()}
+        />
+      )}
       {ok && !live && <p className="mt-6 rounded-xl border border-line bg-ink-2 px-4 py-3 text-sm">{t.received}</p>}
       {erro === "portal" && (
         <p className="mt-6 rounded-xl border border-bad/40 bg-bad/10 px-4 py-3 text-sm text-bad">{t.portalError(site.supportEmail)}</p>
