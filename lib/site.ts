@@ -15,15 +15,15 @@ export const site = {
     starter: { key: "starter", name: "Starter", priceEur: 15, priceBrl: 79, yearEur: 150, yearBrl: 790, clientLimit: 20, teamLimit: 3 },
     office: { key: "office", name: "Escritório", priceEur: 29, priceBrl: 149, yearEur: 290, yearBrl: 1490, clientLimit: 60, teamLimit: 15 },
   },
-  // Vendedor: pessoa singular a operar sob a marca "A Bilonai Group".
-  // Quando a empresa for registada, trocar aqui (nome, NIF e morada) e as páginas legais atualizam-se sozinhas.
-  seller: "Edvaldo Eugénio Cahova Eduardo",
+  // Vendedor e titular do serviço: a sociedade. O NIF entra em taxId assim que for atribuído
+  // (enquanto estiver vazio, as páginas legais não o mostram).
+  seller: "Horizontal Expansão - Comércio e Prestação de Serviços, (SU), Lda",
   legal: {
-    registeredName: "Edvaldo Eugénio Cahova Eduardo (pessoa singular, sob a marca A Bilonai Group)" as string,
-    taxId: "023173713LA056" as string, // NIF (Angola)
-    address: "Rua Simeone Mukune, bairro São José Canjaia, Huambo, Angola" as string,
+    registeredName: "Horizontal Expansão - Comércio e Prestação de Serviços, (SU), Lda" as string,
+    taxId: "" as string, // NIF (Angola) — por atribuir
+    address: "Rua Simeone Mukune, n.º 513, Bairro São José Canjaia, Comuna da Calima, Município e Província do Huambo, Angola" as string,
   },
-  lastUpdated: "30 de outubro de 2026",
+  lastUpdated: "1 de novembro de 2026",
 };
 
 export type PlanKey = keyof typeof site.plans;

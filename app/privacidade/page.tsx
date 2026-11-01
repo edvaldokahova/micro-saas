@@ -95,7 +95,8 @@ export default function Privacidade() {
         <h2>6. Onde ficam os dados e quem os trata</h2>
         <p>Recorremos aos seguintes subcontratantes, com contratos de tratamento de dados:</p>
         <ul>
-          <li><strong>Meta (Pixel)</strong>: só na página pública e no registo, e só depois de aceitar os cookies de medição; serve para medir de onde chegam os visitantes e a eficácia dos anúncios. Pode recusar sem perder nenhuma funcionalidade.</li>
+          <li><strong>Meta Platforms Ireland (Pixel e API de Conversões)</strong>: só depois de aceitar os cookies de medição. Mede de onde chegam os visitantes e a eficácia dos anúncios (visitas, pedido de conta, início do teste, compra). Os e-mails enviados para este fim seguem cifrados por hash. Pode recusar ou retirar o consentimento sem perder nenhuma funcionalidade.</li>
+          <li><strong>UTMify</strong>: recebe os dados de cada venda (valor, plano, origem do anúncio e e-mail de faturação) para medirmos o retorno da publicidade.</li>
           <li><strong>Supabase</strong>: base de dados e autenticação, numa região da União Europeia (Irlanda).</li>
           <li><strong>Vercel</strong>: alojamento da aplicação. Quando aplicável, as transferências para fora do Espaço Económico Europeu apoiam-se em cláusulas contratuais-tipo.</li>
           <li><strong>Supabase Storage</strong>: armazenamento privado e encriptado dos ficheiros recebidos, na mesma região da União Europeia.</li>
@@ -126,11 +127,17 @@ export default function Privacidade() {
       </section>
 
       <section>
-        <h2>8. Cookies</h2>
-        <p>
-          Usamos apenas cookies estritamente necessários, para manter a sua sessão iniciada. Não usamos cookies de
-          publicidade nem de análise.
-        </p>
+        <h2>8. Cookies e medição</h2>
+        <ul>
+          <li><strong>Necessários</strong> (sempre ativos): sessão iniciada, idioma, tema e a sua escolha sobre cookies.</li>
+          <li><strong>Origem da visita</strong>: quando chega por um link de anúncio, guardamos durante 30 dias os parâmetros do link (utm) para saber que campanha trouxe a sua conta.</li>
+          <li><strong>Medição da Meta</strong> (só com consentimento): Pixel da Meta. Pode mudar a escolha a qualquer momento em «Cookies», no rodapé do site.</li>
+          <li>
+            <strong>Lembretes automáticos</strong>: os e-mails de lembrete que os escritórios enviam aos seus clientes contêm
+            uma pequena imagem que indica se a mensagem foi aberta, e registamos se a página do pedido foi visitada. Serve
+            apenas para o escritório ver o desempenho da recolha.
+          </li>
+        </ul>
       </section>
 
       <section>
