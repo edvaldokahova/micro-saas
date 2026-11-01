@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSession, dashboardMonth } from "@/lib/office";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { accountTexts } from "@/lib/account-texts";
 import { formatPeriod } from "@/lib/i18n";
 import { DocList, ZipButton } from "@/components/doc-files";
 import { DOC_COLUMNS, docTexts, docView, type DocRow } from "@/lib/doc-view";
@@ -15,6 +16,7 @@ type Row = DocRow & { clients: { name: string } | null; requests: { period: stri
 export default async function Documentos({ searchParams }: { searchParams: Promise<{ mes?: string; guia?: string }> }) {
   const sp = await searchParams;
   const { supabase, locale, d, office } = await getSession();
+  const g = accountTexts(locale).guide;
   // Vindo dos primeiros passos: o passo «ver o ficheiro chegar» fica feito
   if (sp.guia === "1" && !office.guide_docs_at) {
     await createAdminClient().from("offices").update({ guide_docs_at: new Date().toISOString() }).eq("id", office.id);
@@ -61,6 +63,23 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
     <div className="mx-auto max-w-3xl">
       <h1 className="font-display text-[2.2rem] leading-none">{x.title}</h1>
       <p className="mt-2 max-w-[60ch] text-sm text-muted">{x.hint}</p>
+
+      {/* Vindo do cliente de exemplo (primeiros passos): confirma e leva ao passo seguinte */}
+      {sp.guia === "1" && (
+        <div className="card mt-6 flex animate-rise flex-col gap-3 border-ok/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2.5 text-sm leading-6">
+            <span className="mt-1 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-ok text-white" aria-hidden>
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2.4 6.3l2.4 2.3 4.8-5" />
+              </svg>
+            </span>
+            {g.arrived}
+          </p>
+          <Link href="/#primeiros-passos" className="btn btn-primary btn-sm shrink-0">
+            {g.continue}
+          </Link>
+        </div>
+      )}
 
       {rows.length === 0 && <p className="card mt-8 p-6 text-sm leading-6 text-muted">{x.empty}</p>}
 

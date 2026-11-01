@@ -58,6 +58,10 @@ export type AccountTexts = {
 
 export type LoginExtraTexts = {
   validation: { required: string; email: string; accept: string };
+  codeOr: string;
+  code: string;
+  codeSubmit: string;
+  codeWrong: string;
   usePassword: string;
   useLink: string;
   password: string;
@@ -83,6 +87,9 @@ export type GuideTexts = {
   sampleName: string;
   steps: { title: string; text: string; action: string }[];
   orOwn: string;
+  back: string; // na página do cliente de exemplo, depois de enviar
+  arrived: string;
+  continue: string;
   doneTitle: string;
   doneText: string;
 };
@@ -101,10 +108,13 @@ const ptPT: Pack = {
     sampleName: "Cliente de exemplo",
     steps: [
       { title: "Crie um cliente de exemplo", text: "Com o seu e-mail e o pedido do mês já feito, para ver tudo a funcionar sem incomodar ninguém.", action: "Criar exemplo" },
-      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer.", action: "Abrir a página do cliente" },
+      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer. Depois volta aqui sozinho.", action: "Abrir a página do cliente" },
       { title: "Veja o ficheiro chegar arrumado", text: "Em Documentos, o ficheiro aparece no cliente e no documento certos.", action: "Ver Documentos" },
       { title: "Adicione os seus clientes", text: "Um a um, ou colados do Excel de uma só vez. Pode apagar o cliente de exemplo quando quiser.", action: "Adicionar clientes" },
     ],
+    back: "Ficheiro recebido. A voltar ao Bilonai…",
+    arrived: "O ficheiro do cliente de exemplo chegou. É aqui que tudo fica, arrumado por cliente e documento.",
+    continue: "Continuar os primeiros passos",
     orOwn: "Prefere começar já com os seus clientes?",
     doneTitle: "Já sabe o essencial.",
     doneText: "É assim todos os meses: os clientes enviam pelo link (ou respondem ao lembrete com anexos) e o Bilonai arruma. Pode apagar o cliente de exemplo em Clientes.",
@@ -200,6 +210,10 @@ const ptPT: Pack = {
   },
   login: {
     validation: { required: "Preencha este campo.", email: "Escreva um e-mail válido, por exemplo nome@escritorio.pt.", accept: "Para continuar, aceite os Termos e a Política de privacidade." },
+    codeOr: "Ou escreva o código de 6 dígitos que vem no e-mail:",
+    code: "Código",
+    codeSubmit: "Entrar",
+    codeWrong: "Código errado ou expirado. Confirme os números ou peça um novo e-mail.",
     usePassword: "Entrar com palavra-passe",
     useLink: "Entrar com link por e-mail",
     password: "Palavra-passe",
@@ -227,10 +241,13 @@ const esES: Pack = {
     sampleName: "Cliente de ejemplo",
     steps: [
       { title: "Crea un cliente de ejemplo", text: "Con tu correo y la solicitud del mes ya hecha, para verlo todo funcionando sin molestar a nadie.", action: "Crear ejemplo" },
-      { title: "Sé tu cliente por un minuto", text: "Abre la página que recibe el cliente y envía una foto o un PDF cualquiera.", action: "Abrir la página del cliente" },
+      { title: "Sé tu cliente por un minuto", text: "Abre la página que recibe el cliente y envía una foto o un PDF cualquiera. Después vuelves aquí solo.", action: "Abrir la página del cliente" },
       { title: "Mira el archivo llegar ordenado", text: "En Documentos, el archivo aparece en el cliente y el documento correctos.", action: "Ver Documentos" },
       { title: "Añade tus clientes", text: "Uno a uno, o pegados desde Excel de una vez. Puedes borrar el cliente de ejemplo cuando quieras.", action: "Añadir clientes" },
     ],
+    back: "Archivo recibido. Volviendo a Bilonai…",
+    arrived: "El archivo del cliente de ejemplo ha llegado. Aquí queda todo, ordenado por cliente y documento.",
+    continue: "Seguir con los primeros pasos",
     orOwn: "¿Prefieres empezar ya con tus clientes?",
     doneTitle: "Ya sabes lo esencial.",
     doneText: "Así cada mes: los clientes envían por el enlace (o responden al recordatorio con adjuntos) y Bilonai lo ordena. Puedes borrar el cliente de ejemplo en Clientes.",
@@ -326,6 +343,10 @@ const esES: Pack = {
   },
   login: {
     validation: { required: "Rellena este campo.", email: "Escribe un correo válido, por ejemplo nombre@asesoria.es.", accept: "Para continuar, acepta los Términos y la Política de privacidad." },
+    codeOr: "O escribe el código de 6 dígitos que viene en el correo:",
+    code: "Código",
+    codeSubmit: "Entrar",
+    codeWrong: "Código incorrecto o caducado. Revisa los números o pide un correo nuevo.",
     usePassword: "Entrar con contraseña",
     useLink: "Entrar con enlace por correo",
     password: "Contraseña",
@@ -353,10 +374,13 @@ const ptBR: Pack = {
     sampleName: "Cliente de exemplo",
     steps: [
       { title: "Crie um cliente de exemplo", text: "Com o seu e-mail e o pedido do mês já feito, para ver tudo funcionando sem incomodar ninguém.", action: "Criar exemplo" },
-      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer.", action: "Abrir a página do cliente" },
+      { title: "Seja o seu cliente por um minuto", text: "Abra a página que o cliente recebe e envie uma foto ou um PDF qualquer. Depois você volta aqui automaticamente.", action: "Abrir a página do cliente" },
       { title: "Veja o arquivo chegar organizado", text: "Em Documentos, o arquivo aparece no cliente e no documento certos.", action: "Ver Documentos" },
       { title: "Adicione os seus clientes", text: "Um a um, ou colados do Excel de uma vez. Você pode excluir o cliente de exemplo quando quiser.", action: "Adicionar clientes" },
     ],
+    back: "Arquivo recebido. Voltando ao Bilonai…",
+    arrived: "O arquivo do cliente de exemplo chegou. É aqui que tudo fica, organizado por cliente e documento.",
+    continue: "Continuar os primeiros passos",
     orOwn: "Prefere começar já com os seus clientes?",
     doneTitle: "Você já sabe o essencial.",
     doneText: "É assim todo mês: os clientes enviam pelo link (ou respondem ao lembrete com anexos) e o Bilonai organiza. Você pode excluir o cliente de exemplo em Clientes.",
@@ -452,6 +476,10 @@ const ptBR: Pack = {
   },
   login: {
     validation: { required: "Preencha este campo.", email: "Digite um e-mail válido, por exemplo nome@escritorio.com.br.", accept: "Para continuar, aceite os Termos e a Política de privacidade." },
+    codeOr: "Ou digite o código de 6 dígitos que veio no e-mail:",
+    code: "Código",
+    codeSubmit: "Entrar",
+    codeWrong: "Código errado ou expirado. Confira os números ou peça um novo e-mail.",
     usePassword: "Entrar com senha",
     useLink: "Entrar com link por e-mail",
     password: "Senha",

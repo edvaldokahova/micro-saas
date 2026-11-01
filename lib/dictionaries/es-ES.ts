@@ -20,7 +20,7 @@ const dict: Dictionary = {
     copy: "Copiar enlace",
     copied: "Enlace copiado",
     open: "Abrir",
-    errorGeneric: "Algo ha fallado. Inténtalo de nuevo en unos momentos.",
+    errorGeneric: "Algo ha fallado. Inténtalo de nuevo en unos momentos; si sigue pasando, escríbenos a suporte@bilonai.com.",
     language: "Idioma",
     themeLight: "Modo claro",
     themeDark: "Modo oscuro",

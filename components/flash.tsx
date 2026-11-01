@@ -1,5 +1,6 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n";
+import { Toast } from "@/components/toast";
 
 export function errorText(d: Dictionary, code: string): string {
   const e = d.app.clients.errors;
@@ -20,8 +21,14 @@ export function errorText(d: Dictionary, code: string): string {
   return map[code] ?? d.common.errorGeneric;
 }
 
-// Mensagens de sucesso/erro depois de uma ação (vêm no endereço: ?ok=… ou ?erro=…)
-export function Flash({ d, error, success }: { d: Dictionary; error?: string; success?: string | null }) {
+// Mensagens de sucesso/erro depois de uma ação (vêm no endereço: ?ok=… ou ?erro=…).
+// Por defeito são avisos flutuantes (canto superior direito); «inline» mostra-os no sítio (ex.: dentro de uma janela).
+export function Flash({ d, error, success, inline = false }: { d: Dictionary; error?: string; success?: string | null; inline?: boolean }) {
+  if (!inline) {
+    if (error) return <Toast tone="bad" text={errorText(d, error)} />;
+    if (success) return <Toast tone="ok" text={success} />;
+    return null;
+  }
   if (error) {
     return (
       <p role="alert" className="mb-6 flex animate-rise items-start gap-2.5 rounded-xl border border-bad/40 bg-bad/10 px-4 py-3 text-sm text-bad">

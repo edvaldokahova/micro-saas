@@ -69,9 +69,9 @@ export function AccountMenu({ t, email, office, billing, inbox, helpUrl }: { t: 
                 <span className={copied ? "text-ok" : ""}>{copied ? t.inboxCopied : t.inbox}</span>
               </button>
             )}
-            <a role="menuitem" href={helpUrl} target="_blank" rel="noopener noreferrer" className={row}>
+            <Link role="menuitem" href={helpUrl} onClick={() => setOpen(false)} className={row}>
               <IconHelp className="h-[18px] w-[18px] text-muted" /> {t.help}
-            </a>
+            </Link>
           </div>
           <form action={signOut} className="border-t border-line pt-1.5">
             <button role="menuitem" className={row}>

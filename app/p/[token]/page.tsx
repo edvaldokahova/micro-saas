@@ -5,6 +5,8 @@ import { ThemeToggle } from "@/components/preferences";
 import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
 import { getLocale } from "@/lib/prefs";
+import { accountTexts } from "@/lib/account-texts";
+import { site } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { Checklist, type ChecklistTexts } from "./checklist";
 import { Uploader, type UploaderTexts } from "./uploader";
@@ -57,14 +59,17 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   };
 }
 
-export default async function PaginaCliente({ params }: { params: Promise<{ token: string }> }) {
+export default async function PaginaCliente({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ guia?: string }> }) {
   const { token } = await params;
+  const { guia } = await searchParams;
   const req = await loadRequest(token);
 
   // A página fala o idioma do escritório (é ele que conhece o cliente)
   const locale: Locale = req && isLocale(req.locale) ? req.locale : await getLocale();
   const d = getDictionary(locale);
   const t = d.public;
+  // Vindo dos primeiros passos (cliente de exemplo): depois do envio, volta sozinho ao painel
+  const back = guia === "1" ? { url: `${site.appUrl}/documentos?guia=1`, text: accountTexts(locale).guide.back } : undefined;
 
   if (!req) {
     return (
@@ -163,7 +168,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
               </p>
             )}
             <div className="mt-4">
-              <Uploader token={token} t={upTexts} />
+              <Uploader token={token} t={upTexts} back={back} />
             </div>
           </section>
         )}
@@ -177,7 +182,7 @@ export default async function PaginaCliente({ params }: { params: Promise<{ toke
           ) : (
             <p className="mb-4 text-sm text-muted">{req.closed ? t.closed : t.instruction}</p>
           )}
-          <Checklist token={token} initial={req.items} closed={req.closed} t={texts} />
+          <Checklist token={token} initial={req.items} closed={req.closed} t={texts} back={back} />
         </section>
 
         <p className="mono-label mt-10 flex items-center justify-center gap-2 !text-[10px]">

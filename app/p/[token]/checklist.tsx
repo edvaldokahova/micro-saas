@@ -9,6 +9,7 @@ import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
 import { uploadFiles, type UploadIssue } from "./upload";
+import type { Back } from "./uploader";
 
 type Item = { id: string; label: string; status: "pending" | "sent" | "received"; via: Channel | null; files: number };
 export type ChecklistTexts = {
@@ -28,11 +29,12 @@ export type ChecklistTexts = {
 };
 
 
-export function Checklist({ token, initial, closed, t }: { token: string; initial: Item[]; closed: boolean; t: ChecklistTexts }) {
+export function Checklist({ token, initial, closed, t, back }: { token: string; initial: Item[]; closed: boolean; t: ChecklistTexts; back?: Back }) {
   const [items, setItems] = useState(initial);
   const [progress, setProgress] = useState<{ id: string; a: number; b: number } | null>(null);
   const [issues, setIssues] = useState<{ id: string; list: UploadIssue[] } | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   // Quando a página é atualizada (por exemplo, depois de a IA arrumar ficheiros), segue o servidor
   useEffect(() => setItems(initial), [initial]);
@@ -55,6 +57,11 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
       );
     }
     if (res.issues.length) setIssues({ id: item.id, list: res.issues });
+    // Cliente de exemplo dos primeiros passos: volta ao painel para continuar o guia
+    if (res.saved && back) {
+      setNotice(back.text);
+      window.setTimeout(() => window.location.assign(back.url), 1600);
+    }
   }
 
   return (
@@ -76,6 +83,11 @@ export function Checklist({ token, initial, closed, t }: { token: string; initia
       {error && (
         <p className="mt-4 text-sm text-bad" role="alert">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p className="mt-4 flex animate-rise items-center gap-2.5 rounded-xl border border-ok/40 bg-ok/10 px-4 py-3 text-sm font-medium text-ok" role="status">
+          <Spinner className="h-3.5 w-3.5" /> {notice}
         </p>
       )}
 

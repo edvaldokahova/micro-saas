@@ -49,8 +49,8 @@ export function FirstSteps({
       );
     if (i === 1)
       return sampleToken ? (
-        <a href={publicLink(sampleToken)} target="_blank" rel="noopener noreferrer" className={cls}>
-          {t.steps[1].action} ↗
+        <a href={`${publicLink(sampleToken)}?guia=1`} className={cls}>
+          {t.steps[1].action}
         </a>
       ) : null;
     if (i === 2)

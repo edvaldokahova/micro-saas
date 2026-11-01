@@ -19,12 +19,15 @@ export type UploaderTexts = {
   issue: Record<UploadIssue["reason"], string>; // "{name}"
 };
 
-export function Uploader({ token, t }: { token: string; t: UploaderTexts }) {
+export type Back = { url: string; text: string };
+
+export function Uploader({ token, t, back }: { token: string; t: UploaderTexts; back?: Back }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<{ a: number; b: number } | null>(null);
   const [over, setOver] = useState(false);
   const [msg, setMsg] = useState<{ saved: number; issues: UploadIssue[] } | null>(null);
+  const [returning, setReturning] = useState(false);
 
   async function send(files: File[]) {
     if (!files.length || busy) return;
@@ -34,12 +37,25 @@ export function Uploader({ token, t }: { token: string; t: UploaderTexts }) {
     setBusy(null);
     setMsg(res);
     if (input.current) input.current.value = "";
+    // Cliente de exemplo dos primeiros passos: volta ao painel para continuar o guia
+    if (res.saved && back) {
+      setReturning(true);
+      window.setTimeout(() => window.location.assign(back.url), 1600);
+      return;
+    }
     // A IA arruma em segundos: atualiza a lista para mostrar os documentos já recebidos
     if (res.saved) {
       setTimeout(() => router.refresh(), 6000);
       setTimeout(() => router.refresh(), 15000);
     }
   }
+
+  if (returning && back)
+    return (
+      <p role="status" className="flex animate-rise items-center justify-center gap-2.5 rounded-2xl border border-ok/40 bg-ok/10 px-5 py-7 text-center text-[15px] font-medium text-ok">
+        <Spinner className="h-4 w-4" /> {back.text}
+      </p>
+    );
 
   return (
     <div>

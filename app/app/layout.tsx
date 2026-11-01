@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { AccountMenu } from "@/components/account-menu";
 import { inboxAddress } from "@/lib/inbound";
-import { site } from "@/lib/site";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
 import { NavProgress } from "@/components/nav-progress";
@@ -63,7 +62,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               office={office.name}
               billing={role === "owner"}
               inbox={role !== "member" ? inboxAddress(office.inbox_key) : null}
-              helpUrl={`${site.url}/suporte`}
+              helpUrl="/ajuda"
             />
           </div>
         </div>

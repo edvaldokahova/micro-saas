@@ -86,7 +86,7 @@ export async function createSample(): Promise<void> {
   const { data: hasReq } = await admin.from("requests").select("id").eq("client_id", clientId).limit(1);
   if (!hasReq?.length) {
     const { data: types } = await supabase.from("document_types").select("label").order("position");
-    const labels = ((types ?? []) as { label: string }[]).map((x) => x.label).slice(0, 4);
+    const labels = ((types ?? []) as { label: string }[]).map((x) => x.label).slice(0, 1);
     const now = new Date();
     const period = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)).toISOString().slice(0, 10);
     const due = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);

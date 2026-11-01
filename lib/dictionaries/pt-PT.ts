@@ -18,7 +18,7 @@ const dict = {
     copy: "Copiar link",
     copied: "Link copiado",
     open: "Abrir",
-    errorGeneric: "Algo correu mal. Tente de novo dentro de momentos.",
+    errorGeneric: "Algo correu mal. Tente de novo dentro de momentos; se continuar, escreva para suporte@bilonai.com.",
     language: "Idioma",
     themeLight: "Modo claro",
     themeDark: "Modo escuro",

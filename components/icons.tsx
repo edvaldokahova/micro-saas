@@ -105,7 +105,7 @@ export function IconBell({ className = "h-5 w-5", alert = false }: P & { alert?:
     <svg {...base} className={className}>
       <path d="M5.2 13.6V9.2a4.8 4.8 0 0 1 9.6 0v4.4l1.4 1.9H3.8z" />
       <path d="M8.3 17.3a1.9 1.9 0 0 0 3.4 0" />
-      {alert && <circle cx="15.4" cy="4.6" r="2.4" fill="currentColor" stroke={hole} strokeWidth="1.4" />}
+      {alert && <circle cx="15.4" cy="4.6" r="2.3" fill="currentColor" stroke={hole} strokeWidth="0.8" />}
     </svg>
   );
 }

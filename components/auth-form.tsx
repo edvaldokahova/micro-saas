@@ -54,6 +54,26 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
     return !first;
   }
 
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  async function verifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (code.length < 6) return;
+    setChecking(true);
+    setCodeError(false);
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token: code, type: "email" });
+    if (error) {
+      setChecking(false);
+      setCodeError(true);
+      return;
+    }
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    window.location.assign(aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2" ? "/entrar/codigo" : "/");
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
@@ -89,7 +109,7 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
 
   if (state === "sent") {
     return (
-      <div className="card animate-rise p-8 text-center">
+      <div className="card animate-rise p-6 text-center sm:p-8">
         <span className="mx-auto grid animate-pop place-items-center">
           <MailCheck className="h-10 w-10 text-gold" strokeWidth={1.6} aria-hidden />
         </span>
@@ -97,6 +117,30 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
         <p className="mt-2 text-[15px] leading-7 text-muted">
           {t.checkTextA} <strong className="text-ivory">{email}</strong> {t.checkTextB}
         </p>
+        {extra && (
+          // O e-mail traz também um código: útil quando o link abre noutro aparelho ou navegador
+          <form onSubmit={verifyCode} noValidate className="mt-6 border-t border-line pt-5 text-left">
+            <label className="block">
+              <span className="label">{extra.codeOr}</span>
+              <input
+                id="auth-code"
+                value={code}
+                onChange={(e) => {
+                  setCode(e.target.value.replace(/\D/g, "").slice(0, 8));
+                  setCodeError(false);
+                }}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                aria-label={extra.code}
+                className={`field text-center font-mono text-xl tracking-[0.4em] ${codeError ? "!border-bad" : ""}`}
+              />
+              <FieldError text={codeError ? extra.codeWrong : undefined} />
+            </label>
+            <button type="submit" disabled={checking || code.length < 6} aria-busy={checking} className="btn btn-primary mt-4 w-full">
+              <BusyLabel busy={checking}>{extra.codeSubmit}</BusyLabel>
+            </button>
+          </form>
+        )}
       </div>
     );
   }
