@@ -217,10 +217,6 @@ body {
     outline-offset: 2px;
   }
 
-  /* Botão a trabalhar: mantém a cor, mostra o spinner */
-  .btn:disabled[aria-busy="true"] {
-    opacity: 1;
-  }
   .label {
     display: block;
     margin-bottom: 0.4rem;
@@ -520,4 +516,16 @@ body {
 @keyframes chart-grow-x {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+
+/* Regra única para todos os botões a trabalhar (com spinner ou aria-busy):
+   mantêm a cor normal, sem ficarem «desbotados»; o spinner e as reticências mostram que está a andar.
+   Fica fora das camadas para ganhar a qualquer utilitário disabled:opacity-*.
+   Desbotado fica só o botão que ainda não se pode usar (ex.: código incompleto). */
+button:disabled:has(.spinner),
+button:disabled[aria-busy="true"],
+.btn:disabled:has(.spinner),
+.btn:disabled[aria-busy="true"] {
+  opacity: 1;
+  cursor: progress;
 }

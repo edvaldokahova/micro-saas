@@ -43,7 +43,7 @@ export function AdminLogin() {
         <span className="label">E-mail</span>
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="field" />
       </label>
-      <button type="submit" disabled={busy} className="btn btn-primary w-full py-3.5">
+      <button type="submit" disabled={busy} aria-busy={busy} className="btn btn-primary w-full py-3.5">
         <BusyLabel busy={busy}>
           Receber código
         </BusyLabel>
@@ -65,7 +65,7 @@ export function AdminLogin() {
         <OtpInput value={code} onChange={setCode} onComplete={verify} invalid={!!error} disabled={busy} autoFocus label="Código" />
       </div>
       {error && <p className="text-sm text-bad">{error}</p>}
-      <button type="submit" disabled={busy || code.replace(/\s/g, "").length < 6} className="btn btn-primary w-full py-3.5">
+      <button type="submit" disabled={busy || code.replace(/\s/g, "").length < 6} aria-busy={busy} className="btn btn-primary w-full py-3.5">
         <BusyLabel busy={busy}>
           Entrar
         </BusyLabel>

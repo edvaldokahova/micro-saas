@@ -54,6 +54,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
   const [error, setError] = useState(false);
   const [, start] = useTransition();
   const [ask, setAsk] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   function run(id: string, job: () => Promise<boolean>) {
     setBusy(id);
@@ -118,7 +119,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
                 aria-label={t.remove}
                 title={t.remove}
               >
-                <IconTrash />
+                {busy === f.id && removing === f.id ? <Spinner className="h-4 w-4" /> : <IconTrash />}
               </button>
             </span>
           </li>
@@ -132,7 +133,10 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
         onConfirm={() => {
           const id = ask;
           setAsk(null);
-          if (id) run(id, () => deleteDocument(id));
+          if (id) {
+            setRemoving(id);
+            run(id, () => deleteDocument(id));
+          }
         }}
       />
     </div>
