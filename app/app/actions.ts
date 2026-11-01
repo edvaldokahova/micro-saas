@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { buildReminderEmail } from "@/lib/email-template";
 import { emailOk, fromOffice, sendOne } from "@/lib/mailer";
 import { site } from "@/lib/site";
+import { BUCKET } from "@/lib/documents";
 import { isLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
@@ -148,7 +149,29 @@ export async function setClientArchived(formData: FormData) {
   }
   await supabase.from("clients").update({ archived_at: archive ? new Date().toISOString() : null }).eq("id", id);
   revalidatePath("/app", "layout");
+  // Reativado a partir da lista de arquivados: fica na lista, com aviso
+  if (!archive && formData.get("from") === "list") redirect("/clientes?ok=reativado");
   redirect(archive ? "/clientes" : `/clientes/${id}`);
+}
+
+// Eliminar de vez um cliente arquivado: pedidos, documentos e ficheiros guardados
+export async function deleteClient(formData: FormData) {
+  const { supabase, office, isManager } = await getSession();
+  if (!isManager) redirect("/");
+  const id = uuid(formData.get("id"));
+  if (!id) redirect("/clientes");
+  // Confirma (com as regras de acesso) que o cliente é deste escritório e já está arquivado
+  const { data: client } = await supabase.from("clients").select("id, archived_at").eq("id", id).maybeSingle();
+  if (!client || !client.archived_at) redirect(`/clientes/${id}?erro=generic`);
+  const admin = createAdminClient();
+  const { data: docs } = await admin.from("documents").select("id, storage_path").eq("office_id", office.id).eq("client_id", id);
+  const paths = (docs ?? []).map((d: { storage_path: string }) => d.storage_path).filter(Boolean);
+  for (let i = 0; i < paths.length; i += 100) await admin.storage.from(BUCKET).remove(paths.slice(i, i + 100));
+  if (docs?.length) await admin.from("documents").delete().eq("office_id", office.id).eq("client_id", id);
+  const { error } = await admin.from("clients").delete().eq("office_id", office.id).eq("id", id);
+  if (error) redirect(`/clientes/${id}?erro=generic`);
+  revalidatePath("/app", "layout");
+  redirect("/clientes?ok=eliminado");
 }
 
 /* ---------- Pedidos ---------- */

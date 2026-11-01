@@ -10,7 +10,8 @@ import { Flash } from "@/components/flash";
 import { Select } from "@/components/select";
 import { ListSearch } from "@/components/list-search";
 import { clientLimit, getSession, officeAccess } from "@/lib/office";
-import { addClient } from "../actions";
+import { addClient, deleteClient, setClientArchived } from "../actions";
+import { IconTrash } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Clientes" };
 
@@ -34,7 +35,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
 
   return (
     <div>
-      <Flash d={d} error={isManager ? undefined : sp.erro} success={sp.ok ? d.common.saved : null} />
+      <Flash d={d} error={isManager ? undefined : sp.erro} success={sp.ok === "reativado" ? t.reactivated : sp.ok === "eliminado" ? t.deleted : sp.ok ? d.common.saved : null} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">{t.title}</p>
@@ -121,13 +122,48 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                 {t.archived} ({archived.length})
               </summary>
               <p className="mt-2 text-xs text-muted">{t.archiveHint}</p>
-              <ul className="card mt-3 divide-y divide-line">
+              <ul className="card mt-3 divide-y divide-line overflow-hidden">
                 {archived.map((c) => (
                   <li key={c.id}>
-                    <Link href={`/clientes/${c.id}`} className="flex items-center gap-3 px-4 py-3 text-sm text-muted hover:text-ivory sm:px-5">
+                    <div className="flex items-center gap-3 px-4 py-3 sm:px-5">
                       <Avatar name={c.name} className="h-8 w-8 text-[13px] opacity-60" />
-                      {c.name}
-                    </Link>
+                      <Link href={`/clientes/${c.id}`} className="min-w-0 flex-1 truncate text-sm text-muted hover:text-ivory">
+                        {c.name}
+                      </Link>
+                      {isManager && (
+                        <>
+                          <form action={setClientArchived}>
+                            <input type="hidden" name="id" value={c.id} />
+                            <input type="hidden" name="archive" value="0" />
+                            <input type="hidden" name="from" value="list" />
+                            <SubmitButton className="btn btn-secondary btn-sm">
+                              {t.unarchive}
+                            </SubmitButton>
+                          </form>
+                          <OpenDialog
+                            target={`eliminar-${c.id}`}
+                            className="grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-ink-3 hover:text-bad"
+                          >
+                            <IconTrash className="h-[18px] w-[18px]" />
+                            <span className="sr-only">{t.deleteClient}</span>
+                          </OpenDialog>
+                          <Dialog id={`eliminar-${c.id}`} title={t.deleteTitle} closeLabel={d.common.cancel}>
+                            <p className="text-[15px] leading-6 text-muted">
+                              {t.deleteText.split("{name}")[0]}
+                              <strong className="font-medium text-ivory">{c.name}</strong>
+                              {t.deleteText.split("{name}")[1]}
+                            </p>
+                            <form action={deleteClient} className="mt-6">
+                              <input type="hidden" name="id" value={c.id} />
+                              <SubmitButton className="btn w-full border-bad bg-bad text-white hover:opacity-90">{t.deleteConfirm}</SubmitButton>
+                            </form>
+                          </Dialog>
+                        </>
+                      )}
+                      <Link href={`/clientes/${c.id}`} className="text-muted hover:text-ivory" aria-label={t.editTitle}>
+                        <ChevronRight className="h-5 w-5" aria-hidden />
+                      </Link>
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -162,6 +162,18 @@ export function IconChart({ className = "h-5 w-5", active = false }: N) {
   );
 }
 
+// Caixote: tampa com pega e corpo afunilado, com duas riscas
+export function IconTrash({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3.6 5.6h12.8" />
+      <path d="M7.8 5.6V4.2c0-.7.5-1.2 1.2-1.2h2c.7 0 1.2.5 1.2 1.2v1.4" />
+      <path d="M5.2 5.6l.8 10.1c.1.8.7 1.3 1.5 1.3h5c.8 0 1.4-.5 1.5-1.3l.8-10.1" />
+      <path d="M8.6 9v4.6M11.4 9v4.6" />
+    </svg>
+  );
+}
+
 // Visto
 export function IconTick({ className = "h-4 w-4" }: P) {
   return (
