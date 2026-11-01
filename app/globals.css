@@ -518,14 +518,15 @@ body {
   to { transform: scaleX(1); }
 }
 
-/* Regra única para todos os botões a trabalhar (com spinner ou aria-busy):
-   mantêm a cor normal, sem ficarem «desbotados»; o spinner e as reticências mostram que está a andar.
-   Fica fora das camadas para ganhar a qualquer utilitário disabled:opacity-*.
-   Desbotado fica só o botão que ainda não se pode usar (ex.: código incompleto). */
-button:disabled:has(.spinner),
-button:disabled[aria-busy="true"],
-.btn:disabled:has(.spinner),
-.btn:disabled[aria-busy="true"] {
-  opacity: 1;
-  cursor: progress;
+/* Regra única para todos os botões a trabalhar (com spinner ou aria-busy) e para os que ainda não se podem usar:
+   ficam desbotados, com o spinner e as reticências a mostrar que está a andar.
+   Fica fora das camadas para ser igual em todos, mesmo nos que têm outra opacidade definida. */
+button:disabled,
+button[aria-busy="true"],
+button:has(.spinner),
+.btn:disabled,
+.btn[aria-busy="true"],
+.btn:has(.spinner) {
+  opacity: 0.5;
+  pointer-events: none;
 }
