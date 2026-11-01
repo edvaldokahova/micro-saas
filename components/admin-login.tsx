@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { BusyLabel } from "@/components/spinner";
+import { OtpInput } from "@/components/otp-input";
 import { requestAdminCode } from "@/app/admin/actions";
 
 export function AdminLogin() {
@@ -22,14 +23,15 @@ export function AdminLogin() {
     setStep("code");
   }
 
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
+  async function verify(token: string) {
+    if (token.length < 6 || busy) return;
     setBusy(true);
     setError("");
-    const { error: err } = await createClient().auth.verifyOtp({ email: email.trim().toLowerCase(), token: code.trim(), type: "email" });
+    const { error: err } = await createClient().auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: "email" });
     if (err) {
       setBusy(false);
       setError("Código errado ou expirado.");
+      setCode("");
       return;
     }
     window.location.assign("/");
@@ -42,30 +44,29 @@ export function AdminLogin() {
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="field" />
       </label>
       <button type="submit" disabled={busy} className="btn btn-primary w-full py-3.5">
-        <BusyLabel busy={busy} text="A enviar…">
+        <BusyLabel busy={busy}>
           Receber código
         </BusyLabel>
       </button>
     </form>
   ) : (
-    <form onSubmit={verify} className="space-y-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        verify(code.replace(/\s/g, ""));
+      }}
+      className="space-y-4"
+    >
       <p className="text-sm leading-6 text-muted">
         Se <strong className="text-ivory">{email}</strong> tiver acesso, recebe um código por e-mail. Escreva-o aqui.
       </p>
-      <label className="block">
-        <span className="label">Código</span>
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          required
-          className="field text-center font-mono text-xl tracking-[0.35em]"
-        />
-      </label>
+      <div>
+        <p className="label">Código</p>
+        <OtpInput value={code} onChange={setCode} onComplete={verify} invalid={!!error} disabled={busy} autoFocus label="Código" />
+      </div>
       {error && <p className="text-sm text-bad">{error}</p>}
-      <button type="submit" disabled={busy || code.length < 6} className="btn btn-primary w-full py-3.5">
-        <BusyLabel busy={busy} text="A verificar…">
+      <button type="submit" disabled={busy || code.replace(/\s/g, "").length < 6} className="btn btn-primary w-full py-3.5">
+        <BusyLabel busy={busy}>
           Entrar
         </BusyLabel>
       </button>

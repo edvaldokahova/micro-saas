@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { BusyLabel } from "@/components/spinner";
+import { OtpInput } from "@/components/otp-input";
 import type { CodeTexts } from "@/lib/account-texts";
 
 export function CodeForm({ t }: { t: CodeTexts }) {
@@ -10,8 +11,8 @@ export function CodeForm({ t }: { t: CodeTexts }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
+  async function submit(token: string) {
+    if (token.length < 6 || busy) return;
     setBusy(true);
     setError(false);
     const supabase = createClient();
@@ -22,7 +23,7 @@ export function CodeForm({ t }: { t: CodeTexts }) {
       window.location.assign("/");
       return;
     }
-    const { error: err } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: code.trim() });
+    const { error: err } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: token });
     if (err) {
       setBusy(false);
       setError(true);
@@ -38,26 +39,24 @@ export function CodeForm({ t }: { t: CodeTexts }) {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="space-y-5">
-      <label className="block">
-        <span className="label">{t.code}</span>
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          autoFocus
-          required
-          pattern="\d{6}"
-          className="field text-center font-mono text-xl tracking-[0.4em]"
-        />
-      </label>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        submit(code.replace(/\s/g, ""));
+      }}
+      noValidate
+      className="space-y-5"
+    >
+      <div>
+        <p className="label">{t.code}</p>
+        <OtpInput value={code} onChange={(v) => { setCode(v); setError(false); }} onComplete={submit} invalid={error} disabled={busy} autoFocus label={t.code} />
+      </div>
       {error && (
         <p className="text-sm text-bad" role="alert">
           {t.wrong}
         </p>
       )}
-      <button type="submit" disabled={busy || code.length !== 6} aria-busy={busy} className="btn btn-primary w-full py-3.5">
+      <button type="submit" disabled={busy || code.replace(/\s/g, "").length !== 6} aria-busy={busy} className="btn btn-primary w-full py-3.5">
         <BusyLabel busy={busy} text={t.submit}>
           {t.submit}
         </BusyLabel>

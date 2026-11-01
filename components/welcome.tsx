@@ -5,6 +5,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
+import { IconSpark } from "@/components/icons";
 import { BusyLabel } from "@/components/spinner";
 import { finishWelcome } from "@/app/app/conta/actions";
 import type { WelcomeTexts } from "@/lib/account-texts";
@@ -97,10 +98,7 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
             <ul className="mt-7 space-y-3.5">
               {t.safe.map((s, i) => (
                 <li key={s} className="flex animate-rise items-start gap-3 text-[15px] leading-6" style={{ animationDelay: `${120 + i * 90}ms` }}>
-                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-ok" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M10 2.5l6 2.3v4.6c0 3.7-2.5 6.6-6 8.1-3.5-1.5-6-4.4-6-8.1V4.8z" />
-                    <path d="M7.3 10l1.9 1.9 3.6-3.8" />
-                  </svg>
+<IconSpark className="mt-[5px] h-[15px] w-[15px] shrink-0 text-ivory" />
                   {s}
                 </li>
               ))}

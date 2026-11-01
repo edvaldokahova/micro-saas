@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { BusyLabel } from "@/components/spinner";
+import { IconSpark } from "@/components/icons";
+import { OtpInput } from "@/components/otp-input";
 import { deleteAccount, markPassword } from "@/app/app/conta/actions";
 import type { AccountTexts } from "@/lib/account-texts";
 
@@ -106,14 +108,16 @@ export function AccountSettings({
     if (error || !data) return setMfaNote({ ok: false, text: t.error });
     setEnroll({ id: data.id, qr: data.totp.qr_code, secret: data.totp.secret });
   }
-  async function confirmMfa(e: React.FormEvent) {
-    e.preventDefault();
-    if (!enroll) return;
+  async function confirmMfa(token: string) {
+    if (!enroll || token.length < 6 || mfaBusy) return;
     setMfaBusy(true);
     setMfaNote(null);
-    const { error } = await createClient().auth.mfa.challengeAndVerify({ factorId: enroll.id, code: code.trim() });
+    const { error } = await createClient().auth.mfa.challengeAndVerify({ factorId: enroll.id, code: token });
     setMfaBusy(false);
-    if (error) return setMfaNote({ ok: false, text: t.mfaWrong });
+    if (error) {
+      setCode("");
+      return setMfaNote({ ok: false, text: t.mfaWrong });
+    }
     setFactor(enroll.id);
     setEnroll(null);
     setCode("");
@@ -214,7 +218,13 @@ export function AccountSettings({
           </button>
         )}
         {enroll && (
-          <form onSubmit={confirmMfa} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              confirmMfa(code.replace(/\s/g, ""));
+            }}
+            className="space-y-4"
+          >
             <p className="text-sm leading-6">{t.mfaScan}</p>
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               {/* O Supabase devolve o QR já desenhado (imagem SVG) */}
@@ -225,20 +235,12 @@ export function AccountSettings({
                 <code className="mt-1 block select-all break-all rounded-lg bg-ink-3 px-2.5 py-1.5 font-mono text-[12.5px] text-ivory">{enroll.secret}</code>
               </div>
             </div>
-            <label className="block max-w-[14rem]">
-              <span className="label">{t.mfaCode}</span>
-              <input
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="\d{6}"
-                required
-                className="field text-center font-mono text-lg tracking-[0.3em]"
-              />
-            </label>
+            <div className="max-w-[22rem]">
+              <p className="label">{t.mfaCode}</p>
+              <OtpInput value={code} onChange={setCode} onComplete={confirmMfa} invalid={!!mfaNote && !mfaNote.ok} disabled={mfaBusy} label={t.mfaCode} />
+            </div>
             <div className="flex flex-wrap gap-2">
-              <button type="submit" disabled={mfaBusy || code.length !== 6} aria-busy={mfaBusy} className="btn btn-primary">
+              <button type="submit" disabled={mfaBusy || code.replace(/\s/g, "").length !== 6} aria-busy={mfaBusy} className="btn btn-primary">
                 <BusyLabel busy={mfaBusy} text={t.saving}>
                   {t.mfaConfirm}
                 </BusyLabel>
@@ -285,10 +287,7 @@ export function AccountSettings({
         <ul className="mt-3 space-y-2 text-sm text-muted">
           {t.safe.map((s) => (
             <li key={s} className="flex items-start gap-2.5">
-              <svg className="mt-0.5 h-4 w-4 shrink-0 text-ok" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M10 2.5l6 2.3v4.6c0 3.7-2.5 6.6-6 8.1-3.5-1.5-6-4.4-6-8.1V4.8z" />
-                <path d="M7.3 10l1.9 1.9 3.6-3.8" />
-              </svg>
+              <IconSpark className="mt-[4px] h-[13px] w-[13px] shrink-0 text-ivory" />
               {s}
             </li>
           ))}

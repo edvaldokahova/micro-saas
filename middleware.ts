@@ -12,6 +12,28 @@ const AUTH_PATHS = ["/entrar", "/registar", "/auth", "/pagamento"];
 // Páginas públicas que vivem só em www.bilonai.com
 const MARKETING_PATHS = ["/precos", "/termos", "/privacidade", "/reembolsos", "/suporte"];
 
+// Origem do visitante (anúncios, links com UTM): guardada 30 dias num cookie de todo o bilonai.com,
+// para o registo a juntar à conta e a UTMify saber de onde veio cada venda. O último clique com UTM vale.
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "src", "sck"];
+function withUtm(request: NextRequest, res: NextResponse): NextResponse {
+  const q = request.nextUrl.searchParams;
+  const utm: Record<string, string> = {};
+  for (const k of UTM_KEYS) {
+    const v = q.get(k);
+    if (v) utm[k] = v.slice(0, 200);
+  }
+  if (!Object.keys(utm).length) return res;
+  const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  res.cookies.set("bl_utm", JSON.stringify(utm), {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: "lax",
+    secure: true,
+    ...(host.endsWith("bilonai.com") ? { domain: ".bilonai.com" } : {}),
+  });
+  return res;
+}
+
 const under = (path: string, list: string[]) => list.some((p) => path === p || path.startsWith(`${p}/`));
 // /app/clientes -> /clientes ; /app -> /
 const short = (path: string) => path.replace(/^\/app(?=\/|$)/, "") || "/";
@@ -47,7 +69,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const needsSession = internal.startsWith("/app") || internal.startsWith("/admin") || path === "/entrar" || path === "/registar";
-  if (!needsSession) return NextResponse.next();
+  if (!needsSession) return withUtm(request, NextResponse.next());
 
   const target = new URL(`${internal}${request.nextUrl.search}`, request.url);
   const pass = () => (internal !== path ? NextResponse.rewrite(target, { request }) : NextResponse.next({ request }));
@@ -84,7 +106,7 @@ export async function middleware(request: NextRequest) {
 
   // O painel administrativo nunca entra no Google (além do «noindex» das próprias páginas)
   if (host === ADMIN) response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
-  return response;
+  return withUtm(request, response);
 }
 
 export const config = {

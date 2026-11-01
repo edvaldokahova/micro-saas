@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Locale } from "@/lib/locales";
 import type { LoginExtraTexts } from "@/lib/account-texts";
 import { BusyLabel } from "@/components/spinner";
+import { OtpInput } from "@/components/otp-input";
 
 type Mode = "login" | "signup";
 
@@ -58,16 +59,16 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
   const [codeError, setCodeError] = useState(false);
   const [checking, setChecking] = useState(false);
 
-  async function verifyCode(e: React.FormEvent) {
-    e.preventDefault();
-    if (code.length < 6) return;
+  async function verifyCode(token: string) {
+    if (token.length < 6 || checking) return;
     setChecking(true);
     setCodeError(false);
     const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token: code, type: "email" });
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: "email" });
     if (error) {
       setChecking(false);
       setCodeError(true);
+      setCode("");
       return;
     }
     const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -95,7 +96,7 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
       email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: mode === "signup",
-        data: mode === "signup" ? { office_name: officeName.trim(), locale } : undefined,
+        data: mode === "signup" ? { office_name: officeName.trim(), locale, ...readUtm() } : undefined,
       },
     });
     // Resposta igual quer o e-mail exista ou não (não revela quem tem conta)
@@ -119,24 +120,28 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
         </p>
         {extra && (
           // O e-mail traz também um código: útil quando o link abre noutro aparelho ou navegador
-          <form onSubmit={verifyCode} noValidate className="mt-6 border-t border-line pt-5 text-left">
-            <label className="block">
-              <span className="label">{extra.codeOr}</span>
-              <input
-                id="auth-code"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value.replace(/\D/g, "").slice(0, 8));
-                  setCodeError(false);
-                }}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                aria-label={extra.code}
-                className={`field text-center font-mono text-xl tracking-[0.4em] ${codeError ? "!border-bad" : ""}`}
-              />
-              <FieldError text={codeError ? extra.codeWrong : undefined} />
-            </label>
-            <button type="submit" disabled={checking || code.length < 6} aria-busy={checking} className="btn btn-primary mt-4 w-full">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              verifyCode(code.replace(/\s/g, ""));
+            }}
+            noValidate
+            className="mt-6 border-t border-line pt-5 text-left"
+          >
+            <p className="label">{extra.codeOr}</p>
+            <OtpInput
+              value={code}
+              onChange={(v) => {
+                setCode(v);
+                setCodeError(false);
+              }}
+              onComplete={verifyCode}
+              invalid={codeError}
+              disabled={checking}
+              label={extra.code}
+            />
+            <FieldError text={codeError ? extra.codeWrong : undefined} />
+            <button type="submit" disabled={checking || code.replace(/\s/g, "").length < 6} aria-busy={checking} className="btn btn-primary mt-4 w-full">
               <BusyLabel busy={checking}>{extra.codeSubmit}</BusyLabel>
             </button>
           </form>
@@ -271,4 +276,18 @@ function FieldError({ text }: { text?: string }) {
       {text}
     </span>
   );
+}
+
+// Origem guardada pelo site (cookie bl_utm): vai com o registo para medir de onde vêm as vendas
+function readUtm(): { utm?: Record<string, string> } {
+  try {
+    const raw = document.cookie.split("; ").find((c) => c.startsWith("bl_utm="));
+    if (!raw) return {};
+    const data = JSON.parse(decodeURIComponent(raw.slice(7))) as Record<string, unknown>;
+    const utm: Record<string, string> = {};
+    for (const [k, v] of Object.entries(data)) if (/^(utm_[a-z]+|src|sck)$/.test(k) && typeof v === "string") utm[k] = v.slice(0, 200);
+    return Object.keys(utm).length ? { utm } : {};
+  } catch {
+    return {};
+  }
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyPaddleSignature } from "@/lib/paddle/verify";
 import { applyPaddleEvent, type PaddleEvent } from "@/lib/paddle/webhook";
+import { utmifyFromPaddle } from "@/lib/utmify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +64,11 @@ export async function POST(request: Request) {
       .update({ processed_at: new Date().toISOString(), office_id: officeId })
       .eq("provider", "paddle")
       .eq("event_id", event.event_id);
+    // Venda para a UTMify (se estiver ligada). Nunca faz falhar o webhook: o resultado fica registado.
+    const sent = await utmifyFromPaddle(db, event.event_type, event.data, officeId).catch((e) => `erro: ${e instanceof Error ? e.message : "?"}`);
+    if (sent) {
+      await db.from("billing_events").update({ utmify: sent.slice(0, 300) }).eq("provider", "paddle").eq("event_id", event.event_id);
+    }
   } catch (e) {
     console.error("[paddle] aplicar evento", event.event_type, e instanceof Error ? e.message : e);
     return NextResponse.json({ error: "apply_failed" }, { status: 500 });

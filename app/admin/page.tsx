@@ -3,7 +3,10 @@ import { Logo } from "@/components/logo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { limits, requireAdmin } from "@/lib/admin";
 import { site } from "@/lib/site";
-import { adminSignOut } from "./actions";
+import { adminSignOut, sendUtmifyTest } from "./actions";
+import { utmifyEnabled } from "@/lib/utmify";
+import { Toast } from "@/components/toast";
+import { SubmitButton } from "@/components/app-buttons";
 
 export const metadata: Metadata = { title: "Admin · Bilonai", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -30,8 +33,16 @@ type Office = {
   ai_tokens: number;
   team: number;
   last_seen: string | null;
+  source: string | null;
 };
-type Stats = { db_bytes: number; storage_bytes: number; emails_today: number; emails_month: number; offices: Office[] };
+type Stats = {
+  db_bytes: number;
+  storage_bytes: number;
+  emails_today: number;
+  emails_month: number;
+  offices: Office[];
+  utmify_recent?: { type: string; at: string; result: string; office: string | null }[];
+};
 
 const mb = (b: number) => (b < 1024 * 1024 ? `${Math.max(0, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1).replace(".0", "")} MB`);
 const num = (n: number) => new Intl.NumberFormat("pt-PT").format(n);
@@ -72,8 +83,10 @@ function Meter({ label, used, max, format }: { label: string; used: number; max:
   );
 }
 
-export default async function AdminHome() {
+export default async function AdminHome({ searchParams }: { searchParams: Promise<{ utmify?: string }> }) {
   const { user } = await requireAdmin();
+  const { utmify: tested } = await searchParams;
+  const utmOn = utmifyEnabled();
   const { data, error } = await createAdminClient().rpc("platform_stats");
   const s = (data ?? { db_bytes: 0, storage_bytes: 0, emails_today: 0, emails_month: 0, offices: [] }) as Stats;
   const offices = s.offices ?? [];
@@ -146,12 +159,48 @@ export default async function AdminHome() {
           <Meter label="E-mails este mês" used={Number(s.emails_month)} max={limits.emailsMonth} format={num} />
         </div>
 
+        <h2 className="mt-10 text-[17px] font-semibold">UTMify</h2>
+        <p className="mt-1 text-[13px] text-muted">
+          Cada pagamento, renovação, reembolso e chargeback da Paddle segue para a UTMify, com a origem do cliente (UTM do primeiro contacto até ao registo), o valor, a taxa e o que fica para a empresa.
+        </p>
+        {tested && <Toast tone={tested.startsWith("ok") ? "ok" : "bad"} text={tested.startsWith("ok") ? "A UTMify aceitou a venda de teste (não fica gravada)." : `A UTMify recusou: ${tested}`} />}
+        <div className="card mt-4 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="flex items-center gap-2.5 text-[15px] font-medium">
+              <span className={`h-2.5 w-2.5 rounded-full ${utmOn ? "bg-ok" : "bg-line-strong"}`} aria-hidden />
+              {utmOn ? "Ligada" : "Desligada"}
+            </p>
+            {utmOn && (
+              <form action={sendUtmifyTest}>
+                <SubmitButton className="btn btn-secondary btn-sm">Enviar venda de teste</SubmitButton>
+              </form>
+            )}
+          </div>
+          {!utmOn && (
+            <p className="mt-3 text-[13px] leading-6 text-muted">
+              Para ligar: na UTMify, Integrações → Webhooks → Credenciais de API → criar credencial. Na Vercel, projeto bentrega → Settings → Environment Variables, crie <code className="font-mono text-ivory">UTMIFY_API_TOKEN</code> com essa credencial e faça um novo deploy.
+            </p>
+          )}
+          {(s.utmify_recent ?? []).length > 0 && (
+            <ul className="mt-4 divide-y divide-line border-t border-line text-[13px]">
+              {(s.utmify_recent ?? []).map((r, i) => (
+                <li key={i} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5">
+                  <span>
+                    <span className="font-medium">{r.office ?? "—"}</span> <span className="text-muted">· {r.type} · {day(r.at)}</span>
+                  </span>
+                  <span className={r.result.startsWith("ok") ? "text-ok" : "text-bad"}>{r.result}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <h2 className="mt-10 text-[17px] font-semibold">Escritórios</h2>
         <div className="mt-4 overflow-x-auto rounded-[14px] border border-line">
-          <table className="w-full min-w-[920px] text-left text-[13px]">
+          <table className="w-full min-w-[1000px] text-left text-[13px]">
             <thead className="bg-ink-3/50 text-[11px] uppercase tracking-wider text-muted">
               <tr>
-                {["Escritório", "Estado", "Clientes", "Pedidos (mês)", "Ficheiros", "Armazen.", "E-mails (mês)", "IA (mês)", "Equipa", "Último acesso", "Criado"].map((h) => (
+                {["Escritório", "Estado", "Origem", "Clientes", "Pedidos (mês)", "Ficheiros", "Armazen.", "E-mails (mês)", "IA (mês)", "Equipa", "Último acesso", "Criado"].map((h) => (
                   <th key={h} className="whitespace-nowrap px-3 py-2.5 font-medium">
                     {h}
                   </th>
@@ -176,6 +225,7 @@ export default async function AdminHome() {
                         {st.key === "trial" ? ` · até ${day(o.trial_ends_at)}` : o.interval === "year" ? " · anual" : ""}
                       </p>
                     </td>
+                    <td className="px-3 py-3 text-muted">{o.source ?? "direto"}</td>
                     <td className="px-3 py-3 tabular-nums">{num(o.clients)}</td>
                     <td className="px-3 py-3 tabular-nums">{num(o.requests_month)}</td>
                     <td className="px-3 py-3 tabular-nums">{num(o.files)}</td>
@@ -193,7 +243,7 @@ export default async function AdminHome() {
               })}
               {offices.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="px-3 py-8 text-center text-muted">
+                  <td colSpan={12} className="px-3 py-8 text-center text-muted">
                     Ainda não há escritórios.
                   </td>
                 </tr>
