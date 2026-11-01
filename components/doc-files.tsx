@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Select } from "@/components/select";
+import { IconTrash } from "@/components/icons";
 import { BusyLabel, Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
 import { uploadFiles, type UploadIssue } from "@/lib/upload-client";
@@ -115,9 +116,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
                 aria-label={t.remove}
                 title={t.remove}
               >
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.2a1.2 1.2 0 0 0 1.2 1.1h3.4a1.2 1.2 0 0 0 1.2-1.1l.6-8.2" />
-                </svg>
+                <IconTrash />
               </button>
             </span>
           </li>

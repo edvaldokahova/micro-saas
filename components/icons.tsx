@@ -162,14 +162,11 @@ export function IconChart({ className = "h-5 w-5", active = false }: N) {
   );
 }
 
-// Caixote: tampa com pega e corpo afunilado, com duas riscas
-export function IconTrash({ className = "h-5 w-5" }: P) {
+// Caixote de apagar (o mesmo em documentos e clientes)
+export function IconTrash({ className = "h-[15px] w-[15px]" }: P) {
   return (
-    <svg {...base} className={className}>
-      <path d="M3.6 5.6h12.8" />
-      <path d="M7.8 5.6V4.2c0-.7.5-1.2 1.2-1.2h2c.7 0 1.2.5 1.2 1.2v1.4" />
-      <path d="M5.2 5.6l.8 10.1c.1.8.7 1.3 1.5 1.3h5c.8 0 1.4-.5 1.5-1.3l.8-10.1" />
-      <path d="M8.6 9v4.6M11.4 9v4.6" />
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.2a1.2 1.2 0 0 0 1.2 1.1h3.4a1.2 1.2 0 0 0 1.2-1.1l.6-8.2" />
     </svg>
   );
 }

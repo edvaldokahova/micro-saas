@@ -142,9 +142,9 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                           </form>
                           <OpenDialog
                             target={`eliminar-${c.id}`}
-                            className="grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-ink-3 hover:text-bad"
+                            className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-bad/10 hover:text-bad"
                           >
-                            <IconTrash className="h-[18px] w-[18px]" />
+                            <IconTrash />
                             <span className="sr-only">{t.deleteClient}</span>
                           </OpenDialog>
                           <Dialog id={`eliminar-${c.id}`} title={t.deleteTitle} closeLabel={d.common.cancel}>
