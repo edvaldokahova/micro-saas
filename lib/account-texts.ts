@@ -6,7 +6,7 @@ export type WelcomeTexts = {
   step: string; // "{a} de {b}"
   back: string;
   q: { title: string; hint: string; options: { value: string; label: string; hint?: string }[] }[];
-  tz: { label: string; hint: string; next: string; search: string };
+  tz: { label: string; hint: string; next: string; search: string; detected: string; change: string };
   doneTitle: string; // "{office}"
   doneLead: string;
   safe: string[];
@@ -156,7 +156,7 @@ const ptPT: Pack = {
         ],
       },
     ],
-    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos nesta hora. Pode mudá-lo depois em Conta.", next: "Continuar", search: "Procurar cidade…" },
+    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos nesta hora. Pode mudá-lo depois em Conta.", next: "Continuar", search: "Procurar cidade…", detected: "Detetámos o seu fuso horário", change: "Mudar" },
     doneTitle: "Tudo pronto, {office}.",
     doneLead: "A sua conta está preparada. Antes de entrar, o essencial sobre os seus dados:",
     safe: [
@@ -294,7 +294,7 @@ const esES: Pack = {
         ],
       },
     ],
-    tz: { label: "Zona horaria del despacho", hint: "Los recordatorios automáticos salen y cuentan los plazos en esta hora. Puedes cambiarla después en Cuenta.", next: "Continuar", search: "Buscar ciudad…" },
+    tz: { label: "Zona horaria del despacho", hint: "Los recordatorios automáticos salen y cuentan los plazos en esta hora. Puedes cambiarla después en Cuenta.", next: "Continuar", search: "Buscar ciudad…", detected: "Hemos detectado tu zona horaria", change: "Cambiar" },
     doneTitle: "Todo listo, {office}.",
     doneLead: "Tu cuenta está preparada. Antes de entrar, lo esencial sobre tus datos:",
     safe: [
@@ -432,7 +432,7 @@ const ptBR: Pack = {
         ],
       },
     ],
-    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos neste horário. Você pode mudar depois em Conta.", next: "Continuar", search: "Buscar cidade…" },
+    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos neste horário. Você pode mudar depois em Conta.", next: "Continuar", search: "Buscar cidade…", detected: "Detectamos o seu fuso horário", change: "Mudar" },
     doneTitle: "Tudo pronto, {office}.",
     doneLead: "Sua conta está preparada. Antes de entrar, o essencial sobre os seus dados:",
     safe: [

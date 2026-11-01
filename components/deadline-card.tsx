@@ -12,6 +12,7 @@ type T = {
   today: string;
   late: (n: number) => string;
   done: string;
+  doneLate: (n: number) => string;
 };
 
 const TEXTS: Record<string, T> = {
@@ -23,6 +24,7 @@ const TEXTS: Record<string, T> = {
     today: "Hoje",
     late: (n) => (n === 1 ? "Prazo terminou há 1 dia" : `Prazo terminou há ${n} dias`),
     done: "Tudo entregue a tempo",
+    doneLate: (n) => (n === 1 ? "Entregue com 1 dia de atraso" : `Entregue com ${n} dias de atraso`),
   },
   "pt-BR": {
     requested: "Pedido enviado",
@@ -32,6 +34,7 @@ const TEXTS: Record<string, T> = {
     today: "Hoje",
     late: (n) => (n === 1 ? "O prazo terminou há 1 dia" : `O prazo terminou há ${n} dias`),
     done: "Tudo entregue no prazo",
+    doneLate: (n) => (n === 1 ? "Entregue com 1 dia de atraso" : `Entregue com ${n} dias de atraso`),
   },
   "es-ES": {
     requested: "Solicitud enviada",
@@ -41,10 +44,11 @@ const TEXTS: Record<string, T> = {
     today: "Hoy",
     late: (n) => (n === 1 ? "El plazo terminó hace 1 día" : `El plazo terminó hace ${n} días`),
     done: "Todo entregado a tiempo",
+    doneLate: (n) => (n === 1 ? "Entregado con 1 día de retraso" : `Entregado con ${n} días de retraso`),
   },
 };
 
-export function DeadlineCard({ locale, createdAt, dueDate, complete }: { locale: string; createdAt: string; dueDate: string; complete: boolean }) {
+export function DeadlineCard({ locale, createdAt, dueDate, complete, doneAt = null }: { locale: string; createdAt: string; dueDate: string; complete: boolean; doneAt?: string | null }) {
   const t = TEXTS[locale] ?? TEXTS["pt-PT"];
   const [now, setNow] = useState<number | null>(null);
   const [shown, setShown] = useState(false);
@@ -77,10 +81,14 @@ export function DeadlineCard({ locale, createdAt, dueDate, complete }: { locale:
   const late = msLeft < 0;
   const soon = !late && daysLeft <= 2;
 
-  const tone = complete ? "ok" : late ? "bad" : soon ? "warn" : "ivory";
+  // Entregue depois do prazo: fica a vermelho, com ×
+  const doneLateDays = complete && doneAt && Date.parse(doneAt) > end ? Math.max(1, Math.ceil((Date.parse(doneAt) - end) / 86_400_000)) : 0;
+  const onTime = complete && !doneLateDays;
+  const failed = doneLateDays > 0 || (!complete && late);
+  const tone = onTime ? "ok" : failed ? "bad" : soon ? "warn" : "ivory";
   const bar = { ok: "from-[#34d399] to-[#059669]", bad: "from-[#fca5a5] to-[#dc2626]", warn: "from-[#fcd34d] to-[#d97706]", ivory: "from-[#60a5fa] to-[#2563eb]" }[tone];
   const text = { ok: "text-ok", bad: "text-bad", warn: "text-warn", ivory: "text-ivory" }[tone];
-  const headline = complete ? t.done : late ? t.late(Math.max(1, Math.ceil(-msLeft / 86_400_000))) : daysLeft <= 0 ? t.hours(Math.ceil(msLeft / 3_600_000)) : t.left(daysLeft);
+  const headline = onTime ? t.done : doneLateDays ? t.doneLate(doneLateDays) : late ? t.late(Math.max(1, Math.ceil(-msLeft / 86_400_000))) : daysLeft <= 0 ? t.hours(Math.ceil(msLeft / 3_600_000)) : t.left(daysLeft);
 
   return (
     <div className="card mt-5 p-4 sm:p-5">
@@ -92,7 +100,8 @@ export function DeadlineCard({ locale, createdAt, dueDate, complete }: { locale:
           </p>
         </div>
         {/* Anel com o tempo já passado */}
-        <svg viewBox="0 0 44 44" className="h-12 w-12 shrink-0 -rotate-90" aria-hidden>
+        <span className="relative h-12 w-12 shrink-0">
+        <svg viewBox="0 0 44 44" className="h-12 w-12 -rotate-90" aria-hidden>
           <defs>
             <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor={tone === "ok" ? "#34d399" : tone === "bad" ? "#fca5a5" : tone === "warn" ? "#fcd34d" : "#60a5fa"} />
@@ -109,10 +118,24 @@ export function DeadlineCard({ locale, createdAt, dueDate, complete }: { locale:
             strokeWidth="5"
             strokeLinecap="round"
             pathLength={100}
-            strokeDasharray={`${shown ? (complete ? 100 : pct) : 0} 100`}
+            strokeDasharray={`${shown ? (complete || failed ? 100 : pct) : 0} 100`}
             style={{ transition: "stroke-dasharray 1.2s cubic-bezier(0.2,0.7,0.2,1)" }}
           />
         </svg>
+          {/* Dentro do anel: visto quando chegou tudo a tempo; × quando o prazo falhou */}
+          {(onTime || failed) && now != null && (
+            <svg viewBox="0 0 24 24" className={`absolute inset-0 m-auto h-6 w-6 ${onTime ? "text-ok" : "text-bad"}`} fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              {onTime ? (
+                <path d="M6 12.5l4 3.8L18 8" pathLength={1} className="chart-draw" style={{ animationDelay: "0.9s" }} />
+              ) : (
+                <>
+                  <path d="M7.5 7.5l9 9" pathLength={1} className="chart-draw" style={{ animationDelay: "0.9s" }} />
+                  <path d="M16.5 7.5l-9 9" pathLength={1} className="chart-draw" style={{ animationDelay: "1.15s" }} />
+                </>
+              )}
+            </svg>
+          )}
+        </span>
       </div>
 
       {/* Linha do tempo: pedido → hoje → prazo */}
@@ -120,7 +143,7 @@ export function DeadlineCard({ locale, createdAt, dueDate, complete }: { locale:
         <div className="h-2 overflow-hidden rounded-full bg-ink-3">
           <div
             className={`h-full rounded-full bg-gradient-to-r ${bar}`}
-            style={{ width: `${shown ? (complete ? 100 : pct) : 0}%`, transition: "width 1.2s cubic-bezier(0.2,0.7,0.2,1)" }}
+            style={{ width: `${shown ? (complete || failed ? 100 : pct) : 0}%`, transition: "width 1.2s cubic-bezier(0.2,0.7,0.2,1)" }}
           />
         </div>
         {!complete && now != null && !late && (

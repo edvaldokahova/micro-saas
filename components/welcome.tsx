@@ -22,14 +22,17 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
   const done = step >= total;
 
   // «Outro país»: o fuso horário tem de ser escolhido (os lembretes automáticos dependem dele)
-  const [tz, setTz] = useState<string>(() => {
+  // O fuso do aparelho é detetado sozinho; se não for possível, a pessoa escolhe na lista
+  const [detected] = useState<string | null>(() => {
     try {
       const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      return isTimeZone(guess) ? guess : "Europe/Lisbon";
+      return isTimeZone(guess) ? guess : null;
     } catch {
-      return "Europe/Lisbon";
+      return null;
     }
   });
+  const [tz, setTz] = useState<string>(detected ?? "Europe/Lisbon");
+  const [changingTz, setChangingTz] = useState(!detected);
   const tzOptions = useMemo(() => {
     const list: string[] = TIMEZONES.includes(tz as (typeof TIMEZONES)[number]) ? [...TIMEZONES] : [tz, ...TIMEZONES];
     return list.map((z) => ({ value: z, label: tzLabel(z) }));
@@ -106,8 +109,22 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
             </div>
             {step === 0 && answers[0] === "other" && (
               <div className="mt-6 animate-rise space-y-3 [animation-duration:.3s]">
-                <p className="label !mb-0">{t.tz.label}</p>
-                <Select options={tzOptions} defaultValue={tz} onPick={setTz} searchPlaceholder={t.tz.search} searchFrom={8} />
+                {changingTz ? (
+                  <>
+                    <p className="label !mb-0">{t.tz.label}</p>
+                    <Select options={tzOptions} defaultValue={tz} onPick={setTz} searchPlaceholder={t.tz.search} searchFrom={8} />
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-ink-2 px-4 py-3.5">
+                    <span>
+                      <span className="block text-[12.5px] text-muted">{t.tz.detected}</span>
+                      <span className="block text-[15px] font-medium">{tzLabel(tz)}</span>
+                    </span>
+                    <button type="button" onClick={() => setChangingTz(true)} className="text-[14px] text-muted underline decoration-line-strong underline-offset-4 hover:text-ivory">
+                      {t.tz.change}
+                    </button>
+                  </div>
+                )}
                 <p className="text-[13px] leading-5 text-muted">{t.tz.hint}</p>
                 <button type="button" onClick={() => setStep(1)} className="btn btn-primary w-full">
                   {t.tz.next}

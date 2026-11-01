@@ -28,6 +28,7 @@ type PublicRequest = {
   months: number | null;
   due_date: string | null;
   created_at: string;
+  done_at: string | null;
   note: string | null;
   closed: boolean;
   loose: number;
@@ -151,7 +152,7 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
           <h1 className="mt-3 font-display text-[2.3rem] leading-[1.08] sm:text-[2.7rem]">{t.hello(req.client_name)}</h1>
           <p className="mt-3 text-[15px] leading-7 text-muted">{t.intro(req.office_name, ofPeriod)}</p>
           {req.due_date && (
-            <DeadlineCard locale={locale} createdAt={req.created_at} dueDate={req.due_date} complete={req.items.length > 0 && req.items.every((i) => i.status === "received")} />
+            <DeadlineCard locale={locale} createdAt={req.created_at} dueDate={req.due_date} complete={req.items.length > 0 && req.items.every((i) => i.status === "received")} doneAt={req.done_at} />
           )}
         </header>
 
