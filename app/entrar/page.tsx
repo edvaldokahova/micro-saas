@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
-import { SiteHeader } from "@/components/site-chrome";
+import { LocaleSwitcher } from "@/components/preferences";
 import { authTexts } from "@/lib/auth-texts";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -15,8 +15,10 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
   const d = getDictionary(locale);
   return (
     <>
-      <SiteHeader />
-      <main className="mx-auto max-w-md px-5 py-16">
+      <main className="mx-auto max-w-md px-5 pb-16 pt-8 sm:pt-14">
+        <div className="mb-10 flex">
+          <LocaleSwitcher align="left" locale={locale} label={d.common.language} />
+        </div>
         <h1 className="animate-rise font-display text-3xl">{d.auth.signInTitle}</h1>
         <p className="mt-2 animate-rise text-muted [animation-delay:80ms]">{d.auth.signInLead}</p>
         {erro === "acesso" && (

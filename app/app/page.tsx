@@ -13,6 +13,7 @@ import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, 
 import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests, setItemStatus } from "./actions";
 import { FirstSteps } from "@/components/first-steps";
+import { IconBell } from "@/components/icons";
 import { accountTexts } from "@/lib/account-texts";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -251,7 +252,8 @@ export default async function Painel({
                       href={href("remind")}
                       className={`flex items-start gap-3 p-4 transition hover:bg-ink-3/40 ${filter === "remind" ? "bg-ink-3/70" : ""}`}
                     >
-                      <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-bad" aria-hidden />
+                      {/* Aviso negativo (atrasos): sino vermelho; sugestões e boas notícias: sino preto */}
+                      <IconBell className="mt-0.5 h-5 w-5 shrink-0 text-bad" alert />
                       <span>
                         <span className="block font-medium">{t.nextRemind(toRemind)}</span>
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">{t.nextRemindHint}</span>
@@ -263,7 +265,7 @@ export default async function Painel({
                       href={href("awaiting")}
                       className={`flex items-start gap-3 p-4 transition hover:bg-ink-3/40 ${toRemind > 0 ? "border-t border-line sm:border-l sm:border-t-0" : ""} ${filter === "awaiting" ? "bg-ink-3/70" : ""}`}
                     >
-                      <DocMark state="sent" className="mt-[3px] h-3.5 w-3.5" />
+                      <IconBell className="mt-0.5 h-5 w-5 shrink-0 text-ivory" />
                       <span>
                         <span className="block font-medium">{t.nextConfirm(toConfirm)}</span>
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">{t.nextConfirmHint}</span>

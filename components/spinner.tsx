@@ -9,15 +9,16 @@ export function Spinner({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-// Conteúdo de um botão: normal, ou spinner + texto ("A guardar…") enquanto trabalha.
-// Sem texto, o spinner fica por cima do rótulo e o botão mantém a largura.
-export function BusyLabel({ busy, text, children }: { busy: boolean; text?: string; children: React.ReactNode }) {
+// Conteúdo de um botão enquanto trabalha: o rótulo não muda (só ganha reticências) e aparece o spinner;
+// o botão fica desativado por quem o usa. Botões só com ícone: o spinner fica por cima, sem mudar a largura.
+// (`text` mantém-se por compatibilidade, mas já não substitui o rótulo.)
+export function BusyLabel({ busy, children }: { busy: boolean; text?: string; children: React.ReactNode }) {
   if (!busy) return <>{children}</>;
-  if (text && text !== "…")
+  if (typeof children === "string")
     return (
       <>
         <Spinner />
-        <span>{text}</span>
+        <span>{children.endsWith("…") ? children : `${children}…`}</span>
       </>
     );
   return (

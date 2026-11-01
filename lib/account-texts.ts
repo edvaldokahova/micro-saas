@@ -57,6 +57,7 @@ export type AccountTexts = {
 };
 
 export type LoginExtraTexts = {
+  validation: { required: string; email: string; accept: string };
   usePassword: string;
   useLink: string;
   password: string;
@@ -86,9 +87,12 @@ export type GuideTexts = {
   doneText: string;
 };
 
-type Pack = { welcome: WelcomeTexts; account: AccountTexts; login: LoginExtraTexts; code: CodeTexts; guide: GuideTexts };
+export type MenuTexts = { label: string; account: string; billing: string; inbox: string; inboxCopied: string; help: string; signOut: string };
+
+type Pack = { menu: MenuTexts; welcome: WelcomeTexts; account: AccountTexts; login: LoginExtraTexts; code: CodeTexts; guide: GuideTexts };
 
 const ptPT: Pack = {
+  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar endereço de recolha", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
   guide: {
     title: "Primeiros passos",
     lead: "Quatro passos curtos, com um cliente de exemplo. No fim, já sabe usar o Bilonai.",
@@ -195,6 +199,7 @@ const ptPT: Pack = {
     ],
   },
   login: {
+    validation: { required: "Preencha este campo.", email: "Escreva um e-mail válido, por exemplo nome@escritorio.pt.", accept: "Para continuar, aceite os Termos e a Política de privacidade." },
     usePassword: "Entrar com palavra-passe",
     useLink: "Entrar com link por e-mail",
     password: "Palavra-passe",
@@ -213,6 +218,7 @@ const ptPT: Pack = {
 };
 
 const esES: Pack = {
+  menu: { label: "Cuenta", account: "Cuenta y seguridad", billing: "Suscripción", inbox: "Copiar dirección de recepción", inboxCopied: "Dirección copiada", help: "Ayuda y soporte", signOut: "Cerrar sesión" },
   guide: {
     title: "Primeros pasos",
     lead: "Cuatro pasos cortos, con un cliente de ejemplo. Al terminar, ya sabrás usar Bilonai.",
@@ -319,6 +325,7 @@ const esES: Pack = {
     ],
   },
   login: {
+    validation: { required: "Rellena este campo.", email: "Escribe un correo válido, por ejemplo nombre@asesoria.es.", accept: "Para continuar, acepta los Términos y la Política de privacidad." },
     usePassword: "Entrar con contraseña",
     useLink: "Entrar con enlace por correo",
     password: "Contraseña",
@@ -337,6 +344,7 @@ const esES: Pack = {
 };
 
 const ptBR: Pack = {
+  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar endereço de recebimento", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
   guide: {
     title: "Primeiros passos",
     lead: "Quatro passos curtos, com um cliente de exemplo. No fim, você já sabe usar o Bilonai.",
@@ -443,6 +451,7 @@ const ptBR: Pack = {
     ],
   },
   login: {
+    validation: { required: "Preencha este campo.", email: "Digite um e-mail válido, por exemplo nome@escritorio.com.br.", accept: "Para continuar, aceite os Termos e a Política de privacidade." },
     usePassword: "Entrar com senha",
     useLink: "Entrar com link por e-mail",
     password: "Senha",

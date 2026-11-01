@@ -287,6 +287,7 @@ export function AccountSettings({
             <li key={s} className="flex items-start gap-2.5">
               <svg className="mt-0.5 h-4 w-4 shrink-0 text-ok" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M10 2.5l6 2.3v4.6c0 3.7-2.5 6.6-6 8.1-3.5-1.5-6-4.4-6-8.1V4.8z" />
+                <path d="M7.3 10l1.9 1.9 3.6-3.8" />
               </svg>
               {s}
             </li>

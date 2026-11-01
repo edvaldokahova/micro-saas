@@ -431,7 +431,7 @@ const dict: Dictionary = {
       },
     },
     whatsappTemplate:
-      "Olá, {cliente}! Para fecharmos a contabilidade {periodo}, ainda faltam {em_falta}. Veja quais são e marque o que já enviou aqui: {link}\n\nObrigado,\n{escritorio}",
+      "Olá, {cliente}! Para fecharmos a contabilidade {periodo}, ainda faltam {em_falta}. Você pode enviá-los aqui, com um toque: {link}\n\nObrigado,\n{escritorio}",
     whatsappAllSent: "Olá, {cliente}! Você pode conferir os documentos {periodo} aqui: {link}\n\nObrigado,\n{escritorio}",
     emailSubject: "Documentos pendentes {periodo}",
   },
@@ -463,7 +463,7 @@ const dict: Dictionary = {
     dueSoon: (n: number) => (n === 0 ? "O prazo vence hoje." : n === 1 ? "Falta 1 dia para o prazo." : `Faltam ${n} dias para o prazo.`),
     overdue: (d: string) => `O prazo venceu em ${d}. Envie o que falta o quanto antes.`,
     progress: (a: number, b: number) => `${a} de ${b} resolvidos`,
-    instruction: "Envie os documentos pelo canal de sempre e marque aqui o que já enviou.",
+    instruction: "Estes são os documentos desta solicitação.",
     howSent: "Por onde você enviou?",
     sendPortal: "Enviar pelo portal",
     sendVia: (name: string) => `Enviar via ${name}`,

@@ -38,7 +38,7 @@ export function CodeForm({ t }: { t: CodeTexts }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5">
+    <form onSubmit={submit} noValidate className="space-y-5">
       <label className="block">
         <span className="label">{t.code}</span>
         <input

@@ -76,6 +76,71 @@ export function IconBilling({ className = "h-5 w-5", active = false }: N) {
   );
 }
 
+// Novo pedido: uma folha com um «+» (na barra, no lugar onde o pedido nasce)
+export function IconNewRequest({ className = "h-5 w-5", active = false }: N) {
+  const inner = active ? hole : "currentColor";
+  return (
+    <svg {...base} className={className}>
+      <path d="M5.75 2.75h5.75l4 4v9a1.8 1.8 0 0 1-1.8 1.8H5.75a1.8 1.8 0 0 1-1.8-1.8v-11.2a1.8 1.8 0 0 1 1.8-1.8z" fill={active ? "currentColor" : "none"} />
+      <path d="M11.5 2.75v2.5a1.5 1.5 0 0 0 1.5 1.5h2.5" stroke={inner} />
+      <path d="M9.75 9.25v5M7.25 11.75h5" stroke={inner} />
+    </svg>
+  );
+}
+
+// Conta: uma pessoa dentro de um círculo (a cabeça e os ombros cortados pelo próprio círculo)
+export function IconAccount({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="10" cy="10" r="7.6" />
+      <circle cx="10" cy="8.1" r="2.6" />
+      <path d="M5.1 15.8c.9-2.1 2.8-3.4 4.9-3.4s4 1.3 4.9 3.4" />
+    </svg>
+  );
+}
+
+// Aviso do painel: um sino com o badalo; «alert» acende um ponto no canto
+export function IconBell({ className = "h-5 w-5", alert = false }: P & { alert?: boolean }) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M5.2 13.6V9.2a4.8 4.8 0 0 1 9.6 0v4.4l1.4 1.9H3.8z" />
+      <path d="M8.3 17.3a1.9 1.9 0 0 0 3.4 0" />
+      {alert && <circle cx="15.4" cy="4.6" r="2.4" fill="currentColor" stroke={hole} strokeWidth="1.4" />}
+    </svg>
+  );
+}
+
+// Assinatura (no menu da conta) usa IconBilling; ajuda: um balão com um ponto de interrogação
+export function IconHelp({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="10" cy="10" r="7.6" />
+      <path d="M7.9 7.9a2.2 2.2 0 0 1 4.2.9c0 1.5-2.1 1.8-2.1 3.1" />
+      <circle cx="10" cy="14.4" r=".4" fill="currentColor" />
+    </svg>
+  );
+}
+
+// Sair: uma porta com a seta a sair
+export function IconSignOut({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M8.5 3.25H5a1.8 1.8 0 0 0-1.8 1.8v9.9A1.8 1.8 0 0 0 5 16.75h3.5" />
+      <path d="M12.75 6.5L16.25 10l-3.5 3.5M16 10H8" />
+    </svg>
+  );
+}
+
+// Recolha por e-mail: um envelope com uma seta a entrar
+export function IconInbox({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="2.75" y="4.5" width="14.5" height="11" rx="2" />
+      <path d="M3.2 6l6.8 4.8L16.8 6" />
+    </svg>
+  );
+}
+
 // Visto
 export function IconTick({ className = "h-4 w-4" }: P) {
   return (

@@ -146,7 +146,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
         <h2 className="font-display text-lg">{tm.title}</h2>
         <p className="mt-1 text-sm text-muted">{tm.hint}</p>
         {team.length === 0 ? (
-          <p className="mt-4 border border-dashed border-line px-4 py-3 text-sm text-muted">{tm.none}</p>
+          <p className="mt-4 rounded-xl border border-dashed border-line-strong px-4 py-3.5 text-sm text-muted">{tm.none}</p>
         ) : (
           <ul className="mt-5 border-t border-line">
             {team.map((m) => {

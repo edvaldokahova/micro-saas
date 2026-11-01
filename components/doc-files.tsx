@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Select } from "@/components/select";
-import { Spinner } from "@/components/spinner";
+import { BusyLabel, Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
 import { uploadFiles, type UploadIssue } from "@/lib/upload-client";
 import { makeZip } from "@/lib/zip";
@@ -235,13 +235,7 @@ export function ZipButton({ ids, name, t }: { ids: string[]; name: string; t: Do
   return (
     <span className="inline-flex flex-col items-start">
       <button type="button" onClick={go} disabled={busy} className="btn btn-secondary btn-sm" aria-busy={busy}>
-        {busy ? (
-          <>
-            <Spinner className="h-3.5 w-3.5" /> {t.zipping}
-          </>
-        ) : (
-          t.zip.replace("{n}", String(ids.length))
-        )}
+        <BusyLabel busy={busy}>{t.zip.replace("{n}", String(ids.length))}</BusyLabel>
       </button>
       {error && <span className="mt-1 text-[12px] text-bad">{t.error}</span>}
     </span>

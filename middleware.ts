@@ -82,6 +82,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // O painel administrativo nunca entra no Google (além do «noindex» das próprias páginas)
+  if (host === ADMIN) response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   return response;
 }
 

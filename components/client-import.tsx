@@ -6,7 +6,7 @@
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Select } from "@/components/select";
-import { Spinner } from "@/components/spinner";
+import { BusyLabel } from "@/components/spinner";
 import { importClients, type ImportRow } from "@/app/app/actions";
 
 export type ImportTexts = {
@@ -169,13 +169,7 @@ export function ClientImport({ t, room, team, assignee: at }: { t: ImportTexts; 
       )}
 
       <button type="button" onClick={submit} disabled={!rows.length || busy || room <= 0} className="btn btn-primary w-full" aria-busy={busy}>
-        {busy ? (
-          <>
-            <Spinner /> {t.importing}
-          </>
-        ) : (
-          t.submit
-        )}
+        <BusyLabel busy={busy}>{t.submit}</BusyLabel>
       </button>
     </div>
   );

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Building2, UserRound } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { AccountMenu } from "@/components/account-menu";
+import { inboxAddress } from "@/lib/inbound";
+import { site } from "@/lib/site";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
 import { NavProgress } from "@/components/nav-progress";
@@ -13,12 +16,13 @@ export const metadata: Metadata = { robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { office, locale, d, role } = await getSession();
+  const { office, locale, d, role, user } = await getSession();
   // Colaboradores: Painel, Clientes e Documentos. Administradores: também Definições. Assinatura: só o dono da conta.
-  type NavKey = "dashboard" | "clients" | "documents" | "settings" | "billing";
-  const show: NavKey[] = ["dashboard", "clients", "documents"];
+  // A assinatura passou para o menu da conta; na barra fica «Novo pedido», a ação mais usada
+  type NavKey = "dashboard" | "clients" | "newRequest" | "documents" | "settings";
+  const show: NavKey[] = ["dashboard", "clients", "newRequest", "documents"];
   if (role !== "member") show.push("settings");
-  if (role === "owner") show.push("billing");
+  const navLabels = { ...d.app.nav, newRequest: d.app.request.newTitle };
   // Primeira entrada do dono: questionário de boas-vindas antes do painel
   if (role === "owner" && !office.onboarded_at) return <Welcome t={accountTexts(locale).welcome} office={office.name} />;
   const access = officeAccess(office);
@@ -44,26 +48,23 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="mx-auto flex h-16 max-w-6xl items-stretch justify-between gap-3 px-4 sm:px-5">
           <div className="flex min-w-0 items-stretch gap-8">
             {/* Dentro da conta: o nome do escritório (com ícone de empresa) no lugar do logótipo */}
-            <Link href="/" aria-label={d.app.nav.dashboard} title={office.name} className="flex min-w-0 items-center gap-2.5">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line-strong text-ivory" aria-hidden>
-                <Building2 className="h-4 w-4" strokeWidth={1.6} />
-              </span>
+            <Link href="/" aria-label={d.app.nav.dashboard} title={office.name} className="flex min-w-0 items-center gap-1.5">
+              <Building2 className="h-5 w-5 shrink-0 text-ivory" strokeWidth={1.6} aria-hidden />
               <span className="max-w-[44vw] truncate text-[15px] font-semibold tracking-[-0.01em] sm:max-w-[16rem]">{office.name}</span>
             </Link>
-            <AppNav labels={d.app.nav} show={show} />
+            <AppNav labels={navLabels} show={show} />
           </div>
           <div className="flex items-center gap-2 self-center">
             <LocaleSwitcher locale={locale} label={d.common.language} />
             <ThemeToggle labels={{ light: d.common.themeLight, dark: d.common.themeDark }} />
-            {/* Conta: e-mail, palavra-passe, dois passos e sair */}
-            <Link
-              href="/conta"
-              className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
-              aria-label={accountTexts(locale).account.title}
-              title={accountTexts(locale).account.title}
-            >
-              <UserRound className="h-4 w-4" aria-hidden />
-            </Link>
+            <AccountMenu
+              t={accountTexts(locale).menu}
+              email={user.email ?? ""}
+              office={office.name}
+              billing={role === "owner"}
+              inbox={role !== "member" ? inboxAddress(office.inbox_key) : null}
+              helpUrl={`${site.url}/suporte`}
+            />
           </div>
         </div>
       </header>
@@ -82,7 +83,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       )}
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">{children}</main>
-      <AppTabBar labels={d.app.nav} show={show} />
+      <AppTabBar labels={navLabels} show={show} />
     </div>
   );
 }

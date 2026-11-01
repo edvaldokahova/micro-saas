@@ -7,7 +7,7 @@ import { localeMeta, locales, THEME_COOKIE, type Locale } from "@/lib/locales";
 import { setLocale } from "@/lib/actions/locale";
 
 // Seletor de idioma: ícone de globo; a lista mostra só o nome de cada língua
-export function LocaleSwitcher({ locale, label }: { locale: Locale; label: string }) {
+export function LocaleSwitcher({ locale, label, align = "right" }: { locale: Locale; label: string; align?: "left" | "right" }) {
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
   const router = useRouter();
@@ -54,7 +54,7 @@ export function LocaleSwitcher({ locale, label }: { locale: Locale; label: strin
         <ul
           role="listbox"
           aria-label={label}
-          className="card absolute right-0 z-50 mt-2 w-56 animate-rise p-1.5 [animation-duration:.25s]"
+          className={`card absolute z-50 mt-2 w-56 animate-rise p-1.5 [animation-duration:.25s] ${align === "left" ? "left-0" : "right-0"}`}
         >
           {locales.map((l) => (
             <li key={l}>
