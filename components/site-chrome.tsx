@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettings } from "@/components/meta-pixel";
 import { Menu } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
@@ -81,6 +82,7 @@ export async function SiteFooter() {
           <li><Link className="transition hover:text-ivory" href={`${site.url}/termos`}>{d.nav.terms}</Link></li>
           <li><Link className="transition hover:text-ivory" href={`${site.url}/privacidade`}>{d.nav.privacy}</Link></li>
           <li><Link className="transition hover:text-ivory" href={`${site.url}/reembolsos`}>{d.nav.refunds}</Link></li>
+          <li><CookieSettings label="Cookies" /></li>
         </ul>
       </div>
       <div className="mx-auto max-w-6xl border-t border-line px-5 py-5 font-mono text-[11px] text-muted">

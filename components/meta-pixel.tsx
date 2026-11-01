@@ -16,10 +16,31 @@ declare global {
   }
 }
 
-const TEXTS: Record<string, { text: string; yes: string; no: string; more: string }> = {
-  pt: { text: "Usamos cookies de medição da Meta para perceber de onde chegam os visitantes e melhorar os anúncios.", yes: "Aceitar", no: "Recusar", more: "Privacidade" },
-  es: { text: "Usamos cookies de medición de Meta para saber de dónde llegan los visitantes y mejorar los anuncios.", yes: "Aceptar", no: "Rechazar", more: "Privacidad" },
-  "pt-BR": { text: "Usamos cookies de medição da Meta para entender de onde chegam os visitantes e melhorar os anúncios.", yes: "Aceitar", no: "Recusar", more: "Privacidade" },
+const TEXTS: Record<string, { title: string; text: string; yes: string; no: string; more: string; manage: string }> = {
+  pt: {
+    title: "Ajude-nos a chegar a mais escritórios",
+    text: "Com a sua autorização, usamos cookies de medição da Meta para saber que anúncios trazem visitas. Não vendemos dados e pode mudar de ideias quando quiser, no fundo da página.",
+    yes: "Aceitar e continuar",
+    no: "Recusar",
+    more: "Política de privacidade",
+    manage: "Cookies",
+  },
+  es: {
+    title: "Ayúdanos a llegar a más despachos",
+    text: "Con tu permiso, usamos cookies de medición de Meta para saber qué anuncios traen visitas. No vendemos datos y puedes cambiar de opinión cuando quieras, al pie de la página.",
+    yes: "Aceptar y continuar",
+    no: "Rechazar",
+    more: "Política de privacidad",
+    manage: "Cookies",
+  },
+  "pt-BR": {
+    title: "Ajude a gente a chegar a mais escritórios",
+    text: "Com a sua autorização, usamos cookies de medição da Meta para saber quais anúncios trazem visitas. Não vendemos dados e você pode mudar de ideia quando quiser, no rodapé da página.",
+    yes: "Aceitar e continuar",
+    no: "Recusar",
+    more: "Política de privacidade",
+    manage: "Cookies",
+  },
 };
 
 function readConsent(): "yes" | "no" | null {
@@ -79,39 +100,58 @@ export function MetaPixel({ id, events }: { id: string | null; events: string[] 
   if (!id || excluded || consent !== null) return null;
   const lang = document.documentElement.lang;
   const t = TEXTS[lang] ?? TEXTS[lang.slice(0, 2)] ?? TEXTS.pt;
+  // Escolha obrigatória antes de continuar: o fundo fica desfocado até aceitar ou recusar.
+  // As duas opções têm o mesmo peso e o mesmo tamanho (é o que a lei europeia exige).
   return (
-    <div className="fixed inset-x-3 bottom-3 z-[70] flex justify-center sm:inset-x-auto sm:bottom-5 sm:left-5 sm:justify-start">
-      <div className="flex w-full max-w-md animate-rise flex-col gap-3 rounded-2xl border border-line bg-ink-2 p-4 text-[13.5px] leading-5 shadow-[0_16px_40px_-14px_rgba(18,19,22,0.35)] sm:flex-row sm:items-center">
-        <p className="flex-1 text-muted">
-          {t.text}{" "}
-          <a href="https://www.bilonai.com/privacidade" className="text-ivory underline decoration-line-strong underline-offset-4">
-            {t.more}
-          </a>
-        </p>
-        <div className="flex shrink-0 gap-2">
+    <div className="fixed inset-0 z-[80] grid place-items-end bg-ink/40 p-3 backdrop-blur-md sm:place-items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="bl-consent-title">
+      <div className="w-full max-w-md animate-rise rounded-2xl border border-line bg-ink-2 p-5 shadow-[0_24px_60px_-20px_rgba(18,19,22,0.45)] sm:p-6">
+        <p id="bl-consent-title" className="text-[17px] font-semibold tracking-[-0.01em]">{t.title}</p>
+        <p className="mt-2 text-[14px] leading-6 text-muted">{t.text}</p>
+        <a href="https://www.bilonai.com/privacidade" className="mt-2 inline-block text-[13px] text-ivory underline decoration-line-strong underline-offset-4">
+          {t.more}
+        </a>
+        <div className="mt-5 grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => {
               saveConsent("no");
               setConsent("no");
             }}
-            className="btn btn-secondary btn-sm flex-1"
+            className="btn btn-secondary"
           >
             {t.no}
           </button>
           <button
             type="button"
+            autoFocus
             onClick={() => {
               saveConsent("yes");
               setConsent("yes");
             }}
-            className="btn btn-primary btn-sm flex-1"
+            className="btn btn-primary"
           >
             {t.yes}
           </button>
         </div>
       </div>
     </div>
+  );
+}
+
+// «Cookies» no rodapé: apaga a escolha e volta a perguntar (retirar o consentimento tem de ser tão fácil como dá-lo)
+export function CookieSettings({ label }: { label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const domain = location.hostname.endsWith("bilonai.com") ? "; domain=.bilonai.com" : "";
+        document.cookie = `bl_consent=; path=/; max-age=0; samesite=lax; secure${domain}`;
+        location.reload();
+      }}
+      className="transition hover:text-ivory"
+    >
+      {label}
+    </button>
   );
 }
 

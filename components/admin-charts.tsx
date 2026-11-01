@@ -2,7 +2,7 @@
 
 // Gráficos do cockpit, desenhados à mão em SVG (sem bibliotecas): linhas com gradiente,
 // marcas finas e um aviso ao passar o dedo/rato. As cores seguem o azul do Bilonai.
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 /* ---------- Receita por mês (área com linha em gradiente) ---------- */
 
@@ -89,13 +89,13 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
           <line key={v} x1={PAD.left} x2={W - PAD.right} y1={y(v)} y2={y(v)} stroke="var(--color-line)" strokeDasharray="2 5" />
         ))}
         <line x1={PAD.left} x2={W - PAD.right} y1={H - PAD.bottom} y2={H - PAD.bottom} stroke="var(--color-line-strong)" />
-        <path d={area} fill={`url(#a${id})`} />
+        <path d={area} fill={`url(#a${id})`} className="chart-area" />
         {/* Brilho por baixo da linha (o toque «futurista», sem exagero) */}
-        <path d={line} fill="none" stroke={`url(#l${id})`} strokeWidth="6" opacity="0.35" filter={`url(#g${id})`} />
-        <path d={line} fill="none" stroke={`url(#l${id})`} strokeWidth="2.5" strokeLinecap="round" />
+        <path d={line} pathLength={1} className="chart-draw" fill="none" stroke={`url(#l${id})`} strokeWidth="6" opacity="0.35" filter={`url(#g${id})`} />
+        <path d={line} pathLength={1} className="chart-draw" fill="none" stroke={`url(#l${id})`} strokeWidth="2.5" strokeLinecap="round" />
         {h && hover != null && <line x1={x(hover)} x2={x(hover)} y1={PAD.top} y2={H - PAD.bottom} stroke="var(--color-line-strong)" />}
         {points.map((p, i) => (
-          <circle key={p.label} cx={x(i)} cy={y(p.total)} r={hover === i ? 5.5 : 3.5} fill="var(--color-ink-2)" stroke="#2563eb" strokeWidth="2.2" />
+          <circle key={p.label} cx={x(i)} cy={y(p.total)} r={hover === i ? 5.5 : 3.5} fill="var(--color-ink-2)" stroke="#2563eb" strokeWidth="2.2" className="chart-dot" style={{ animationDelay: `${0.25 + (i / Math.max(1, points.length - 1)) * 1.1}s` }} />
         ))}
         {/* Zonas de toque largas, uma por mês */}
         {points.map((p, i) => (
@@ -145,6 +145,30 @@ export type Segment = { key: string; label: string; value: number; from: string;
 export function OfficesRing({ segments, total, center }: { segments: Segment[]; total: number; center: string }) {
   const id = useId().replace(/:/g, "");
   const [hover, setHover] = useState<string | null>(null);
+  // Entrada: os segmentos crescem um a seguir ao outro e o número conta até ao total
+  const [shown, setShown] = useState(false);
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setShown(true);
+      setCount(total);
+      return;
+    }
+    const t = window.setTimeout(() => setShown(true), 60);
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - start) / 1100);
+      setCount(Math.round(total * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.clearTimeout(t);
+      cancelAnimationFrame(raf);
+    };
+  }, [total]);
   const R = 70;
   const C = 2 * Math.PI * R;
   const visible = segments.filter((s) => s.value > 0);
@@ -167,7 +191,8 @@ export function OfficesRing({ segments, total, center }: { segments: Segment[]; 
           {total > 0 &&
             visible.map((s) => {
               const len = (s.value / total) * C;
-              const dash = Math.max(0.001, len - gap);
+              const dash = shown ? Math.max(0.001, len - gap) : 0.001;
+              const order = visible.indexOf(s);
               const el = (
                 <circle
                   key={s.key}
@@ -180,7 +205,7 @@ export function OfficesRing({ segments, total, center }: { segments: Segment[]; 
                   strokeLinecap="round"
                   strokeDasharray={`${dash} ${C - dash}`}
                   strokeDashoffset={-offset - gap / 2}
-                  className="transition-[stroke-width] duration-200"
+                  style={{ transition: `stroke-dasharray 0.9s cubic-bezier(0.2,0.7,0.2,1) ${order * 0.18}s, stroke-width 0.2s` }}
                   onPointerEnter={() => setHover(s.key)}
                   onPointerLeave={() => setHover(null)}
                 />
@@ -191,7 +216,7 @@ export function OfficesRing({ segments, total, center }: { segments: Segment[]; 
         </svg>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div>
-            <p className="figure text-[38px] leading-none">{hover ? segments.find((s) => s.key === hover)?.value : total}</p>
+            <p className="figure text-[38px] leading-none">{hover ? segments.find((s) => s.key === hover)?.value : count}</p>
             <p className="mt-1 text-[11.5px] text-muted">{hover ? segments.find((s) => s.key === hover)?.label : center}</p>
           </div>
         </div>

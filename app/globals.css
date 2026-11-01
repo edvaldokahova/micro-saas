@@ -492,3 +492,28 @@ body {
     transform: scale(1);
   }
 }
+
+/* Gráficos: a linha desenha-se, a área aparece, os pontos surgem um a um, os segmentos crescem */
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes chart-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes chart-dot {
+  from { opacity: 0; transform: scale(0.2); }
+  to { opacity: 1; transform: scale(1); }
+}
+.chart-draw { stroke-dasharray: 1; animation: chart-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.chart-area { animation: chart-rise 0.9s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; transform-box: fill-box; }
+.chart-dot { animation: chart-dot 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both; transform-box: fill-box; transform-origin: center; }
+.chart-bar { animation: chart-bar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; transform-box: fill-box; transform-origin: bottom; }
+@keyframes chart-bar {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-draw, .chart-area, .chart-dot, .chart-bar { animation: none; }
+}

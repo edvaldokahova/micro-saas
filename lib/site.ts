@@ -6,7 +6,7 @@ export const site = {
   url: "https://www.bilonai.com",
   appUrl: "https://app.bilonai.com",
   clientUrl: "https://entrega.bilonai.com",
-  owner: "A Bilonai Group",
+  owner: "Horizontal Expansão, (SU), Lda",
   supportEmail: "suporte@bilonai.com",
   trialDays: 7,
   // Euros para Portugal e Espanha; reais para o Brasil (na Paddle: preço por país no mesmo produto)

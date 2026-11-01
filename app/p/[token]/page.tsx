@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { CalendarClock, Lock, UserRound } from "lucide-react";
+import { Lock, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/preferences";
-import { formatDate, formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
-import { deadlineLabel, deadlineState, deadlineTone, statusText } from "@/lib/deadline";
+import { formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { accountTexts } from "@/lib/account-texts";
 import { site } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { Checklist, type ChecklistTexts } from "./checklist";
+import { DeadlineCard } from "@/components/deadline-card";
 import { Uploader, type UploaderTexts } from "./uploader";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,7 @@ type PublicRequest = {
   period: string;
   months: number | null;
   due_date: string | null;
+  created_at: string;
   note: string | null;
   closed: boolean;
   loose: number;
@@ -86,8 +87,6 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
   const ofPeriod = periodOf(req.period, locale, months);
   const canSend = !req.closed;
   const initials = req.office_name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
-  const st = deadlineState(req.due_date, req.items.length > 0 && req.items.every((i) => i.status === "received"));
-  const dl = deadlineLabel(st, d);
   const issue = {
     type: t.issue.type("{name}"),
     size: t.issue.size("{name}"),
@@ -142,15 +141,7 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
           <h1 className="mt-3 font-display text-[2.3rem] leading-[1.08] sm:text-[2.7rem]">{t.hello(req.client_name)}</h1>
           <p className="mt-3 text-[15px] leading-7 text-muted">{t.intro(req.office_name, ofPeriod)}</p>
           {req.due_date && (
-            <div className="double-rule mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-line py-3">
-              <span className="mono-label inline-flex items-center gap-2">
-                <CalendarClock className="h-3.5 w-3.5" aria-hidden /> {t.dueLabel}
-              </span>
-              <span className="text-right text-[15px] font-medium">
-                {formatDate(req.due_date, locale)}
-                {st.kind !== "pending" && <span className={`${statusText} block ${deadlineTone[st.kind]}`}>{dl.detail ?? dl.chip}</span>}
-              </span>
-            </div>
+            <DeadlineCard locale={locale} createdAt={req.created_at} dueDate={req.due_date} complete={req.items.length > 0 && req.items.every((i) => i.status === "received")} />
           )}
         </header>
 
