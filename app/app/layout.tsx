@@ -63,6 +63,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               billing={role === "owner"}
               inbox={role !== "member" ? inboxAddress(office.inbox_key) : null}
               helpUrl="/ajuda"
+              timezone={office.timezone}
             />
           </div>
         </div>

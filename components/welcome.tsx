@@ -2,12 +2,14 @@
 
 // Boas-vindas do dono, depois de confirmar o e-mail: três perguntas de um toque (país, área, tamanho)
 // e um resumo de como os dados estão protegidos. O país define o idioma e a moeda da conta.
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { IconSpark } from "@/components/icons";
 import { BusyLabel } from "@/components/spinner";
 import { finishWelcome } from "@/app/app/conta/actions";
+import { Select } from "@/components/select";
+import { isTimeZone, TIMEZONES, tzLabel } from "@/lib/timezone";
 import type { WelcomeTexts } from "@/lib/account-texts";
 
 export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
@@ -19,9 +21,24 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
   const total = t.q.length;
   const done = step >= total;
 
+  // «Outro país»: o fuso horário tem de ser escolhido (os lembretes automáticos dependem dele)
+  const [tz, setTz] = useState<string>(() => {
+    try {
+      const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return isTimeZone(guess) ? guess : "Europe/Lisbon";
+    } catch {
+      return "Europe/Lisbon";
+    }
+  });
+  const tzOptions = useMemo(() => {
+    const list: string[] = TIMEZONES.includes(tz as (typeof TIMEZONES)[number]) ? [...TIMEZONES] : [tz, ...TIMEZONES];
+    return list.map((z) => ({ value: z, label: tzLabel(z) }));
+  }, [tz]);
+
   function pick(value: string) {
     const next = [...answers.slice(0, step), value];
     setAnswers(next);
+    if (step === 0 && value === "other") return;
     // Pequena pausa para se ver a escolha marcada antes de avançar
     window.setTimeout(() => setStep((s) => s + 1), 180);
   }
@@ -29,7 +46,7 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
   function enter() {
     setError(false);
     start(async () => {
-      const ok = await finishWelcome(answers[0], answers[1], answers[2]).catch(() => false);
+      const ok = await finishWelcome(answers[0], answers[1], answers[2], answers[0] === "other" ? tz : null).catch(() => false);
       if (!ok) {
         setError(true);
         return;
@@ -87,6 +104,16 @@ export function Welcome({ t, office }: { t: WelcomeTexts; office: string }) {
                 );
               })}
             </div>
+            {step === 0 && answers[0] === "other" && (
+              <div className="mt-6 animate-rise space-y-3 [animation-duration:.3s]">
+                <p className="label !mb-0">{t.tz.label}</p>
+                <Select options={tzOptions} defaultValue={tz} onPick={setTz} searchPlaceholder={t.tz.search} searchFrom={8} />
+                <p className="text-[13px] leading-5 text-muted">{t.tz.hint}</p>
+                <button type="button" onClick={() => setStep(1)} className="btn btn-primary w-full">
+                  {t.tz.next}
+                </button>
+              </div>
+            )}
             {step > 0 && (
               <button type="button" onClick={() => setStep((s) => s - 1)} className="mt-6 text-[14px] text-muted underline decoration-line-strong underline-offset-4 hover:text-ivory">
                 {t.back}

@@ -10,10 +10,10 @@ import { site } from "@/lib/site";
 import { accountTexts } from "@/lib/account-texts";
 
 // Questionário de boas-vindas (só o dono). A base de dados valida os valores e muda o idioma pelo país.
-export async function finishWelcome(country: string, profession: string, clients: string): Promise<boolean> {
+export async function finishWelcome(country: string, profession: string, clients: string, timezone: string | null = null): Promise<boolean> {
   const { supabase, role } = await getSession();
   if (role !== "owner") return false;
-  const { error } = await supabase.rpc("finish_welcome", { p_country: country, p_profession: profession, p_clients: clients });
+  const { error } = await supabase.rpc("finish_welcome", { p_country: country, p_profession: profession, p_clients: clients, p_timezone: timezone });
   if (error) return false;
   // Os e-mails de acesso (link, alteração de e-mail) seguem o idioma guardado no utilizador
   const locale = ({ PT: "pt-PT", BR: "pt-BR", ES: "es-ES" } as Record<string, string>)[country];
@@ -102,4 +102,14 @@ export async function hideGuide(): Promise<void> {
   await createAdminClient().from("offices").update({ guide_done_at: new Date().toISOString() }).eq("id", office.id);
   revalidatePath("/app", "layout");
   redirect("/");
+}
+
+// Fuso horário do escritório (dono ou administrador): os lembretes automáticos contam os dias nele
+export async function setTimezone(tz: string): Promise<boolean> {
+  const { supabase, isManager } = await getSession();
+  if (!isManager) return false;
+  const { error } = await supabase.rpc("set_office_timezone", { p_timezone: tz });
+  if (error) return false;
+  revalidatePath("/app", "layout");
+  return true;
 }

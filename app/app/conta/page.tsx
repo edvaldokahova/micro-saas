@@ -4,11 +4,12 @@ import { accountTexts } from "@/lib/account-texts";
 import { AccountSettings } from "@/components/account-settings";
 import { signOut } from "../actions";
 import { Toast } from "@/components/toast";
+import { TimezoneCard } from "@/components/timezone-card";
 
 export const metadata: Metadata = { title: "Conta" };
 
 export default async function Conta({ searchParams }: { searchParams: Promise<{ email?: string }> }) {
-  const { supabase, user, office, locale, role } = await getSession();
+  const { supabase, user, office, locale, role, isManager } = await getSession();
   const { email } = await searchParams;
   const t = accountTexts(locale).account;
   const { data: factors } = await supabase.auth.mfa.listFactors();
@@ -19,6 +20,7 @@ export default async function Conta({ searchParams }: { searchParams: Promise<{ 
       <h1 className="font-display text-3xl">{t.title}</h1>
       <p className="mt-2 text-muted">{t.lead}</p>
       {email === "ok" && <Toast tone="ok" text={t.emailChanged} />}
+      <TimezoneCard t={t} value={office.timezone} canEdit={isManager} search={accountTexts(locale).welcome.tz.search} />
       <AccountSettings
         t={t}
         email={user.email ?? ""}

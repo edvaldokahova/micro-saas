@@ -6,6 +6,7 @@ export type WelcomeTexts = {
   step: string; // "{a} de {b}"
   back: string;
   q: { title: string; hint: string; options: { value: string; label: string; hint?: string }[] }[];
+  tz: { label: string; hint: string; next: string; search: string };
   doneTitle: string; // "{office}"
   doneLead: string;
   safe: string[];
@@ -14,6 +15,10 @@ export type WelcomeTexts = {
 };
 
 export type AccountTexts = {
+  tzTitle: string;
+  tzHint: string;
+  tzSaved: string;
+  tzOnlyManagers: string;
   title: string;
   lead: string;
   emailTitle: string;
@@ -94,12 +99,12 @@ export type GuideTexts = {
   doneText: string;
 };
 
-export type MenuTexts = { label: string; account: string; billing: string; inbox: string; inboxCopied: string; help: string; signOut: string };
+export type MenuTexts = { label: string; tz: string; account: string; billing: string; inbox: string; inboxCopied: string; help: string; signOut: string };
 
 type Pack = { menu: MenuTexts; welcome: WelcomeTexts; account: AccountTexts; login: LoginExtraTexts; code: CodeTexts; guide: GuideTexts };
 
 const ptPT: Pack = {
-  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar endereço de recolha", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
+  menu: { label: "Conta", tz: "Fuso horário", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar endereço de recolha", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
   guide: {
     title: "Primeiros passos",
     lead: "Quatro passos curtos, com um cliente de exemplo. No fim, já sabe usar o Bilonai.",
@@ -151,6 +156,7 @@ const ptPT: Pack = {
         ],
       },
     ],
+    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos nesta hora. Pode mudá-lo depois em Conta.", next: "Continuar", search: "Procurar cidade…" },
     doneTitle: "Tudo pronto, {office}.",
     doneLead: "A sua conta está preparada. Antes de entrar, o essencial sobre os seus dados:",
     safe: [
@@ -163,6 +169,10 @@ const ptPT: Pack = {
     error: "Não foi possível guardar. Tente de novo.",
   },
   account: {
+    tzTitle: "Fuso horário",
+    tzHint: "Os lembretes automáticos saem e contam os prazos nesta hora.",
+    tzSaved: "Fuso horário guardado.",
+    tzOnlyManagers: "Só o dono ou um administrador pode mudar o fuso horário.",
     title: "Conta",
     lead: "O seu e-mail, a forma de entrar e a segurança da conta.",
     emailTitle: "E-mail",
@@ -232,7 +242,7 @@ const ptPT: Pack = {
 };
 
 const esES: Pack = {
-  menu: { label: "Cuenta", account: "Cuenta y seguridad", billing: "Suscripción", inbox: "Copiar correo de recepción", inboxCopied: "Dirección copiada", help: "Ayuda y soporte", signOut: "Cerrar sesión" },
+  menu: { label: "Cuenta", tz: "Zona horaria", account: "Cuenta y seguridad", billing: "Suscripción", inbox: "Copiar correo de recepción", inboxCopied: "Dirección copiada", help: "Ayuda y soporte", signOut: "Cerrar sesión" },
   guide: {
     title: "Primeros pasos",
     lead: "Cuatro pasos cortos, con un cliente de ejemplo. Al terminar, ya sabrás usar Bilonai.",
@@ -284,6 +294,7 @@ const esES: Pack = {
         ],
       },
     ],
+    tz: { label: "Zona horaria del despacho", hint: "Los recordatorios automáticos salen y cuentan los plazos en esta hora. Puedes cambiarla después en Cuenta.", next: "Continuar", search: "Buscar ciudad…" },
     doneTitle: "Todo listo, {office}.",
     doneLead: "Tu cuenta está preparada. Antes de entrar, lo esencial sobre tus datos:",
     safe: [
@@ -296,6 +307,10 @@ const esES: Pack = {
     error: "No se pudo guardar. Inténtalo de nuevo.",
   },
   account: {
+    tzTitle: "Zona horaria",
+    tzHint: "Los recordatorios automáticos salen y cuentan los plazos en esta hora.",
+    tzSaved: "Zona horaria guardada.",
+    tzOnlyManagers: "Solo el titular o un administrador puede cambiar la zona horaria.",
     title: "Cuenta",
     lead: "Tu correo, la forma de entrar y la seguridad de la cuenta.",
     emailTitle: "Correo",
@@ -365,7 +380,7 @@ const esES: Pack = {
 };
 
 const ptBR: Pack = {
-  menu: { label: "Conta", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar e-mail de coleta", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
+  menu: { label: "Conta", tz: "Fuso horário", account: "Conta e segurança", billing: "Assinatura", inbox: "Copiar e-mail de coleta", inboxCopied: "Endereço copiado", help: "Ajuda e suporte", signOut: "Sair" },
   guide: {
     title: "Primeiros passos",
     lead: "Quatro passos curtos, com um cliente de exemplo. No fim, você já sabe usar o Bilonai.",
@@ -417,6 +432,7 @@ const ptBR: Pack = {
         ],
       },
     ],
+    tz: { label: "Fuso horário do escritório", hint: "Os lembretes automáticos saem e contam os prazos neste horário. Você pode mudar depois em Conta.", next: "Continuar", search: "Buscar cidade…" },
     doneTitle: "Tudo pronto, {office}.",
     doneLead: "Sua conta está preparada. Antes de entrar, o essencial sobre os seus dados:",
     safe: [
@@ -429,6 +445,10 @@ const ptBR: Pack = {
     error: "Não foi possível salvar. Tente de novo.",
   },
   account: {
+    tzTitle: "Fuso horário",
+    tzHint: "Os lembretes automáticos saem e contam os prazos neste horário.",
+    tzSaved: "Fuso horário salvo.",
+    tzOnlyManagers: "Só o dono ou um administrador pode mudar o fuso horário.",
     title: "Conta",
     lead: "Seu e-mail, a forma de entrar e a segurança da conta.",
     emailTitle: "E-mail",

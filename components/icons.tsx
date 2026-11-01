@@ -141,6 +141,16 @@ export function IconInbox({ className = "h-5 w-5" }: P) {
   );
 }
 
+// Fuso horário: um relógio com um meridiano
+export function IconClock({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="10" cy="10" r="7.6" />
+      <path d="M10 5.8V10l2.8 1.8" />
+    </svg>
+  );
+}
+
 // Visto
 export function IconTick({ className = "h-4 w-4" }: P) {
   return (

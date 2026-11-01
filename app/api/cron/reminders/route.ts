@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BUCKET } from "@/lib/documents";
 import { buildReminderEmail } from "@/lib/email-template";
+import { isTimeZone, localHour, localMidnight } from "@/lib/timezone";
 import { formatDate, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { officeAccess, type Office } from "@/lib/office";
 import { publicLink } from "@/lib/reminder";
@@ -19,7 +20,7 @@ const DAY = 86_400_000;
 
 type OfficeRow = Pick<
   Office,
-  "id" | "name" | "locale" | "plan" | "plan_status" | "trial_ends_at" | "contact_email" | "owner_id" | "auto_days_before" | "auto_repeat_days" | "auto_max" | "email_subject" | "email_message"
+  "id" | "name" | "locale" | "plan" | "plan_status" | "trial_ends_at" | "contact_email" | "owner_id" | "auto_days_before" | "auto_repeat_days" | "auto_max" | "email_subject" | "email_message" | "timezone"
 > & { billing_email: string | null };
 
 type RequestRow = {
@@ -79,9 +80,14 @@ export async function GET(request: Request) {
 
   const { data: officeData } = await admin
     .from("offices")
-    .select("id, name, locale, plan, plan_status, trial_ends_at, contact_email, billing_email, owner_id, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message")
+    .select("id, name, locale, plan, plan_status, trial_ends_at, contact_email, billing_email, owner_id, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, timezone")
     .eq("auto_remind", true);
-  const offices = ((officeData ?? []) as OfficeRow[]).filter((o) => officeAccess(o as unknown as Office).canWrite);
+  // Com a tarefa a correr de hora a hora (Vercel Pro, CRON_HOURLY=1), cada escritório recebe às 9h da sua hora local.
+  // No plano gratuito corre uma vez por dia e envia a todos nessa altura.
+  const hourly = process.env.CRON_HOURLY === "1";
+  const offices = ((officeData ?? []) as OfficeRow[])
+    .filter((o) => officeAccess(o as unknown as Office).canWrite)
+    .filter((o) => !hourly || localHour(isTimeZone(o.timezone) ? o.timezone : "Europe/Lisbon") === 9);
   if (!offices.length) return NextResponse.json({ sent: 0 });
   const byId = new Map(offices.map((o) => [o.id, o]));
 
@@ -106,11 +112,13 @@ export async function GET(request: Request) {
       // Lembrete manual nas últimas 24 h: não insistir no mesmo dia
       if (r.last_reminder_at && now - new Date(r.last_reminder_at).getTime() < DAY) return false;
       if (r.auto_count === 0) {
+        // O prazo conta a partir da meia-noite do dia, na hora do escritório
+        const tz = isTimeZone(o.timezone) ? o.timezone : "Europe/Lisbon";
         const start = r.due_date
-          ? new Date(`${r.due_date}T00:00:00Z`).getTime() - o.auto_days_before * DAY
+          ? localMidnight(r.due_date, tz) - o.auto_days_before * DAY
           : new Date(r.created_at).getTime() + 3 * DAY;
         // Pedidos com prazo passado há mais de 60 dias ficam de fora (pedidos antigos esquecidos)
-        if (r.due_date && now - new Date(`${r.due_date}T00:00:00Z`).getTime() > 60 * DAY) return false;
+        if (r.due_date && now - localMidnight(r.due_date, tz) > 60 * DAY) return false;
         return now >= start;
       }
       return !!r.last_auto_at && now - new Date(r.last_auto_at).getTime() >= o.auto_repeat_days * DAY - 2 * 3_600_000;
