@@ -7,6 +7,7 @@ import { loadPaddle } from "@/lib/paddle/client";
 import type { BillingInterval } from "@/lib/paddle/config";
 import type { PlanKey } from "@/lib/site";
 import { BusyLabel } from "@/components/spinner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export type BillingTexts = {
   opening: string;
@@ -87,8 +88,9 @@ export function ChangePlanButton({
   const [message, setMessage] = useState("");
   const router = useRouter();
 
+  const [ask, setAsk] = useState(false);
   function onClick() {
-    if (!window.confirm(t.changeConfirm)) return;
+    setAsk(false);
     setMessage("");
     start(async () => {
       const res = await changePlan(plan, interval);
@@ -103,11 +105,12 @@ export function ChangePlanButton({
 
   return (
     <div className="space-y-2">
-      <button type="button" onClick={onClick} disabled={pending} aria-busy={pending} className="btn btn-secondary w-full">
+      <button type="button" onClick={() => setAsk(true)} disabled={pending} aria-busy={pending} className="btn btn-secondary w-full">
         <BusyLabel busy={pending} text={t.changing}>
           {label}
         </BusyLabel>
       </button>
+      <ConfirmDialog open={ask} text={t.changeConfirm} confirmLabel={label} danger={false} onClose={() => setAsk(false)} onConfirm={onClick} />
       {message && <p className="text-sm text-muted">{message}</p>}
     </div>
   );

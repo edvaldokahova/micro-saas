@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, Copy } from "lucide-react";
 import { ChannelLogo } from "@/components/channel-logo";
 import { bumpReminder } from "@/app/app/actions";
 import { BusyLabel } from "@/components/spinner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 // Abre o WhatsApp (ou o programa de e-mail) com a mensagem pronta e regista o lembrete
 export function ReminderButton({
@@ -61,7 +62,7 @@ export function CopyButton({ value, label, done, compact = false }: { value: str
   );
 }
 
-// Botão de submissão com estado "a guardar…" e confirmação opcional
+// Botão de submissão com estado "a guardar…" e confirmação opcional (na nossa janela, não no aviso do navegador)
 export function SubmitButton({
   children,
   pendingText,
@@ -74,19 +75,39 @@ export function SubmitButton({
   className?: string;
 }) {
   const { pending } = useFormStatus();
+  const ref = useRef<HTMLButtonElement>(null);
+  const [asking, setAsking] = useState(false);
+  const close = useCallback(() => setAsking(false), []);
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      aria-busy={pending}
-      className={className}
-      onClick={(e) => {
-        if (confirm && !window.confirm(confirm)) e.preventDefault();
-      }}
-    >
-      <BusyLabel busy={pending} text={pendingText}>
-        {children}
-      </BusyLabel>
-    </button>
+    <>
+      <button
+        ref={ref}
+        type="submit"
+        disabled={pending}
+        aria-busy={pending}
+        className={className}
+        onClick={(e) => {
+          if (!confirm) return;
+          e.preventDefault();
+          setAsking(true);
+        }}
+      >
+        <BusyLabel busy={pending} text={pendingText}>
+          {children}
+        </BusyLabel>
+      </button>
+      {confirm && (
+        <ConfirmDialog
+          open={asking}
+          text={confirm}
+          confirmLabel={children}
+          onClose={close}
+          onConfirm={() => {
+            setAsking(false);
+            ref.current?.form?.requestSubmit(ref.current);
+          }}
+        />
+      )}
+    </>
   );
 }

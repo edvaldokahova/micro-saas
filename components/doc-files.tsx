@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Select } from "@/components/select";
 import { IconTrash } from "@/components/icons";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { BusyLabel, Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
 import { uploadFiles, type UploadIssue } from "@/lib/upload-client";
@@ -52,6 +53,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [, start] = useTransition();
+  const [ask, setAsk] = useState<string | null>(null);
 
   function run(id: string, job: () => Promise<boolean>) {
     setBusy(id);
@@ -111,7 +113,7 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
               <button
                 type="button"
                 disabled={busy === f.id}
-                onClick={() => window.confirm(t.removeConfirm) && run(f.id, () => deleteDocument(f.id))}
+                onClick={() => setAsk(f.id)}
                 className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-bad/10 hover:text-bad"
                 aria-label={t.remove}
                 title={t.remove}
@@ -122,6 +124,17 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
           </li>
         ))}
       </ul>
+      <ConfirmDialog
+        open={ask != null}
+        text={t.removeConfirm}
+        confirmLabel={t.remove}
+        onClose={() => setAsk(null)}
+        onConfirm={() => {
+          const id = ask;
+          setAsk(null);
+          if (id) run(id, () => deleteDocument(id));
+        }}
+      />
     </div>
   );
 }

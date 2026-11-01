@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { BusyLabel } from "@/components/spinner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { IconSpark } from "@/components/icons";
 import { OtpInput } from "@/components/otp-input";
 import { deleteAccount, markPassword } from "@/app/app/conta/actions";
@@ -129,8 +130,10 @@ export function AccountSettings({
     setCode("");
     setMfaNote(null);
   }
+  const [askMfa, setAskMfa] = useState(false);
   async function disableMfa() {
-    if (!factor || !window.confirm(t.mfaDisableConfirm)) return;
+    setAskMfa(false);
+    if (!factor) return;
     setMfaBusy(true);
     const supabase = createClient();
     const { error } = await supabase.auth.mfa.unenroll({ factorId: factor });
@@ -252,9 +255,12 @@ export function AccountSettings({
           </form>
         )}
         {factor && (
-          <button type="button" onClick={disableMfa} disabled={mfaBusy} className="btn btn-secondary w-full sm:w-auto">
-            {t.mfaDisable}
+          <button type="button" onClick={() => setAskMfa(true)} disabled={mfaBusy} aria-busy={mfaBusy} className="btn btn-secondary w-full sm:w-auto">
+            <BusyLabel busy={mfaBusy}>{t.mfaDisable}</BusyLabel>
           </button>
+        )}
+        {factor && (
+          <ConfirmDialog open={askMfa} text={t.mfaDisableConfirm} confirmLabel={t.mfaDisable} onClose={() => setAskMfa(false)} onConfirm={disableMfa} />
         )}
         <Msg note={mfaNote} />
       </Card>
