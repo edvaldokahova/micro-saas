@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconClients, IconDocs, IconLedger, IconNewRequest, IconSettings } from "@/components/icons";
+import { IconChart, IconClients, IconDocs, IconLedger, IconNewRequest, IconSettings } from "@/components/icons";
 
 const items = [
   { href: "/", key: "dashboard", icon: IconLedger },
@@ -10,6 +10,8 @@ const items = [
   { href: "/pedidos/novo", key: "newRequest", icon: IconNewRequest },
   { href: "/documentos", key: "documents", icon: IconDocs },
   { href: "/definicoes", key: "settings", icon: IconSettings },
+  // Desempenho: no topo (computador); no telemóvel fica no menu da conta, para a barra não ter 6 botões
+  { href: "/desempenho", key: "performance", icon: IconChart },
 ] as const;
 
 type Labels = Record<(typeof items)[number]["key"], string>;
@@ -47,8 +49,8 @@ export function AppTabBar({ labels, show }: { labels: Labels; show: Key[] }) {
   const path = usePathname();
   return (
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${show.length}, minmax(0, 1fr))` }}>
-          {items.filter((x) => show.includes(x.key)).map(({ href, key, icon: Icon }) => {
+        <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${show.filter((k) => k !== "performance").length}, minmax(0, 1fr))` }}>
+          {items.filter((x) => show.includes(x.key) && x.key !== "performance").map(({ href, key, icon: Icon }) => {
             const active = isActive(path, href);
             return (
               <li key={href}>

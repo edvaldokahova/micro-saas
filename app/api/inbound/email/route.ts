@@ -53,6 +53,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
   const emailId = event.data?.email_id;
+
+  // Estado dos lembretes automáticos enviados (entregue, aberto, devolvido): só atualiza o registo do envio
+  if ((event.type === "email.delivered" || event.type === "email.opened" || event.type === "email.bounced") && typeof emailId === "string" && /^[A-Za-z0-9_-]{8,80}$/.test(emailId)) {
+    const admin = createAdminClient();
+    const at = new Date().toISOString();
+    if (event.type === "email.delivered") {
+      await admin.from("auto_email_log").update({ delivered_at: at }).eq("provider_id", emailId).is("delivered_at", null);
+    } else if (event.type === "email.bounced") {
+      await admin.from("auto_email_log").update({ bounced_at: at }).eq("provider_id", emailId);
+    } else {
+      const { data: row } = await admin.from("auto_email_log").select("id, open_count, opened_at").eq("provider_id", emailId).maybeSingle();
+      const r = row as { id: string; open_count: number; opened_at: string | null } | null;
+      if (r) await admin.from("auto_email_log").update({ open_count: r.open_count + 1, opened_at: r.opened_at ?? at }).eq("id", r.id);
+    }
+    return NextResponse.json({ ok: true });
+  }
+
   if (event.type !== "email.received" || typeof emailId !== "string" || !/^[A-Za-z0-9_-]{8,80}$/.test(emailId)) return NextResponse.json({ ok: true });
 
   // Os dados vêm sempre da API do Resend (não do corpo do aviso)

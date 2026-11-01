@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cache } from "react";
+import { after } from "next/server";
 import { Lock, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/preferences";
 import { formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
@@ -7,6 +8,7 @@ import { getLocale } from "@/lib/prefs";
 import { accountTexts } from "@/lib/account-texts";
 import { site } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { Checklist, type ChecklistTexts } from "./checklist";
 import { DeadlineCard } from "@/components/deadline-card";
 import { Uploader, type UploaderTexts } from "./uploader";
@@ -84,6 +86,14 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
 
   const months = req.months ?? 1;
   const period = formatPeriod(req.period, locale, months);
+  // Visita do cliente (para o Desempenho do escritório: quantos abriram o pedido). Não atrasa a página.
+  // Quem vem do guia (cliente de exemplo) não conta.
+  if (guia !== "1") {
+    // (dentro do after não se podem ler cookies numa página: usa a ligação do servidor)
+    after(async () => {
+      await createAdminClient().rpc("mark_request_viewed", { p_token: token });
+    });
+  }
   const ofPeriod = periodOf(req.period, locale, months);
   const canSend = !req.closed;
   const initials = req.office_name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");

@@ -375,6 +375,10 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                   ))}
                 </div>
               </fieldset>
+              <p className={`flex items-center gap-1.5 text-[12.5px] ${process.env.META_CAPI_TOKEN ? "text-ok" : "text-muted"}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${process.env.META_CAPI_TOKEN ? "bg-ok" : "bg-line-strong"}`} aria-hidden />
+                API de Conversões {process.env.META_CAPI_TOKEN ? "ligada: Lead, registo e compra seguem também pelo servidor, sem contar a dobrar" : "desligada (falta META_CAPI_TOKEN na Vercel)"}
+              </p>
               <p className="text-[12px] leading-5 text-muted">Só carrega depois de o visitante aceitar os cookies de medição (obrigatório na UE). Nunca corre nas páginas dos clientes dos escritórios nem aqui.</p>
               <SubmitButton className="btn btn-primary btn-sm">Guardar</SubmitButton>
             </form>

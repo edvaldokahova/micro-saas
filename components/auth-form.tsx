@@ -105,7 +105,7 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
       setMessage(t.rateLimit);
       return;
     }
-    if (mode === "signup") window.blTrack?.("Lead");
+    if (mode === "signup") window.blTrack?.("Lead", undefined, { email: email.trim().toLowerCase() });
     setState("sent");
   }
 
@@ -281,14 +281,22 @@ function FieldError({ text }: { text?: string }) {
 
 // Origem guardada pelo site (cookie bl_utm): vai com o registo para medir de onde vêm as vendas
 function readUtm(): { utm?: Record<string, string> } {
+  const get = (name: string) => document.cookie.split("; ").find((c) => c.startsWith(`${name}=`))?.slice(name.length + 1) ?? null;
+  const utm: Record<string, string> = {};
   try {
-    const raw = document.cookie.split("; ").find((c) => c.startsWith("bl_utm="));
-    if (!raw) return {};
-    const data = JSON.parse(decodeURIComponent(raw.slice(7))) as Record<string, unknown>;
-    const utm: Record<string, string> = {};
-    for (const [k, v] of Object.entries(data)) if (/^(utm_[a-z]+|src|sck)$/.test(k) && typeof v === "string") utm[k] = v.slice(0, 200);
-    return Object.keys(utm).length ? { utm } : {};
-  } catch {
-    return {};
+    const raw = get("bl_utm");
+    if (raw) {
+      const data = JSON.parse(decodeURIComponent(raw)) as Record<string, unknown>;
+      for (const [k, v] of Object.entries(data)) if (/^(utm_[a-z]+|src|sck)$/.test(k) && typeof v === "string") utm[k] = v.slice(0, 200);
+    }
+  } catch {}
+  // Para a Meta poder atribuir a compra mais tarde (só com consentimento dado)
+  if (get("bl_consent") === "yes") {
+    utm.consent = "yes";
+    const fbp = get("_fbp");
+    const fbc = get("_fbc");
+    if (fbp) utm.fbp = fbp.slice(0, 200);
+    if (fbc) utm.fbc = fbc.slice(0, 300);
   }
+  return Object.keys(utm).length ? { utm } : {};
 }

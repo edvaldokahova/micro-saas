@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { AccountMenu } from "@/components/account-menu";
+import { perfTexts } from "@/lib/performance-texts";
 import { inboxAddress } from "@/lib/inbound";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
@@ -18,10 +19,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { office, locale, d, role, user } = await getSession();
   // Colaboradores: Painel, Clientes e Documentos. Administradores: também Definições. Assinatura: só o dono da conta.
   // A assinatura passou para o menu da conta; na barra fica «Novo pedido», a ação mais usada
-  type NavKey = "dashboard" | "clients" | "newRequest" | "documents" | "settings";
+  type NavKey = "dashboard" | "clients" | "newRequest" | "documents" | "settings" | "performance";
   const show: NavKey[] = ["dashboard", "clients", "newRequest", "documents"];
-  if (role !== "member") show.push("settings");
-  const navLabels = { ...d.app.nav, newRequest: d.app.request.newTitle };
+  if (role !== "member") show.push("settings", "performance");
+  const navLabels = { ...d.app.nav, newRequest: d.app.request.newTitle, performance: perfTexts(locale).nav };
   // Primeira entrada do dono: questionário de boas-vindas antes do painel
   if (role === "owner" && !office.onboarded_at) return <Welcome t={accountTexts(locale).welcome} office={office.name} />;
   const access = officeAccess(office);
@@ -64,6 +65,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               inbox={role !== "member" ? inboxAddress(office.inbox_key) : null}
               helpUrl="/ajuda"
               timezone={office.timezone}
+              performance={role !== "member" ? perfTexts(locale).nav : null}
             />
           </div>
         </div>

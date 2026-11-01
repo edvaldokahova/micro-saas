@@ -517,3 +517,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .chart-draw, .chart-area, .chart-dot, .chart-bar { animation: none; }
 }
+@keyframes chart-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}

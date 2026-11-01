@@ -6,13 +6,14 @@
 // Os eventos disparam com window.blTrack("Lead") etc.; só os ligados no painel seguem para a Meta.
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { serverTrack } from "@/lib/actions/track";
 
 type Fbq = ((...args: unknown[]) => void) & { callMethod?: (...a: unknown[]) => void; queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown };
 declare global {
   interface Window {
     fbq?: Fbq;
     _fbq?: Fbq;
-    blTrack?: (event: string, params?: Record<string, unknown>) => void;
+    blTrack?: (event: string, params?: Record<string, unknown>, opts?: { email?: string }) => void;
   }
 }
 
@@ -82,10 +83,18 @@ export function MetaPixel({ id, events }: { id: string | null; events: string[] 
 
   // Função de eventos sempre disponível (não faz nada sem consentimento ou com o evento desligado)
   useEffect(() => {
-    window.blTrack = (event, params) => {
+    window.blTrack = (event, params, opts) => {
       if (!id || excluded || readConsent() !== "yes" || !events.includes(event)) return;
       loadPixel(id);
-      window.fbq?.("track", event, params ?? {});
+      // O mesmo identificador vai no navegador e no servidor: a Meta conta uma só vez
+      const eventId = `${event.slice(0, 3).toLowerCase()}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+      window.fbq?.("track", event, params ?? {}, { eventID: eventId });
+      serverTrack(event, eventId, {
+        email: opts?.email,
+        value: typeof params?.value === "number" ? (params.value as number) : undefined,
+        currency: typeof params?.currency === "string" ? (params.currency as string) : undefined,
+        url: location.href,
+      }).catch(() => null);
     };
   }, [id, events, excluded]);
 

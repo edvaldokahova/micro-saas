@@ -151,6 +151,17 @@ export function IconClock({ className = "h-5 w-5" }: P) {
   );
 }
 
+// Desempenho: três barras a subir com a última realçada
+export function IconChart({ className = "h-5 w-5", active = false }: N) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3" y="10.5" width="3.4" height="6.5" rx="1.2" fill={active ? "currentColor" : "none"} />
+      <rect x="8.3" y="7" width="3.4" height="10" rx="1.2" fill={active ? "currentColor" : "none"} />
+      <rect x="13.6" y="3" width="3.4" height="14" rx="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
 // Visto
 export function IconTick({ className = "h-4 w-4" }: P) {
   return (

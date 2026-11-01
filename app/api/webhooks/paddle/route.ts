@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyPaddleSignature } from "@/lib/paddle/verify";
 import { applyPaddleEvent, type PaddleEvent } from "@/lib/paddle/webhook";
 import { utmifyFromPaddle } from "@/lib/utmify";
+import { sendCapi } from "@/lib/meta-capi";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,10 +70,36 @@ export async function POST(request: Request) {
     if (sent) {
       await db.from("billing_events").update({ utmify: sent.slice(0, 300) }).eq("provider", "paddle").eq("event_id", event.event_id);
     }
+    // Compra para a API de Conversões da Meta (só se a pessoa aceitou os cookies quando se registou)
+    if (event.event_type === "transaction.completed" && officeId) {
+      await metaPurchase(db, event.data as unknown as { id: string; details?: { totals?: { total?: string; currency_code?: string } } }, officeId).catch(() => null);
+    }
   } catch (e) {
     console.error("[paddle] aplicar evento", event.event_type, e instanceof Error ? e.message : e);
     return NextResponse.json({ error: "apply_failed" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });
+}
+
+async function metaPurchase(
+  db: ReturnType<typeof createAdminClient>,
+  txn: { id: string; details?: { totals?: { total?: string; currency_code?: string } } },
+  officeId: string,
+) {
+  const { data } = await db.from("offices").select("billing_email, country, utm").eq("id", officeId).maybeSingle();
+  const o = data as { billing_email: string | null; country: string | null; utm: Record<string, string> | null } | null;
+  if (!o || o.utm?.consent !== "yes") return;
+  const total = Number(txn.details?.totals?.total ?? 0) / 100;
+  await sendCapi({
+    event: "Purchase",
+    eventId: txn.id,
+    email: o.billing_email,
+    value: total,
+    currency: (txn.details?.totals?.currency_code ?? "EUR").toUpperCase(),
+    url: "https://app.bilonai.com/assinatura",
+    fbp: o.utm.fbp ?? null,
+    fbc: o.utm.fbc ?? null,
+    country: o.country && o.country !== "other" ? o.country.toLowerCase() : null,
+  });
 }

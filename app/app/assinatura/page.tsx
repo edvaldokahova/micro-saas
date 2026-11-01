@@ -56,7 +56,8 @@ export default async function Assinatura({ searchParams }: { searchParams: Promi
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
 
       {/* Compra concluída: evento Purchase para o Pixel da Meta (se ligado e com consentimento) */}
-      {ok && (
+      {/* Com a API de Conversões ligada, a compra segue pelo servidor (via Paddle); senão, pelo navegador */}
+      {ok && !process.env.META_CAPI_TOKEN && (
         <TrackOnce
           event="Purchase"
           params={(() => {

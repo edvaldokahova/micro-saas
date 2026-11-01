@@ -31,19 +31,22 @@ function smooth(pts: [number, number][]): string {
   return path;
 }
 
-export function RevenueChart({ points, currency }: { points: RevenuePoint[]; currency: "EUR" | "BRL" }) {
+// Também serve para contagens (unit="count"): ex.: documentos recebidos por mês no Desempenho
+export function RevenueChart({ points, currency = "EUR", unit = "money", noun }: { points: RevenuePoint[]; currency?: "EUR" | "BRL"; unit?: "money" | "count"; noun?: [string, string] }) {
   const id = useId().replace(/:/g, "");
   const [hover, setHover] = useState<number | null>(null);
   const money = (cents: number) =>
+    unit === "count" ? new Intl.NumberFormat("pt-PT").format(cents) :
     new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
   // Escala «redonda» (ex.: 0, 50 €, 100 €, 150 €) para o eixo vertical
-  const top = Math.max(100, ...points.map((p) => p.total));
+  const top = Math.max(unit === "count" ? 4 : 100, ...points.map((p) => p.total));
   const rough = top / 4;
   const mag = 10 ** Math.floor(Math.log10(rough));
-  const step = [1, 2, 2.5, 5, 10].map((f) => f * mag).find((v) => v >= rough) ?? 10 * mag;
+  const step = Math.max(unit === "count" ? 1 : 0, [1, 2, 2.5, 5, 10].map((f) => f * mag).find((v) => v >= rough && (unit !== "count" || Number.isInteger(v))) ?? 10 * mag);
   const max = step * Math.ceil(top / step);
   const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
   const axis = (cents: number) =>
+    unit === "count" ? new Intl.NumberFormat("pt-PT").format(cents) :
     new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, notation: cents >= 1_000_000 ? "compact" : "standard", maximumFractionDigits: 0 }).format(cents / 100);
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
@@ -122,9 +125,13 @@ export function RevenueChart({ points, currency }: { points: RevenuePoint[]; cur
         >
           <p className="font-mono text-[10.5px] uppercase tracking-wider text-muted">{h.label}</p>
           <p className="mt-0.5 font-semibold tabular-nums">{money(h.total)}</p>
-          <p className="text-muted tabular-nums">
-            Líquido {money(h.earnings)} · {h.count} {h.count === 1 ? "pagamento" : "pagamentos"}
-          </p>
+          {unit === "money" ? (
+            <p className="text-muted tabular-nums">
+              Líquido {money(h.earnings)} · {h.count} {h.count === 1 ? "pagamento" : "pagamentos"}
+            </p>
+          ) : (
+            noun && <p className="text-muted">{h.total === 1 ? noun[0] : noun[1]}</p>
+          )}
         </div>
       )}
     </div>
@@ -240,6 +247,113 @@ export function OfficesRing({ segments, total, center }: { segments: Segment[]; 
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/* ---------- Barras agrupadas (ex.: lembretes enviados e abertos) ---------- */
+
+export type BarGroup = { label: string; values: number[] };
+
+export function BarsChart({ groups, series }: { groups: BarGroup[]; series: { name: string; from: string; to: string }[] }) {
+  const id = useId().replace(/:/g, "");
+  const [hover, setHover] = useState<number | null>(null);
+  const top = Math.max(4, ...groups.flatMap((g) => g.values));
+  const rough = top / 4;
+  const mag = 10 ** Math.floor(Math.log10(Math.max(1, rough)));
+  const step = Math.max(1, [1, 2, 5, 10].map((f) => f * mag).find((v) => v >= rough) ?? 10 * mag);
+  const max = step * Math.ceil(top / step);
+  const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
+  const BW = 640;
+  const BH = 200;
+  const slot = BW / Math.max(1, groups.length);
+  const barW = Math.min(26, (slot * 0.62) / series.length);
+  const yb = (v: number) => 10 + (BH - 10) * (1 - v / max);
+  const h = hover != null ? groups[hover] : null;
+
+  return (
+    <div>
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3">
+        <div className="relative w-max min-w-[1.75rem] self-stretch" aria-hidden>
+          {ticks.map((v) => (
+            <span key={v} className="absolute right-0 -translate-y-1/2 font-mono text-[10.5px] tabular-nums text-muted" style={{ top: `${(yb(v) / BH) * 100}%` }}>
+              {v}
+            </span>
+          ))}
+          <span className="invisible block font-mono text-[10.5px]">{max}</span>
+        </div>
+        <div className="relative">
+          <svg viewBox={`0 0 ${BW} ${BH}`} className="h-auto w-full overflow-visible" role="img">
+            <defs>
+              {series.map((s, k) => (
+                <linearGradient key={k} id={`b${k}${id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={s.from} />
+                  <stop offset="100%" stopColor={s.to} />
+                </linearGradient>
+              ))}
+            </defs>
+            {ticks.slice(1).map((v) => (
+              <line key={v} x1={0} x2={BW} y1={yb(v)} y2={yb(v)} stroke="var(--color-line)" strokeDasharray="2 5" />
+            ))}
+            <line x1={0} x2={BW} y1={BH} y2={BH} stroke="var(--color-line-strong)" />
+            {groups.map((g, i) => {
+              const cx = slot * i + slot / 2;
+              const start = cx - (barW * series.length + 4 * (series.length - 1)) / 2;
+              return (
+                <g key={g.label} onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)}>
+                  <rect x={slot * i} y={0} width={slot} height={BH} fill={hover === i ? "var(--color-ink-3)" : "transparent"} opacity={0.6} rx={8} />
+                  {g.values.map((v, k) => {
+                    const top = yb(v);
+                    const height = Math.max(v > 0 ? 3 : 0, BH - top);
+                    return (
+                      <rect
+                        key={k}
+                        x={start + k * (barW + 4)}
+                        y={BH - height}
+                        width={barW}
+                        height={height}
+                        rx={Math.min(5, barW / 2)}
+                        fill={`url(#b${k}${id})`}
+                        className="chart-bar"
+                        style={{ animationDelay: `${0.08 * i + 0.12 * k}s` }}
+                      />
+                    );
+                  })}
+                </g>
+              );
+            })}
+          </svg>
+          {h && hover != null && (
+            <div
+              className="pointer-events-none absolute top-0 z-10 w-max rounded-xl border border-line bg-ink-2 px-3 py-2 text-[12.5px] shadow-[0_12px_30px_-12px_rgba(18,19,22,0.35)]"
+              style={{ left: `${((slot * hover + slot / 2) / BW) * 100}%`, transform: `translateX(${hover / groups.length > 0.6 ? "calc(-100% - 10px)" : hover / groups.length < 0.3 ? "10px" : "-50%"})` }}
+            >
+              <p className="font-mono text-[10.5px] uppercase tracking-wider text-muted">{h.label}</p>
+              {series.map((s, k) => (
+                <p key={s.name} className="mt-0.5 flex items-center gap-2 tabular-nums">
+                  <span className="h-2 w-2 rounded-full" style={{ background: `linear-gradient(135deg, ${s.from}, ${s.to})` }} />
+                  {s.name}: <strong className="font-semibold">{h.values[k]}</strong>
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="col-start-2 mt-2 flex">
+          {groups.map((g) => (
+            <span key={g.label} className="flex-1 text-center font-mono text-[10.5px] uppercase tracking-wider text-muted">
+              {g.label}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[13px]">
+        {series.map((s) => (
+          <span key={s.name} className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: `linear-gradient(135deg, ${s.from}, ${s.to})` }} aria-hidden />
+            {s.name}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

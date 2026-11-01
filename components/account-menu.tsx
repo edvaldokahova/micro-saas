@@ -4,12 +4,12 @@
 // endereço de recolha por e-mail (copiar num toque), ajuda e sair. Fecha ao tocar fora ou com Esc.
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { IconAccount, IconBilling, IconClock, IconHelp, IconInbox, IconSignOut, IconTick } from "@/components/icons";
+import { IconAccount, IconBilling, IconChart, IconClock, IconHelp, IconInbox, IconSignOut, IconTick } from "@/components/icons";
 import { tzLabel } from "@/lib/timezone";
 import { signOut } from "@/app/app/actions";
 import type { MenuTexts } from "@/lib/account-texts";
 
-export function AccountMenu({ t, email, office, billing, inbox, helpUrl, timezone }: { t: MenuTexts; email: string; office: string; billing: boolean; inbox: string | null; helpUrl: string; timezone: string }) {
+export function AccountMenu({ t, email, office, billing, inbox, helpUrl, timezone, performance }: { t: MenuTexts; email: string; office: string; billing: boolean; inbox: string | null; helpUrl: string; timezone: string; performance: string | null }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -59,6 +59,11 @@ export function AccountMenu({ t, email, office, billing, inbox, helpUrl, timezon
             <Link role="menuitem" href="/conta" onClick={() => setOpen(false)} className={row}>
               <IconAccount className="h-[18px] w-[18px] text-muted" /> {t.account}
             </Link>
+            {performance && (
+              <Link role="menuitem" href="/desempenho" onClick={() => setOpen(false)} className={`${row} md:hidden`}>
+                <IconChart className="h-[18px] w-[18px] text-muted" /> {performance}
+              </Link>
+            )}
             <Link role="menuitem" href="/conta#fuso" onClick={() => setOpen(false)} className={row}>
               <IconClock className="h-[18px] w-[18px] text-muted" />
               <span className="min-w-0 truncate">
