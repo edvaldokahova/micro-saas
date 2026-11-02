@@ -77,6 +77,15 @@ export async function POST(request: Request) {
   const mail = await resend<Received>(`/emails/receiving/${emailId}`);
   if (!mail) return NextResponse.json({ ok: false }, { status: 502 });
   const sender = addressOf(mail.from);
+  // Gmail: ao configurar o reencaminhamento, a Google envia um código para o endereço do escritório.
+  // Guardamo-lo para aparecer nas Definições (o escritório copia-o para o Gmail e fica confirmado).
+  if (sender === "forwarding-noreply@google.com") {
+    const code = (mail.subject ?? "").match(/\(#(\d{6,12})\)/)?.[1];
+    const keys = [...(mail.to ?? [])].map(addressOf).filter((a): a is string => !!a && a.endsWith(`@${domain}`)).map((a) => a.slice(0, -(domain.length + 1)));
+    if (code && keys.length)
+      await createAdminClient().from("offices").update({ inbox_confirm_code: code, inbox_confirm_at: new Date().toISOString() }).in("inbox_key", keys);
+    return NextResponse.json({ ok: true });
+  }
   // Nunca processar e-mails enviados por nós próprios (evita voltas)
   if (!sender || sender.endsWith("@mail.bilonai.com") || sender.endsWith(`@${domain}`)) return NextResponse.json({ ok: true });
 

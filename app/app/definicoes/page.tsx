@@ -1,6 +1,8 @@
 import { clientBase, cnameHost, CNAME_TARGET } from "@/lib/domains";
 import { domainTexts } from "@/lib/domain-texts";
 import { DomainCard } from "@/components/domain-card";
+import { HelpTip } from "@/components/help-tip";
+import { inboxHelpTexts } from "@/lib/inbox-help-texts";
 import { IntegrationsCard, type DriveState } from "@/components/integrations-card";
 import { integrationTexts } from "@/lib/integration-texts";
 import { driveReady } from "@/lib/gdrive";
@@ -29,6 +31,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
   if (!isManager) redirect("/");
   const t = d.app.settings;
   const inbox = inboxAddress(office.inbox_key);
+  const ih = inboxHelpTexts(locale);
   const [{ data }, { data: teamData }] = await Promise.all([
     supabase.from("document_types").select("id, label").order("position"),
     supabase.from("team_members").select("id, name, phone, email, access, see_all, user_id, joined_at").order("created_at"),
@@ -169,12 +172,35 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       {/* Recolha por e-mail: endereço do escritório para uma regra de reencaminhamento (opcional) */}
       {inbox && (
         <section id="recolha" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
-          <h2 className="font-display text-lg">{t.inbox.title}</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-lg">{t.inbox.title}</h2>
+            <HelpTip
+              label={ih.open}
+              title={ih.title}
+              footer={ih.tip}
+              tabs={[
+                { name: ih.tabs[0], steps: ih.gmail },
+                { name: ih.tabs[1], steps: ih.outlook },
+                { name: ih.tabs[2], steps: ih.other },
+              ]}
+            />
+          </div>
           <p className="mt-1 text-sm leading-6 text-muted">{t.inbox.hint}</p>
           <code className="mt-4 block truncate border-y border-line py-2.5 font-mono text-[13px]">{inbox}</code>
           <div className="mt-3">
-            <CopyButton value={inbox} label={d.common.copy} done={d.common.copied} />
+            <CopyButton value={inbox} label={ih.copy} done={ih.copied} />
           </div>
+          {/* Código que o Gmail enviou ao configurar o reencaminhamento (válido por pouco tempo) */}
+          {office.inbox_confirm_code && office.inbox_confirm_at && Date.now() - new Date(office.inbox_confirm_at).getTime() < 7 * 86_400_000 && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line px-3.5 py-3">
+              <div>
+                <p className="text-[12.5px] text-muted">{ih.code}</p>
+                <p className="font-mono text-[17px] tracking-wider">{office.inbox_confirm_code}</p>
+                <p className="mt-0.5 text-[12px] text-muted">{ih.codeHint}</p>
+              </div>
+              <CopyButton value={office.inbox_confirm_code} label={d.common.copy.split(" ")[0]} done={ih.copied} compact />
+            </div>
+          )}
           <p className="mt-3 text-xs leading-5 text-muted">{t.inbox.note}</p>
         </section>
       )}
