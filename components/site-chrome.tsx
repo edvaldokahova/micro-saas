@@ -86,8 +86,7 @@ export async function SiteFooter() {
         </ul>
       </div>
       <div className="mx-auto max-w-6xl border-t border-line px-5 py-5 font-mono text-[11px] text-muted">
-        © {new Date().getFullYear()} {site.owner} ·{" "}
-        <a className="transition hover:text-ivory" href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+        © {new Date().getFullYear()} {site.owner}
       </div>
     </footer>
   );

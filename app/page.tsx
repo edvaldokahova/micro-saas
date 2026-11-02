@@ -9,7 +9,7 @@ import { FitStory } from "@/components/story/fit-story";
 import { PhoneStory, type PhoneStoryTexts } from "@/components/story/phone-story";
 import { PricingPlans } from "@/components/pricing";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
-import { fill, formatDate, getDictionary, periodOf, type Locale } from "@/lib/i18n";
+import { fill, formatDate, formatPeriod, getDictionary, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site } from "@/lib/site";
 
@@ -65,13 +65,20 @@ export default async function Home() {
   const clients = [...h.mock.clients, ...h.story.extraClients];
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
   const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
-  const message = (cliente: string, docs: string[]) =>
+  // Plano Escritório: as páginas dos clientes saem com o domínio do escritório
+  const officeDomain = { "pt-PT": "doc.contabilidadesilva.pt", "pt-BR": "doc.contabilidadesilva.com.br", "es-ES": "doc.asesoriasilva.es" }[locale];
+  const ios = {
+    "pt-PT": { cancel: "Cancelar", add: "Adicionar", photos: "Fotografias", recents: "Recentes", search: "Pesquisar", today: "Hoje" },
+    "pt-BR": { cancel: "Cancelar", add: "Adicionar", photos: "Fotos", recents: "Recentes", search: "Buscar", today: "Hoje" },
+    "es-ES": { cancel: "Cancelar", add: "Añadir", photos: "Fotos", recents: "Recientes", search: "Buscar", today: "Hoy" },
+  };
+  const message = (cliente: string, docs: string[], url: string = link) =>
     fill(d.app.whatsappTemplate, {
       cliente,
       periodo: period,
       lista: docs.map((l) => `• ${l}`).join("\n"),
       em_falta: docs.length === 1 ? d.autoEmail.missingOne : fill(d.autoEmail.missingMany, { n: String(docs.length) }),
-      link,
+      link: url,
       escritorio: h.demo.office,
     });
   const laptop: WindowTexts = {
@@ -155,30 +162,39 @@ export default async function Home() {
     title: h.story.phone.title,
     lead: h.story.phone.lead,
     chapters: h.story.phone.chapters,
-    art: <LinkArt link="entrega.bilonai.com/p/q4hf…" labels={h.story.phone.art} />,
+    art: <LinkArt link={`${officeDomain}/p/q4hf…`} labels={h.story.phone.art} />,
     phone: {
       office: h.demo.office,
       client: clients[1],
-      preview: message(clients[1], h.demo.docs.slice(2)),
+      preview: message(clients[1], h.demo.docs.slice(1), `${officeDomain}/p/q4hfp7k2mx9a`),
       via: d.common.via.whatsapp,
       now: h.story.phone.now,
       date: h.story.phone.date,
-      link: "entrega.bilonai.com",
+      link: officeDomain,
+      locale,
+      requestFrom: d.public.requestFrom,
+      period: formatPeriod(locale === "es-ES" ? "2026-07-01" : "2026-09-01", locale, locale === "es-ES" ? 3 : 1),
       hello: d.public.hello(clients[1]),
       intro: d.public.intro(h.demo.office, period),
-      due: d.public.due(formatDate("2026-10-30", locale, false)),
-      progress: [d.public.progress(2, 3), d.public.progress(3, 3)],
+      step1: d.public.step1,
+      step2: d.public.step2,
+      uploadButton: d.public.uploadButton,
+      uploadHint: d.public.uploadHint(h.demo.office),
+      progress: [0, 1, 2, 3].map((n) => d.public.progress(n, 3)),
+      allDone: d.public.allDone,
       docs: h.demo.docs,
       upload: d.public.uploadItem,
       more: d.public.uploadMore,
-      sheet: h.demo.sheet as [string, string, string],
-      uploading: d.public.uploading(1, 1),
-      file: h.demo.files[2],
-      fileOne: d.public.files(1),
-      pageVia: d.common.via.page,
       received: d.public.received,
-      pending: d.public.pending,
-      thanks: h.story.phone.thanks,
+      fileOne: d.public.files(1),
+      privateLink: d.public.privateLink,
+      footer: d.public.footer(h.demo.office),
+      sheet: h.demo.sheet as [string, string, string],
+      ios: ios[locale],
+      photo: h.demo.files[2],
+      pdf: h.demo.files[1].replace(/\.\w+$/, ".pdf"),
+      pdfOther: h.demo.files[0],
+      pdfMeta: [`${ios[locale].today}, 09:12 · 212 KB`, `${ios[locale].today}, 08:47 · 1,1 MB`],
     },
   };
 
