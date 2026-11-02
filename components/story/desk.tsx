@@ -36,7 +36,7 @@ export type DeskTexts = {
     showDocs: string;
     docsTitle: string;
     docsHint: string;
-    filesCount: (n: number) => string;
+    filesCount: string[]; // índice = número de ficheiros
     months: string[]; // [atual, anterior]
     zip: string;
     zipDone: string;
@@ -380,7 +380,7 @@ function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
         ))}
       </div>
       <div className="mt-3 flex items-center justify-between border-b border-line pb-3">
-        <p className="text-[13px] text-muted tabular-nums">{u.filesCount(total)}</p>
+        <p className="text-[13px] text-muted tabular-nums">{u.filesCount[total]}</p>
       </div>
       <div className="mt-5 grid grid-cols-2 gap-8">
         {groups.map((g, gi) => (
@@ -389,7 +389,7 @@ function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
               <div>
                 <p className="text-[19px] font-semibold leading-tight tracking-[-0.01em]">{g.client}</p>
                 <p className="mt-0.5 whitespace-nowrap text-[12px] text-muted tabular-nums">
-                  {u.months[0]} · {u.filesCount(g.got)}
+                  {u.months[0]} · {u.filesCount[g.got]}
                 </p>
               </div>
               {g.zip && (

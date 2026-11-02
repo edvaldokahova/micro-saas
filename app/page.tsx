@@ -108,7 +108,8 @@ export default async function Home() {
         showDocs: d.app.dashboard.showDocs,
         docsTitle: d.app.docs.title,
         docsHint: d.app.docs.hint.split(". ")[0] + ".",
-        filesCount: d.app.docs.files,
+        // Textos já prontos (funções não podem passar para a animação, que corre no navegador)
+        filesCount: Array.from({ length: 7 }, (_, n) => d.app.docs.files(n)),
         months: [h.mock.month, locale === "es-ES" ? "2.º trimestre de 2026" : "Agosto de 2026"],
         zip: d.app.docs.zip(h.demo.docs.length),
         zipDone: `${clients[1].replace(/\s+/g, "_")}.zip`,
