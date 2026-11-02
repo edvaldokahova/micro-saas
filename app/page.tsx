@@ -107,9 +107,18 @@ export default async function Home() {
         delivered: dl.delivered,
         showDocs: d.app.dashboard.showDocs,
         docsTitle: d.app.docs.title,
-        docsHint: d.app.docs.hint.split(". ")[0] + ".",
+        docsHint: d.app.docs.hint,
         // Textos já prontos (funções não podem passar para a animação, que corre no navegador)
         filesCount: Array.from({ length: 7 }, (_, n) => d.app.docs.files(n)),
+        zipCounts: Array.from({ length: 7 }, (_, n) => d.app.docs.zip(n)),
+        // Dia e hora de chegada, no mesmo formato do painel (fuso do escritório)
+        dates: ["2026-10-02T08:14:00Z", "2026-10-03T15:47:00Z", "2026-10-06T10:02:00Z", "2026-10-01T09:31:00Z", "2026-10-01T09:33:00Z", "2026-10-02T18:20:00Z"].map((iso) => {
+          const tz = { timeZone: locale === "es-ES" ? "Europe/Madrid" : locale === "pt-BR" ? "America/Sao_Paulo" : "Europe/Lisbon" };
+          const at = new Date(iso);
+          return `${new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", ...tz }).format(at)}, ${new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false, ...tz }).format(at)}`;
+        }),
+        sizes: ["212 KB", "88 KB", "1.4 MB"],
+        move: d.app.docs.move,
         months: [h.mock.month, locale === "es-ES" ? "2.º trimestre de 2026" : "Agosto de 2026"],
         zip: d.app.docs.zip(h.demo.docs.length),
         zipDone: `${clients[1].replace(/\s+/g, "_")}.zip`,
