@@ -1,6 +1,6 @@
 // O painel do Bilonai na versão de computador (1280 × 800 lógicos), para a gravação no portátil.
 // Mesmos textos, marcas e ícones do painel real; os alvos dos cliques têm data-t.
-import { IconClients, IconDocs, IconLedger, IconSettings } from "@/components/icons";
+import { IconClients, IconDocs, IconLedger, IconSettings, IconSpark } from "@/components/icons";
 import { Avatar } from "@/components/avatar";
 import { Wordmark } from "@/components/logo";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
@@ -34,6 +34,10 @@ export type DeskTexts = {
     awaiting: string;
     delivered: string;
     showDocs: string;
+    docsTitle: string;
+    docsHint: string;
+    filesCount: (n: number) => string;
+    months: string[]; // [atual, anterior]
     zip: string;
     zipDone: string;
     filedBy: string;
@@ -69,7 +73,7 @@ export type DeskTexts = {
 
 type Access = "none" | "member" | "admin";
 export type DeskState = {
-  tab: "dash" | "clients" | "settings";
+  tab: "dash" | "clients" | "docs" | "settings";
   created: boolean;
   fresh: boolean;
   modal: boolean;
@@ -105,8 +109,17 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
     },
     {
       start: { ...BASE, reminded: true },
-      // Os ficheiros chegam arrumados (o último, enviado agora pela página do pedido) e descarrega-se tudo num ZIP
-      steps: [{ tap: "docs", set: { expanded: true }, zoom: 1.6 }, { wait: 1.1 }, { set: { confirmed: true } }, { wait: 1.2 }, { tap: "zip", set: { zipped: true }, zoom: 1.7 }, { wait: 0.9 }],
+      // Página Documentos: tudo arrumado por cliente e por documento. Chega um ficheiro novo (enviado agora
+      // pela página do pedido), o Bilonai arruma-o no documento certo e descarrega-se o cliente num ZIP.
+      steps: [
+        { tap: "tab-docs", set: { tab: "docs" } },
+        { wait: 0.7 },
+        { set: { confirmed: true } },
+        { tap: "doc-new", zoom: 1.55 },
+        { wait: 1.1 },
+        { tap: "zip", set: { zipped: true }, zoom: 1.7 },
+        { wait: 0.9 },
+      ],
     },
     {
       start: { ...BASE, reminded: true, confirmed: true },
@@ -172,6 +185,7 @@ export function DeskScreen({ s, t }: { s: DeskState; t: DeskTexts }) {
         <div className="mx-auto max-w-[1040px] px-10 pt-9">
           {s.tab === "dash" && <Dash s={s} t={t} />}
           {s.tab === "clients" && <Clients s={s} t={t} />}
+          {s.tab === "docs" && <Docs s={s} t={t} />}
           {s.tab === "settings" && <Settings s={s} t={t} />}
         </div>
         {/* Lembrete pronto */}
@@ -341,6 +355,94 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
           </ul>
         </>
       )}
+    </div>
+  );
+}
+
+// Página Documentos, como no painel real: mês, depois cada cliente, e dentro dele cada documento com os ficheiros
+function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
+  const u = t.ui;
+  const n = t.docs.length;
+  const groups = [
+    { client: t.clients[1], via: DEMO_VIA, got: s.confirmed ? n : n - 1, zip: true },
+    { client: t.clients[3], via: ["email", "email", "page"] as Channel[], got: n, zip: false },
+  ];
+  const total = groups.reduce((a, g) => a + g.got, 0);
+  return (
+    <div>
+      <p className={h1}>{u.docsTitle}</p>
+      <p className="mt-2 text-[13.5px] text-muted">{u.docsHint}</p>
+      <div className="mt-6 flex gap-2">
+        {u.months.map((m, i) => (
+          <span key={m} className={`rounded-full border px-3.5 py-1.5 text-[12.5px] ${i === 0 ? "border-ivory bg-ivory text-ink" : "border-line-strong text-muted"}`}>
+            {m}
+          </span>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between border-b border-line pb-3">
+        <p className="text-[13px] text-muted tabular-nums">{u.filesCount(total)}</p>
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-8">
+        {groups.map((g, gi) => (
+          <section key={g.client}>
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[19px] font-semibold leading-tight tracking-[-0.01em]">{g.client}</p>
+                <p className="mt-0.5 whitespace-nowrap text-[12px] text-muted tabular-nums">
+                  {u.months[0]} · {u.filesCount(g.got)}
+                </p>
+              </div>
+              {g.zip && (
+                <span className="relative">
+                  {/* A descarga aparece por baixo do botão, como no navegador, sem mexer no resto */}
+                  {s.zipped && (
+                    <span className="absolute right-0 top-full z-10 mt-1.5 flex animate-rise items-center gap-1.5 whitespace-nowrap rounded-lg border border-line bg-ink-2 py-1 pl-1.5 pr-2 shadow-[0_6px_16px_-10px_rgba(18,19,22,0.35)]">
+                      <span className="grid h-5 w-4 place-items-center rounded-[3px] bg-[#f4c542] font-mono text-[6px] font-bold text-[#5c4300]">ZIP</span>
+                      <span className="text-[11px] font-medium">{u.zipDone}</span>
+                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ok" aria-hidden><path d="M2.5 6.3l2.2 2.2L9.5 3.6" /></svg>
+                    </span>
+                  )}
+                  <span data-t="zip" className="btn btn-secondary btn-sm">{u.zip}</span>
+                </span>
+              )}
+            </div>
+            <div className="mt-3 space-y-3">
+              {t.docs.map((d, k) => {
+                const arrived = k < g.got;
+                const fresh = gi === 0 && k === n - 1 && s.confirmed;
+                const via = g.via[k % g.via.length];
+                const file = u.files[k] ?? "";
+                return (
+                  <div key={d}>
+                    <p className="mb-1.5 flex items-center gap-2 text-[13px] font-medium">
+                      <DocMark state={arrived ? "received" : "pending"} animate={fresh} />
+                      {d}
+                    </p>
+                    {arrived ? (
+                      <span
+                        data-t={fresh ? "doc-new" : undefined}
+                        className={`flex items-center gap-3 rounded-xl border bg-ink-2 px-3 py-2 transition-[border-color,box-shadow] duration-700 ${fresh ? "animate-rise border-ivory shadow-[0_0_0_3px_rgba(37,99,235,0.12)]" : "border-line"}`}
+                      >
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ink-3 font-mono text-[8.5px] font-semibold text-muted">{file.split(".").pop()?.toUpperCase()}</span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-[12.5px] font-medium">{file}</span>
+                          <span className="flex items-center gap-1.5 text-[11px] text-muted">
+                            <ChannelIcon via={via} className="h-2.5 w-2.5" /> {u.channels[via]}
+                            <span aria-hidden>·</span>
+                            <IconSpark className="h-2.5 w-2.5 text-ivory" /> {u.filedBy}
+                          </span>
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="block rounded-xl border border-dashed border-line-strong px-3 py-[13px] text-[11.5px] text-muted">{u.docStatus.pending}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

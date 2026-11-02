@@ -38,7 +38,7 @@ export async function SiteHeader() {
           </Link>
           {/* Menu do telemóvel, sem JavaScript */}
           <details className="group relative sm:hidden">
-            <summary className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-muted [&::-webkit-details-marker]:hidden">
+            <summary className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-ivory transition hover:border-ivory group-open:border-ivory [&::-webkit-details-marker]:hidden">
               <Menu className="h-4 w-4" aria-hidden />
               <span className="sr-only">Menu</span>
             </summary>
