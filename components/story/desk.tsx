@@ -42,6 +42,19 @@ export type DeskTexts = {
     dates: string[]; // dia e hora de chegada de cada ficheiro (cliente 1, depois cliente 2)
     sizes: string[];
     move: string;
+    drive: {
+      title: string;
+      lead: string;
+      desc: string;
+      connect: string;
+      connectedAs: string;
+      auto: string;
+      autoHint: string;
+      sent: string;
+      privacy: string;
+      myDrive: string;
+      folder: string; // «Bilonai»
+    };
     months: string[]; // [atual, anterior]
     zip: string;
     zipDone: string;
@@ -78,7 +91,8 @@ export type DeskTexts = {
 
 type Access = "none" | "member" | "admin";
 export type DeskState = {
-  tab: "dash" | "clients" | "docs" | "settings";
+  tab: "dash" | "clients" | "docs" | "settings" | "drive";
+  drive: 0 | 1 | 2; // por ligar · ligado (a enviar) · enviado
   created: boolean;
   fresh: boolean;
   modal: boolean;
@@ -98,7 +112,7 @@ export type DeskState = {
 
 const BASE: DeskState = {
   tab: "dash", created: true, fresh: false, modal: false, reminded: false, expanded: false, confirmed: false, zipped: false,
-  openClient: null, archived: [], showArchived: false, focus: null, name: "", email: "", access: "none", invited: false,
+  openClient: null, archived: [], showArchived: false, focus: null, name: "", email: "", access: "none", invited: false, drive: 0,
 };
 
 export function deskScript(member: DeskTexts["member"]): { start: DeskState; steps: Step<DeskState>[] }[] {
@@ -124,6 +138,19 @@ export function deskScript(member: DeskTexts["member"]): { start: DeskState; ste
         { wait: 1.1 },
         { tap: "zip", set: { zipped: true }, zoom: 1.7 },
         { wait: 0.9 },
+      ],
+    },
+    {
+      // Google Drive: liga-se nas Definições e os documentos arrumados vão para a pasta «Bilonai»
+      start: { ...BASE, reminded: true, confirmed: true, tab: "docs" },
+      steps: [
+        { tap: "tab-settings", set: { tab: "drive" } },
+        { tap: "drive-connect", set: { drive: 1 }, zoom: 1.6 },
+        { wait: 1 },
+        { set: { drive: 2 } },
+        // A câmara vai até à pasta no Drive, já com os documentos do cliente
+        { tap: "drive-folder", zoom: 1.25 },
+        { wait: 1.4 },
       ],
     },
     {
@@ -174,8 +201,8 @@ export function DeskScreen({ s, t }: { s: DeskState; t: DeskTexts }) {
                 ["settings", u.nav.settings, IconSettings],
               ] as const
             ).map(([k, label, Icon]) => (
-              <span key={k} data-t={`tab-${k}`} className={`flex items-center gap-2 ${s.tab === k ? "font-medium text-ivory" : "text-muted"}`}>
-                <Icon className="h-[17px] w-[17px]" active={s.tab === k} />
+              <span key={k} data-t={`tab-${k}`} className={`flex items-center gap-2 ${s.tab === k || (k === "settings" && s.tab === "drive") ? "font-medium text-ivory" : "text-muted"}`}>
+                <Icon className="h-[17px] w-[17px]" active={s.tab === k || (k === "settings" && s.tab === "drive")} />
                 {label}
               </span>
             ))}
@@ -191,6 +218,7 @@ export function DeskScreen({ s, t }: { s: DeskState; t: DeskTexts }) {
           {s.tab === "dash" && <Dash s={s} t={t} />}
           {s.tab === "clients" && <Clients s={s} t={t} />}
           {s.tab === "docs" && <Docs s={s} t={t} />}
+          {s.tab === "drive" && <Drive s={s} t={t} />}
           {s.tab === "settings" && <Settings s={s} t={t} />}
         </div>
         {/* Lembrete pronto */}
@@ -462,6 +490,78 @@ function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
             </div>
           </section>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// Definições → Integrações: ligar o Google Drive; ao lado, a pasta «Bilonai» já com os clientes e os documentos
+function Drive({ s, t }: { s: DeskState; t: DeskTexts }) {
+  const u = t.ui;
+  const x = u.drive;
+  const folderIcon = (
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="#5f6368" aria-hidden>
+      <path d="M2.5 5.5a1.5 1.5 0 0 1 1.5-1.5h3.6l1.6 1.8H16a1.5 1.5 0 0 1 1.5 1.5v7.7A1.5 1.5 0 0 1 16 16.5H4a1.5 1.5 0 0 1-1.5-1.5z" />
+    </svg>
+  );
+  return (
+    <div>
+      <p className={h1}>{u.settingsTitle}</p>
+      <div className="mt-7 grid grid-cols-[1fr_1.1fr] gap-6">
+        <div className="rounded-3xl border border-line bg-ink-2 p-6">
+          <p className="text-[16px] font-semibold">{x.title}</p>
+          <p className="mt-1.5 text-[13px] leading-[1.5] text-muted">{x.lead}</p>
+          <div className="mt-5 rounded-2xl border border-line p-4">
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/google-drive.png" alt="" width={32} height={32} className="h-8 w-8" />
+              <div className="min-w-0">
+                <p className="text-[15px] font-medium">Google Drive</p>
+                <p className="truncate text-[12.5px] text-muted">{s.drive ? x.connectedAs : x.desc}</p>
+              </div>
+              {s.drive > 0 && <span className="ml-auto h-2 w-2 rounded-full bg-ok" />}
+            </div>
+            {s.drive === 0 ? (
+              <span data-t="drive-connect" className="btn btn-primary btn-sm mt-4">{x.connect}</span>
+            ) : (
+              <div className="mt-4 animate-rise space-y-3">
+                <span className="flex items-center justify-between gap-4 rounded-xl border border-line px-3.5 py-3">
+                  <span>
+                    <span className="block text-[14px] font-medium">{x.auto}</span>
+                    <span className="block text-[12px] text-muted">{x.autoHint}</span>
+                  </span>
+                  <span className="relative h-[26px] w-[44px] shrink-0 rounded-full bg-ivory">
+                    <span className="absolute right-[3px] top-[3px] h-5 w-5 rounded-full bg-ink-2" />
+                  </span>
+                </span>
+                <p className={`text-[13px] ${s.drive === 2 ? "text-ok" : "text-muted"}`}>{s.drive === 2 ? x.sent : "…"}</p>
+              </div>
+            )}
+            <p className="mt-4 text-[11.5px] text-muted">{x.privacy}</p>
+          </div>
+        </div>
+
+        {/* A pasta no Google Drive, como o escritório a vê */}
+        <div className={`overflow-hidden rounded-3xl border border-line bg-white text-[#202124] transition-all duration-500 ${s.drive === 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+          <div className="flex items-center gap-2.5 border-b border-[#e3e3e3] px-5 py-3.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/google-drive.png" alt="" width={22} height={22} className="h-[22px] w-[22px]" />
+            <span className="text-[15px]">Drive</span>
+          </div>
+          <p className="px-5 pt-4 text-[14px] text-[#5f6368]">
+            {x.myDrive} <span className="mx-1">›</span> {x.folder} <span className="mx-1">›</span> {t.clients[1]} <span className="mx-1">›</span>{" "}
+            <span className="text-[#202124]">2026-09</span>
+          </p>
+          <ul data-t="drive-folder" className="mt-3 px-3 pb-4">
+            {t.docs.map((d, k) => (
+              <li key={d} className={`flex items-center gap-3 rounded-lg px-2 py-2.5 text-[14px] ${s.drive === 2 ? "animate-rise" : ""}`} style={{ animationDelay: `${150 + k * 90}ms` }}>
+                {folderIcon}
+                <span className="flex-1">{d}</span>
+                <span className="text-[12px] text-[#5f6368]">{u.filesCount[1]}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

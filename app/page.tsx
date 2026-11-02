@@ -12,6 +12,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { fill, formatDate, formatPeriod, getDictionary, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
 import { site } from "@/lib/site";
+import { integrationTexts } from "@/lib/integration-texts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const d = getDictionary(await getLocale());
@@ -67,6 +68,7 @@ export default async function Home() {
   const link = "docs.bilonai.com/p/q4hfp7k2mx9a";
   // Plano Escritório: as páginas dos clientes saem com o domínio do escritório
   const officeDomain = { "pt-PT": "doc.contabilidadesilva.pt", "pt-BR": "doc.contabilidadesilva.com.br", "es-ES": "doc.asesoriasilva.es" }[locale];
+  const it = integrationTexts(locale);
   const ios = {
     "pt-PT": { cancel: "Cancelar", add: "Adicionar", photos: "Fotografias", recents: "Recentes", search: "Pesquisar", today: "Hoje" },
     "pt-BR": { cancel: "Cancelar", add: "Adicionar", photos: "Fotos", recents: "Recentes", search: "Buscar", today: "Hoje" },
@@ -126,6 +128,19 @@ export default async function Home() {
         }),
         sizes: ["212 KB", "88 KB", "1.4 MB"],
         move: d.app.docs.move,
+        drive: {
+          title: it.title,
+          lead: it.lead,
+          desc: it.drive.desc,
+          connect: it.drive.connect,
+          connectedAs: it.drive.connectedAs.replace("{email}", locale === "es-ES" ? "asesoria.silva@gmail.com" : "contabilidade.silva@gmail.com"),
+          auto: it.drive.auto,
+          autoHint: it.drive.autoHint,
+          sent: it.drive.sent.replace("{n}", "6"),
+          privacy: it.drive.privacy,
+          myDrive: locale === "pt-PT" ? "O meu disco" : locale === "pt-BR" ? "Meu Drive" : "Mi unidad",
+          folder: "Bilonai",
+        },
         months: [h.mock.month, locale === "es-ES" ? "2.º trimestre de 2026" : "Agosto de 2026"],
         zip: d.app.docs.zip(h.demo.docs.length),
         zipDone: `${clients[1].replace(/\s+/g, "_")}.zip`,

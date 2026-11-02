@@ -105,6 +105,7 @@ const dict: Dictionary = {
         { title: "Criar as solicitações do mês", text: "Um clique cria a solicitação de cada cliente, com a lista de documentos do período anterior." },
         { title: "Cobrar quem está atrasado", text: "Ligue as cobranças automáticas e o e-mail sai sozinho, em nome do escritório. Ou envie manualmente, pelo WhatsApp ou e-mail, com a mensagem já escrita." },
         { title: "Receber tudo organizado", text: "Cada arquivo entra no documento certo, com o canal por onde chegou. Baixe tudo do cliente em um ZIP, pronto para o seu sistema." },
+        { title: "Guardar no Google Drive", text: "Conecte o Drive do escritório e cada documento organizado é copiado para lá, por cliente, mês e documento." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai das solicitações e do limite do plano. O histórico fica guardado e reativar é um clique." },
         { title: "Convidar um colaborador", text: "Ele recebe um convite por e-mail, entra sem senha e vê só os clientes que você atribuir." },
       ],

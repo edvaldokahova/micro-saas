@@ -103,6 +103,7 @@ const dict = {
         { title: "Criar os pedidos do mês", text: "Um clique cria o pedido de cada cliente, com a lista de documentos do período anterior." },
         { title: "Lembrar quem está atrasado", text: "Ligue os lembretes automáticos e o e-mail sai sozinho, em nome do escritório. Ou envie à mão, por e-mail ou WhatsApp, com a mensagem já escrita." },
         { title: "Receber tudo arrumado", text: "Cada ficheiro entra no documento certo, com o canal por onde chegou. Descarregue tudo do cliente num ZIP, pronto para o seu programa." },
+        { title: "Guardar no Google Drive", text: "Ligue o Drive do escritório e cada documento arrumado é copiado para lá, por cliente, mês e documento." },
         { title: "Arquivar e reativar um cliente", text: "Quem deixa de ser cliente sai dos pedidos e do limite do plano. O histórico fica guardado e reativar é um clique." },
         { title: "Convidar um colaborador", text: "Recebe um convite por e-mail, entra sem palavra-passe e vê só os clientes que lhe atribuir." },
       ],
