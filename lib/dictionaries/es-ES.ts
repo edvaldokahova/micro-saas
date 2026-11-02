@@ -131,7 +131,7 @@ const dict: Dictionary = {
     pricingTitle: "Precio sencillo, por despacho",
     pricingLead: (d: number) =>
       `Empieza con ${d} días gratis. Pago mensual o anual; los impuestos aplicables se calculan en el pago, según el país.`,
-    features: ["Solicitudes ilimitadas, trimestrales o mensuales", "Enlace privado para que el cliente envíe los documentos con un toque", "Adjuntos de las respuestas por correo recogidos automáticamente", "Documentos ordenados por cliente y periodo, con descarga en ZIP", "Recordatorios automáticos por correo, en nombre de la asesoría", "Panel de lo que falta y de quién va con retraso"],
+    features: ["Solicitudes ilimitadas, trimestrales o mensuales", "Enlace privado para que el cliente envíe los documentos con un toque", "Adjuntos de las respuestas por correo recogidos automáticamente", "Documentos ordenados por cliente y periodo, con descarga en ZIP", "Recordatorios automáticos por correo, en nombre de la asesoría", "Panel de lo que falta y de quién va con retraso", "Copia automática en el Google Drive del despacho"],
     popular: "Mejor precio por cliente",
     perDay: (price: string) => `Unos ${price} al día.`,
     planFor: { starter: "Para quien trabaja solo o con un equipo pequeño.", office: "Para despachos con más clientes y varios responsables." },
@@ -145,6 +145,7 @@ const dict: Dictionary = {
       { q: "¿Sirve para cualquier tipo de cliente?", a: "Sí: autónomos, sociedades y particulares. Tú decides qué documentos pide cada uno: facturas, extractos, tickets, nóminas u otros." },
       { q: "¿Y Verifactu? ¿No me llega ya todo?", a: "Verifactu registra las facturas que emite tu cliente. Los extractos bancarios, los tickets y las facturas de gastos siguen teniendo que llegar de él: para eso sirve Bilonai." },
       { q: "¿Dónde están los datos?", a: "En una base de datos en la Unión Europea (Irlanda), con acceso restringido por despacho. Detalles en la política de privacidad." },
+      { q: "¿Puedo guardar los documentos en Google Drive?", a: "Sí. Conecta el Google Drive del despacho en Ajustes y cada documento ordenado se copia en la carpeta «Bilonai», por cliente, mes y documento. Así quedan guardados en tu Drive, incluso después de los 90 días en Bilonai. Bilonai solo accede a la carpeta que él mismo crea." },
       { q: "¿Puedo cancelar cuando quiera?", a: "Sí. Sin permanencia. Cancelas en cualquier momento y mantienes el acceso hasta el final del periodo ya pagado." },
     ],
     moreQuestions: "¿Otra duda? Escríbenos a",

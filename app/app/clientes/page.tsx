@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, FileSpreadsheet, Phone, Plus, UserPlus } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { ClientImport } from "@/components/client-import";
 import { Avatar } from "@/components/avatar";
 import { Dialog, OpenDialog } from "@/components/dialog";
@@ -11,7 +11,7 @@ import { Select } from "@/components/select";
 import { ListSearch } from "@/components/list-search";
 import { clientLimit, getSession, officeAccess } from "@/lib/office";
 import { addClient, deleteClient, setClientArchived } from "../actions";
-import { IconTrash } from "@/components/icons";
+import { IconTrash, IconSheet, IconAddClient, IconPhone } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Clientes" };
 
@@ -45,7 +45,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
         {isManager && active.length > 0 && (
           <div className="flex flex-wrap gap-2">
             <OpenDialog target="importar-clientes" className="btn btn-secondary">
-              <FileSpreadsheet className="h-4 w-4" aria-hidden /> {t.importBtn}
+              <IconSheet className="h-4 w-4" /> {t.importBtn}
             </OpenDialog>
             <OpenDialog target="novo-cliente" className="btn btn-primary">
               <Plus className="h-4 w-4" aria-hidden /> {t.add}
@@ -60,14 +60,14 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
           {active.length === 0 ? (
             <div className="card flex flex-col items-center px-6 py-14 text-center">
               <span className="grid h-14 w-14 place-items-center rounded-full bg-ink-3">
-                <UserPlus className="h-6 w-6 text-ivory" aria-hidden />
+                <IconAddClient className="h-6 w-6 text-ivory" />
               </span>
               <p className="mt-5 font-display text-xl">{t.empty}</p>
               {isManager && <p className="mt-2 max-w-sm text-sm text-muted">{t.emptyHint}</p>}
               {isManager && (
                 <div className="mt-6 flex flex-wrap justify-center gap-2">
                   <OpenDialog target="importar-clientes" className="btn btn-primary">
-                    <FileSpreadsheet className="h-4 w-4" aria-hidden /> {t.importBtn}
+                    <IconSheet className="h-4 w-4" /> {t.importBtn}
                   </OpenDialog>
                   <OpenDialog target="novo-cliente" className="btn btn-secondary">
                     <Plus className="h-4 w-4" aria-hidden /> {t.add}
@@ -90,7 +90,7 @@ export default async function Clientes({ searchParams }: { searchParams: Promise
                     <Link href={`/clientes/${c.id}`} className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{c.name}</span>
                       <span className="flex items-center gap-1.5 truncate text-xs text-muted">
-                        {c.phone && <Phone className="h-3 w-3" aria-hidden />}
+                        {c.phone && <IconPhone className="h-3 w-3" />}
                         {c.phone ?? c.email ?? "—"}
                         {c.cadence === "quarterly" && (
                           <span className="ml-1 rounded-lg border border-line px-2 py-px text-[10.5px]">{d.common.cadence.quarterly}</span>

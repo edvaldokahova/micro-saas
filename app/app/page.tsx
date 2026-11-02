@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, Plus, UserPlus } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { DocMark, DocStrip, orderStates } from "@/components/marks";
 import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon";
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
@@ -13,7 +13,7 @@ import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, 
 import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
 import { createMonthRequests, setItemStatus } from "./actions";
 import { FirstSteps } from "@/components/first-steps";
-import { IconBell } from "@/components/icons";
+import { IconBell, IconAddClient } from "@/components/icons";
 import { accountTexts } from "@/lib/account-texts";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -201,7 +201,7 @@ export default async function Painel({
           <h2 className="mt-5 font-display text-2xl">{t.noClientsTitle}</h2>
           <p className="mx-auto mt-2 max-w-sm text-muted">{t.noClientsText}</p>
           <Link href="/clientes" className="btn btn-primary mt-6">
-            <UserPlus className="h-4 w-4" aria-hidden /> {t.addClients}
+            <IconAddClient className="h-4 w-4" /> {t.addClients}
           </Link>
         </div>
         )

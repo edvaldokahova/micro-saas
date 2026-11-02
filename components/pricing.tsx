@@ -4,6 +4,13 @@ import { IntervalToggle } from "@/components/interval-toggle";
 import { formatMoney, formatPrice, formatYearlyPerMonth, getDictionary, localeMeta, type Locale } from "@/lib/i18n";
 import { site, type PlanKey } from "@/lib/site";
 
+// Só no plano Escritório: os links dos clientes com o domínio do próprio escritório
+const OWN_DOMAIN: Record<Locale, string> = {
+  "pt-PT": "Links dos pedidos com o domínio do seu escritório",
+  "pt-BR": "Links das solicitações com o domínio do seu escritório",
+  "es-ES": "Enlaces de las solicitudes con el dominio de tu despacho",
+};
+
 // Os dois planos, com a escolha mensal/anual. Usado na página inicial e na página de preços.
 export function PricingPlans({ locale }: { locale: Locale }) {
   const d = getDictionary(locale);
@@ -46,7 +53,7 @@ export function PricingPlans({ locale }: { locale: Locale }) {
                 <span className="text-muted">{d.common.upToTeam(p.teamLimit)}</span>
               </p>
               <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[15px]">
-                {h.features.map((f) => (
+                {(featured ? [...h.features, OWN_DOMAIN[locale]] : h.features).map((f) => (
                   <li key={f} className="flex items-start gap-3">
                     <IconSpark className="mt-[3px] h-[15px] w-[15px] shrink-0 text-ivory" /> {f}
                   </li>

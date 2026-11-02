@@ -1,8 +1,9 @@
 "use client";
 
+import { IconCopy } from "@/components/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { Check, Copy } from "lucide-react";
+import { Check } from "lucide-react";
 import { ChannelLogo } from "@/components/channel-logo";
 import { bumpReminder } from "@/app/app/actions";
 import { BusyLabel } from "@/components/spinner";
@@ -48,15 +49,23 @@ export function CopyButton({ value, label, done, compact = false }: { value: str
     try {
       await navigator.clipboard.writeText(value);
     } catch {
-      window.prompt(label, value);
-      return;
+      // Navegadores sem acesso à área de transferência: cópia à moda antiga, sem janelas do navegador
+      const area = document.createElement("textarea");
+      area.value = value;
+      area.setAttribute("readonly", "");
+      area.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      if (!ok) return;
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
   }
   return (
     <button type="button" onClick={copy} className={`btn btn-secondary ${compact ? "btn-sm" : ""}`} aria-label={copied ? done : label} title={label}>
-      {copied ? <Check className="h-4 w-4 animate-pop text-ok" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
+      {copied ? <Check className="h-4 w-4 animate-pop text-ok" aria-hidden /> : <IconCopy className="h-4 w-4" />}
       <span className={compact ? "hidden sm:inline" : ""}>{copied ? done : label}</span>
     </button>
   );

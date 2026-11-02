@@ -4,6 +4,7 @@ import { getDictionary, localeMeta, locales } from "@/lib/i18n";
 import { getLocale, getTheme } from "@/lib/prefs";
 import { site } from "@/lib/site";
 import { OfflineReady } from "@/components/offline-ready";
+import { FormGuard } from "@/components/form-guard";
 import { MetaPixel } from "@/components/meta-pixel";
 import { getPixel } from "@/lib/platform";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-dvh font-sans">
         {children}
         <OfflineReady />
+        <FormGuard />
         <MetaPixel id={pixel.id} events={pixel.events} />
       </body>
     </html>

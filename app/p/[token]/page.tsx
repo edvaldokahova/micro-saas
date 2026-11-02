@@ -1,8 +1,8 @@
+import { IconLock, IconContact } from "@/components/icons";
 import type { Metadata } from "next";
 import { cache } from "react";
 import { after } from "next/server";
 import { headers } from "next/headers";
-import { Lock, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/preferences";
 import { formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -98,7 +98,7 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
   if (!req) {
     return (
       <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-5 text-center">
-        <Lock className="h-8 w-8 text-gold" aria-hidden />
+        <IconLock className="h-8 w-8 text-gold" />
         <h1 className="mt-5 font-display text-2xl">{t.notFoundTitle}</h1>
         <p className="mt-2 text-muted">{t.notFoundText}</p>
       </main>
@@ -186,7 +186,7 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
             </h2>
             {req.contact_name && (
               <p className="mt-1 flex items-center gap-1.5 pl-[30px] text-sm text-muted">
-                <UserRound className="h-4 w-4 text-gold" aria-hidden /> {t.yourContact(req.contact_name)}
+                <IconContact className="h-4 w-4 text-gold" /> {t.yourContact(req.contact_name)}
               </p>
             )}
             <div className="mt-4">
@@ -208,7 +208,7 @@ export default async function PaginaCliente({ params, searchParams }: { params: 
         </section>
 
         <p className="mono-label mt-10 flex items-center justify-center gap-2 !text-[10px]">
-          <Lock className="h-3 w-3" aria-hidden /> {t.privateLink}
+          <IconLock className="h-3 w-3" /> {t.privateLink}
         </p>
 
         <footer className="mt-4 text-center text-xs text-muted">

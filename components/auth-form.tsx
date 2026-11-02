@@ -1,8 +1,8 @@
 "use client";
 
+import { IconMailSent } from "@/components/icons";
 import { useState } from "react";
 import Link from "next/link";
-import { MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Locale } from "@/lib/locales";
 import type { LoginExtraTexts } from "@/lib/account-texts";
@@ -113,7 +113,7 @@ export function AuthForm({ mode, t, initialLocale, extra }: { mode: Mode; t: Aut
     return (
       <div className="card animate-rise p-6 text-center sm:p-8">
         <span className="mx-auto grid animate-pop place-items-center">
-          <MailCheck className="h-10 w-10 text-gold" strokeWidth={1.6} aria-hidden />
+          <IconMailSent className="h-10 w-10 text-gold" />
         </span>
         <h2 className="mt-5 font-display text-xl">{t.checkTitle}</h2>
         <p className="mt-2 text-[15px] leading-7 text-muted">

@@ -1,5 +1,5 @@
+import { IconMail } from "@/components/icons";
 import type { Metadata } from "next";
-import { Mail } from "lucide-react";
 import { LegalPage } from "@/components/legal-page";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/prefs";
@@ -20,7 +20,7 @@ export default async function Suporte() {
           href={`mailto:${site.supportEmail}`}
           className="card inline-flex items-center gap-3 px-5 py-4 no-underline transition hover:border-ivory hover:no-underline"
         >
-          <Mail className="h-5 w-5 text-gold" aria-hidden />
+          <IconMail className="h-5 w-5 text-gold" />
           <span className="text-ivory">{site.supportEmail}</span>
         </a>
         <p className="mt-4">{s.reply}</p>

@@ -130,7 +130,7 @@ const dict: Dictionary = {
     pricingTitle: "Preço simples, por escritório",
     pricingLead: (d: number) =>
       `Comece com ${d} dias grátis. Mensal ou anual; os impostos aplicáveis são calculados no checkout.`,
-    features: ["Solicitações ilimitadas, mensais ou trimestrais", "Link privado para o cliente enviar os documentos com um toque", "Anexos das respostas por e-mail capturados automaticamente", "Documentos organizados por cliente e mês, com download em ZIP", "Cobranças automáticas por e-mail, em nome do escritório", "Painel do que está pendente e de quem está atrasado"],
+    features: ["Solicitações ilimitadas, mensais ou trimestrais", "Link privado para o cliente enviar os documentos com um toque", "Anexos das respostas por e-mail capturados automaticamente", "Documentos organizados por cliente e mês, com download em ZIP", "Cobranças automáticas por e-mail, em nome do escritório", "Painel do que está pendente e de quem está atrasado", "Cópia automática para o Google Drive do escritório"],
     popular: "Melhor preço por cliente",
     perDay: (price: string) => `Cerca de ${price} por dia.`,
     planFor: { starter: "Para quem trabalha sozinho ou com uma equipe pequena.", office: "Para escritórios com mais clientes e vários responsáveis." },
@@ -143,6 +143,7 @@ const dict: Dictionary = {
       { q: "Os documentos ficam armazenados na plataforma?", a: "Só pelo tempo necessário. Os arquivos que os clientes enviam pela página da solicitação ou por e-mail ficam no seu painel, organizados por cliente e documento, por 90 dias, em um armazenamento privado na União Europeia. Depois são excluídos automaticamente. Baixe-os para o seu sistema contábil quando quiser." },
       { q: "E as notas fiscais que já baixo da SEFAZ?", a: "O Bilonai complementa: serve para o que não chega sozinho, como extratos bancários, comprovantes, notas de serviço e folha de cada cliente." },
       { q: "Onde ficam os dados?", a: "Em um banco de dados na União Europeia (Irlanda), com acesso restrito por escritório. Detalhes na política de privacidade." },
+      { q: "Posso guardar os documentos no Google Drive?", a: "Sim. Conecte o Google Drive do escritório nas Configurações e cada documento organizado é copiado para a pasta «Bilonai», por cliente, mês e documento. Assim ficam guardados no seu Drive, mesmo depois dos 90 dias no Bilonai. O Bilonai só tem acesso à pasta que ele mesmo cria." },
       { q: "Posso cancelar quando quiser?", a: "Sim. Sem fidelidade. Você cancela a qualquer momento e mantém o acesso até o fim do período já pago." },
     ],
     moreQuestions: "Outra dúvida? Escreva para",

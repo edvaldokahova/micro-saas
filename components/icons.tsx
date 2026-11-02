@@ -208,3 +208,86 @@ export function IconSeal({ className = "h-5 w-5" }: P) {
     </svg>
   );
 }
+
+// Novo cliente: busto com um «+» ao lado
+export function IconAddClient({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="8" cy="6.6" r="3" />
+      <path d="M2.6 16.4c.6-2.9 2.8-4.6 5.4-4.6 1.5 0 2.8.5 3.8 1.5" />
+      <path d="M15.2 11.2v5M12.7 13.7h5" />
+    </svg>
+  );
+}
+
+// Folha de Excel: folha com a grelha
+export function IconSheet({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="3.4" y="2.8" width="13.2" height="14.4" rx="1.8" />
+      <path d="M3.4 7.4h13.2M3.4 11.8h13.2M8.6 7.4v9.8" />
+    </svg>
+  );
+}
+
+// Cadeado (link privado)
+export function IconLock({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="4" y="8.6" width="12" height="8.6" rx="1.8" />
+      <path d="M6.8 8.6V6.4a3.2 3.2 0 0 1 6.4 0v2.2" />
+      <path d="M10 12.2v1.6" />
+    </svg>
+  );
+}
+
+// Pessoa de contacto (responsável)
+export function IconContact({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="10" cy="6.8" r="3.2" />
+      <path d="M4 16.8c.7-3 3.1-4.8 6-4.8s5.3 1.8 6 4.8" />
+    </svg>
+  );
+}
+
+// Telefone
+export function IconPhone({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="5.6" y="2.6" width="8.8" height="14.8" rx="2" />
+      <path d="M8.8 14.6h2.4" />
+    </svg>
+  );
+}
+
+// Envelope
+export function IconMail({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="2.8" y="4.4" width="14.4" height="11.2" rx="1.8" />
+      <path d="M3.4 5.4l6.6 5.2 6.6-5.2" />
+    </svg>
+  );
+}
+
+// Envelope enviado: o envelope com um visto
+export function IconMailSent({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M17.2 10V6.2a1.8 1.8 0 0 0-1.8-1.8H4.6a1.8 1.8 0 0 0-1.8 1.8v7.6a1.8 1.8 0 0 0 1.8 1.8h5.4" />
+      <path d="M3.4 5.4l6.6 5.2 6.6-5.2" />
+      <path d="M12.6 15.2l1.8 1.8 3.4-3.6" />
+    </svg>
+  );
+}
+
+// Copiar: duas folhas sobrepostas
+export function IconCopy({ className = "h-5 w-5" }: P) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="6.8" y="6.8" width="10" height="10.4" rx="1.8" />
+      <path d="M13.2 3.2H5a1.8 1.8 0 0 0-1.8 1.8v8.2" />
+    </svg>
+  );
+}
