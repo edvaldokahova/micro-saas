@@ -7,6 +7,7 @@ import { inboxAddress } from "@/lib/inbound";
 import { Suspense } from "react";
 import { AppNav, AppTabBar } from "@/components/app-nav";
 import { NavProgress } from "@/components/nav-progress";
+import { KeepScroll } from "@/components/keep-scroll";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getSession, officeAccess } from "@/lib/office";
 import { Welcome } from "@/components/welcome";
@@ -84,6 +85,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       )}
 
+      <Suspense fallback={null}>
+        <KeepScroll />
+      </Suspense>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">{children}</main>
       <AppTabBar labels={navLabels} show={show} />
     </div>

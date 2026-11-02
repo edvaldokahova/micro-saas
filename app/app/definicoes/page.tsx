@@ -198,9 +198,9 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
                           {d.common.save}
                         </SubmitButton>
                         {m.access !== "none" && !m.joined_at && (
-                          <button formAction={resendInvite} className="btn btn-secondary btn-sm">
+                          <SubmitButton formAction={resendInvite} className="btn btn-secondary btn-sm">
                             {tm.resend}
-                          </button>
+                          </SubmitButton>
                         )}
                       </div>
                     </form>

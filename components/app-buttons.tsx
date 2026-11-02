@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, Copy } from "lucide-react";
 import { ChannelLogo } from "@/components/channel-logo";
@@ -68,22 +68,35 @@ export function SubmitButton({
   pendingText,
   confirm,
   className = "btn btn-primary",
+  formAction,
 }: {
   children: React.ReactNode;
   pendingText?: string;
   confirm?: string;
   className?: string;
+  formAction?: (formData: FormData) => void | Promise<void>;
 }) {
-  const { pending } = useFormStatus();
+  const { pending: formPending } = useFormStatus();
   const ref = useRef<HTMLButtonElement>(null);
   const [asking, setAsking] = useState(false);
+  // Num formulário com vários botões, só o botão carregado mostra que está a trabalhar
+  const [mine, setMine] = useState(true);
+  useEffect(() => {
+    const form = ref.current?.form;
+    if (!form) return;
+    const onSubmit = (e: SubmitEvent) => setMine(!e.submitter || e.submitter === ref.current);
+    form.addEventListener("submit", onSubmit);
+    return () => form.removeEventListener("submit", onSubmit);
+  }, []);
+  const pending = formPending && mine;
   const close = useCallback(() => setAsking(false), []);
   return (
     <>
       <button
         ref={ref}
         type="submit"
-        disabled={pending}
+        formAction={formAction}
+        disabled={formPending}
         aria-busy={pending}
         className={className}
         onClick={(e) => {

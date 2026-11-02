@@ -160,9 +160,9 @@ export function AutoEmailSettings({
 
       <div className="flex flex-wrap items-center gap-2">
         <SubmitButton pendingText={t.saving}>{t.save}</SubmitButton>
-        <button formAction={sendTestEmail} className="btn btn-secondary">
+        <SubmitButton formAction={sendTestEmail} className="btn btn-secondary">
           {t.test}
-        </button>
+        </SubmitButton>
       </div>
     </form>
   );

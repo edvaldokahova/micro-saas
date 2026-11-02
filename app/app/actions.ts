@@ -8,6 +8,8 @@ import { buildReminderEmail } from "@/lib/email-template";
 import { emailOk, fromOffice, sendOne } from "@/lib/mailer";
 import { site } from "@/lib/site";
 import { BUCKET } from "@/lib/documents";
+import { inboxAddress, named } from "@/lib/inbound";
+import { publicLink } from "@/lib/reminder";
 import { isLocale, LOCALE_COOKIE } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
@@ -322,6 +324,19 @@ export async function sendTestEmail(formData: FormData) {
 
   const sample = d.app.settings.auto.sample;
   const reply = emailOk(office.contact_email) ? office.contact_email.trim() : user.email;
+  // Para o teste ser real: usa o pedido do cliente de exemplo (criado com o e-mail de quem está a testar).
+  // Responder ao teste com um anexo faz o ficheiro chegar aos Documentos, como um cliente a sério.
+  const { data: demo } = await admin
+    .from("requests")
+    .select("token, inbox_code, clients!inner(is_sample)")
+    .eq("office_id", office.id)
+    .eq("clients.is_sample", true)
+    .is("closed_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const demoInbox = inboxAddress((demo as { inbox_code?: string } | null)?.inbox_code) ?? inboxAddress(office.inbox_key);
+  const replyTo = demoInbox ? [reply, named(office.name, demoInbox)] : reply;
   const mail = buildReminderEmail(d.autoEmail, {
     contact: reply,
     office: office.name,
@@ -330,11 +345,11 @@ export async function sendTestEmail(formData: FormData) {
     dueLabel: sample.due,
     missing: 2,
     total: 5,
-    link: `${site.url}/#lado-do-cliente`,
+    link: demo ? publicLink((demo as { token: string }).token, office) : `${site.url}/#lado-do-cliente`,
     subject: text(formData.get("email_subject"), 160),
     message: text(formData.get("email_message"), 1500),
   });
-  const result = await sendOne({ from: fromOffice(office.name), to: [user.email], reply_to: reply, subject: mail.subject, html: mail.html, text: mail.text });
+  const result = await sendOne({ from: fromOffice(office.name), to: [user.email], reply_to: replyTo, subject: mail.subject, html: mail.html, text: mail.text });
   await admin.from("auto_email_log").insert({
     office_id: office.id,
     request_id: null,
