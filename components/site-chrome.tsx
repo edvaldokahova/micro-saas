@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CookieSettings } from "@/components/meta-pixel";
-import { Menu } from "lucide-react";
+import { MobileMenu } from "@/components/mobile-menu";
 import { Logo } from "@/components/logo";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getDictionary } from "@/lib/i18n";
@@ -36,26 +36,12 @@ export async function SiteHeader() {
           <Link href={`${site.appUrl}/registar`} className="btn btn-primary btn-sm hidden sm:inline-flex">
             {d.nav.tryFree}
           </Link>
-          {/* Menu do telemóvel, sem JavaScript */}
-          <details className="group relative sm:hidden">
-            <summary className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-ivory transition hover:border-ivory group-open:border-ivory [&::-webkit-details-marker]:hidden">
-              <Menu className="h-4 w-4" aria-hidden />
-              <span className="sr-only">Menu</span>
-            </summary>
-            <div className="card absolute right-0 z-50 mt-2 w-56 animate-rise p-2 [animation-duration:.25s]">
-              {links.map((l) => (
-                <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2.5 text-sm hover:bg-ink-3">
-                  {l.label}
-                </Link>
-              ))}
-              <Link href={`${site.appUrl}/entrar`} className="block rounded-lg px-3 py-2.5 text-sm hover:bg-ink-3">
-                {d.nav.signIn}
-              </Link>
-              <Link href={`${site.appUrl}/registar`} className="btn btn-primary btn-sm mt-1 w-full">
-                {d.nav.tryFree}
-              </Link>
-            </div>
-          </details>
+          <MobileMenu
+            label="Menu"
+            links={links}
+            signIn={{ href: `${site.appUrl}/entrar`, label: d.nav.signIn }}
+            tryFree={{ href: `${site.appUrl}/registar`, label: d.nav.tryFree }}
+          />
         </nav>
       </div>
     </header>
