@@ -1,6 +1,11 @@
 import { clientBase, cnameHost, CNAME_TARGET } from "@/lib/domains";
 import { domainTexts } from "@/lib/domain-texts";
 import { DomainCard } from "@/components/domain-card";
+import { IntegrationsCard, type DriveState } from "@/components/integrations-card";
+import { integrationTexts } from "@/lib/integration-texts";
+import { driveReady } from "@/lib/gdrive";
+import { Toast } from "@/components/toast";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { X } from "lucide-react";
@@ -35,6 +40,28 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
   };
   const team = (teamData ?? []) as Member[];
   const tm = d.app.team;
+  // Google Drive do escritório (a ligação vive numa tabela só acessível ao servidor)
+  const it = integrationTexts(locale);
+  const admin = createAdminClient();
+  const [{ data: gd }, { count: drivePending }] = await Promise.all([
+    admin.from("office_integrations").select("account_email, status, auto_sync, root_folder_id").eq("office_id", office.id).eq("provider", "gdrive").maybeSingle(),
+    admin
+      .from("documents")
+      .select("id", { count: "exact", head: true })
+      .eq("office_id", office.id)
+      .eq("state", "filed")
+      .is("drive_file_id", null)
+      .gt("expires_at", new Date().toISOString()),
+  ]);
+  const drive: DriveState = {
+    ready: driveReady(),
+    connected: !!gd,
+    email: gd?.account_email ?? null,
+    expired: gd?.status === "expired",
+    auto: gd?.auto_sync ?? true,
+    folderId: gd?.root_folder_id ?? null,
+    pending: drivePending ?? 0,
+  };
   const teamLimit = office.plan === "office" ? site.plans.office.teamLimit : site.plans.starter.teamLimit;
 
   return (
@@ -42,7 +69,14 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
       <p className="eyebrow">{t.office}</p>
       <h1 className="mt-2 font-display text-3xl sm:text-4xl">{t.title}</h1>
       <div className="mt-6">
-        <Flash d={d} error={sp.erro} success={sp.convite ? d.app.team.invited(sp.convite) : sp.teste ? t.auto.testSent(sp.teste) : sp.ok ? d.common.saved : null} />
+        {sp.erro?.startsWith("drive") || sp.ok === "drive" ? (
+          <Toast
+            tone={sp.ok === "drive" ? "ok" : "bad"}
+            text={sp.ok === "drive" ? it.toast.connected : sp.erro === "drive-cancel" ? it.toast.cancel : sp.erro === "drive-scope" ? it.toast.scope : it.toast.error}
+          />
+        ) : (
+          <Flash d={d} error={sp.erro} success={sp.convite ? d.app.team.invited(sp.convite) : sp.teste ? t.auto.testSent(sp.teste) : sp.ok ? d.common.saved : null} />
+        )}
       </div>
 
       <form action={updateSettings} className="card space-y-5 p-5 sm:p-6">
@@ -144,6 +178,8 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
           <p className="mt-3 text-xs leading-5 text-muted">{t.inbox.note}</p>
         </section>
       )}
+
+      <IntegrationsCard t={it} drive={drive} />
 
       <DomainCard
         t={domainTexts(locale)}

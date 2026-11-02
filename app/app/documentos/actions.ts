@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import { getSession } from "@/lib/office";
 import { classifyDocuments } from "@/lib/classify";
+import { autoSyncDrive, refileInDrive } from "@/lib/gdrive";
 import { isUuid, itemInRequest, prepareSlots, registerUploads, removeStored, signedUrl, type DoneFile, type InFile, type Slot } from "@/lib/documents";
 
 // Ações do escritório sobre os ficheiros recebidos. Tudo passa primeiro pela sessão e pela RLS:
@@ -28,7 +29,11 @@ export async function finishOfficeUpload(requestId: string, done: DoneFile[], it
   const r = await ownRequest(requestId);
   if (!r || !(await itemInRequest(r.id, itemId))) return null;
   const saved = await registerUploads({ officeId: r.office_id, requestId: r.id, itemId, done, channel: "other", addedBy: "office" });
-  if (!itemId && saved.length) after(() => classifyDocuments(saved));
+  if (saved.length)
+    after(async () => {
+      if (!itemId) await classifyDocuments(saved);
+      await autoSyncDrive(r.office_id);
+    });
   return { saved: saved.length };
 }
 
@@ -64,6 +69,9 @@ export async function fileDocument(docId: string, itemId: string): Promise<boole
   const via = doc.channel === "page" || doc.channel === "email" || doc.channel === "whatsapp" ? doc.channel : "other";
   await supabase.from("request_items").update({ status: "received", sent_via: via }).eq("id", itemId).neq("status", "received");
   await releaseItem(doc.item_id, doc);
+  // No Google Drive, o ficheiro passa para a pasta do novo documento
+  const { office } = await getSession();
+  after(() => refileInDrive(office.id, doc.id));
   return true;
 }
 

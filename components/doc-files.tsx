@@ -22,6 +22,7 @@ export type DocView = {
   date: string; // já formatada
   filedBy: "ai" | "client" | "office" | null;
   itemId: string | null;
+  inDrive?: boolean;
 };
 export type DocTexts = {
   view: string;
@@ -97,6 +98,11 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
                 ) : (
                   <> · {t.by[f.filedBy]}</>
                 ))}
+                {/* Já copiado para o Google Drive do escritório */}
+                {f.inDrive && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/brand/google-drive.png" alt="Google Drive" title="Google Drive" width={12} height={12} className="ml-0.5 h-3 w-3" />
+                )}
               </span>
             </span>
             <span className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:shrink-0">

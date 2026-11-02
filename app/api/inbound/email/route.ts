@@ -3,6 +3,7 @@ import { after, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BUCKET, MAX_BYTES, MAX_FILES_PER_REQUEST, cleanName, fileKind, storagePath } from "@/lib/documents";
 import { classifyDocuments } from "@/lib/classify";
+import { autoSyncDrive } from "@/lib/gdrive";
 import { addressOf, inboundDomain } from "@/lib/inbound";
 
 // E-mails recebidos no domínio de recolha (aviso do Resend «email.received»).
@@ -174,6 +175,10 @@ export async function POST(request: Request) {
     }
   }
 
-  if (saved.length && requestId) after(() => classifyDocuments(saved));
+  if (saved.length)
+    after(async () => {
+      if (requestId) await classifyDocuments(saved);
+      await autoSyncDrive(officeId!);
+    });
   return NextResponse.json({ ok: true, saved: saved.length });
 }

@@ -6,7 +6,7 @@ import { getSession } from "@/lib/office";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addDomain, checkDomain, domainsReady, normalizeDomain, removeDomain } from "@/lib/domains";
 
-type Err = "invalid" | "taken" | "setup" | "plan" | "generic";
+type Err = "invalid" | "ours" | "taken" | "setup" | "plan" | "generic";
 export type DomainResult = { ok: true; active: boolean; txt: { name: string; value: string } | null } | { ok: false; error: Err };
 
 async function manager() {
@@ -18,6 +18,8 @@ export async function saveDomain(raw: string): Promise<DomainResult> {
   const s = await manager();
   if (!s) return { ok: false, error: "generic" };
   if (s.office.plan !== "office" && s.office.plan !== "trial") return { ok: false, error: "plan" };
+  // Um endereço do próprio Bilonai não serve: tem de ser um domínio que o escritório controla
+  if (/(^|\.)(bilonai\.com|vercel\.app)\/?$/i.test(raw.trim().replace(/^https?:\/\//, ""))) return { ok: false, error: "ours" };
   const domain = normalizeDomain(raw);
   if (!domain) return { ok: false, error: "invalid" };
   if (!domainsReady()) return { ok: false, error: "setup" };

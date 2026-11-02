@@ -24,7 +24,7 @@ export type DomainTexts = {
   removeConfirm: string;
   copy: string;
   copied: string;
-  errors: { invalid: string; taken: string; setup: string; plan: string; generic: string };
+  errors: { invalid: string; ours: string; taken: string; setup: string; plan: string; generic: string };
   upsell: { title: string; text: string; points: string[]; cta: string; later: string };
 };
 
@@ -53,6 +53,7 @@ const pt: DomainTexts = {
   copied: "Copiado",
   errors: {
     invalid: "Escreva um subdomínio válido, por exemplo docs.oseuescritorio.pt.",
+    ours: "Use um domínio do seu escritório (o site que já tem). Endereços do bilonai.com não servem.",
     taken: "Este domínio já está a ser usado noutra conta.",
     setup: "Esta função está a ser ligada. Tente de novo mais tarde.",
     plan: "O domínio próprio é do plano Escritório.",
@@ -79,7 +80,7 @@ const br: DomainTexts = {
   stillPending: "O domínio ainda não aponta para o Bilonai. Confira o registro e tente de novo em alguns minutos.",
   activeText: "Os links das novas solicitações já saem com https://{domain}.",
   removeConfirm: "Remover o domínio? Os links novos voltam a sair com docs.bilonai.com e os links já enviados com o seu domínio deixam de abrir.",
-  errors: { ...pt.errors, invalid: "Digite um subdomínio válido, por exemplo docs.seuescritorio.com.br.", setup: "Esta função está sendo ativada. Tente de novo mais tarde." },
+  errors: { ...pt.errors, invalid: "Digite um subdomínio válido, por exemplo docs.seuescritorio.com.br.", ours: "Use um domínio do seu escritório (o site que você já tem). Endereços do bilonai.com não servem.", setup: "Esta função está sendo ativada. Tente de novo mais tarde." },
   upsell: {
     title: "O domínio próprio é do plano Escritório",
     text: "Cada link que você envia passa a levar o nome do seu escritório. Os clientes reconhecem na hora quem está pedindo os documentos.",
@@ -114,6 +115,7 @@ const es: DomainTexts = {
   copied: "Copiado",
   errors: {
     invalid: "Escribe un subdominio válido, por ejemplo docs.tudespacho.es.",
+    ours: "Usa un dominio de tu despacho (la web que ya tienes). Las direcciones de bilonai.com no sirven.",
     taken: "Este dominio ya se usa en otra cuenta.",
     setup: "Esta función se está activando. Vuelve a intentarlo más tarde.",
     plan: "El dominio propio es del plan Despacho.",

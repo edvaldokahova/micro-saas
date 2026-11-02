@@ -4,6 +4,7 @@ import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { itemInRequest, prepareSlots, registerUploads, requestByToken, type DoneFile, type InFile, type Slot } from "@/lib/documents";
 import { classifyDocuments } from "@/lib/classify";
+import { autoSyncDrive } from "@/lib/gdrive";
 
 type Via = "whatsapp" | "email" | "other";
 
@@ -38,6 +39,11 @@ export async function finishUpload(token: string, done: DoneFile[], itemId: stri
   const req = await requestByToken(token);
   if (!req || !(await itemInRequest(req.id, itemId))) return null;
   const saved = await registerUploads({ officeId: req.office_id, requestId: req.id, itemId, done, channel: "page", addedBy: "client" });
-  if (!itemId && saved.length) after(() => classifyDocuments(saved));
+  // A IA arruma (se for preciso) e, se o escritório ligou o Google Drive, segue logo uma cópia
+  if (saved.length)
+    after(async () => {
+      if (!itemId) await classifyDocuments(saved);
+      await autoSyncDrive(req.office_id);
+    });
   return { saved: saved.length };
 }

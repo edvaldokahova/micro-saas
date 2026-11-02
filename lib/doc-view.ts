@@ -3,7 +3,7 @@ import type { DocTexts, DocView } from "@/components/doc-files";
 import { isChannel } from "@/components/channel-icon";
 import type { Dictionary, Locale } from "@/lib/i18n";
 
-export const DOC_COLUMNS = "id, request_id, item_id, client_id, filename, size_bytes, channel, created_at, filed_by, state";
+export const DOC_COLUMNS = "id, request_id, item_id, client_id, filename, size_bytes, channel, created_at, filed_by, state, drive_file_id";
 
 export type DocRow = {
   id: string;
@@ -16,6 +16,7 @@ export type DocRow = {
   created_at: string;
   filed_by: "ai" | "client" | "office" | null;
   state: "review" | "filed";
+  drive_file_id?: string | null;
 };
 
 export function docTexts(d: Dictionary): DocTexts {
@@ -65,5 +66,6 @@ export function docView(r: DocRow, locale: Locale, timeZone?: string): DocView {
     date: arrivedAt(r.created_at, locale, timeZone),
     filedBy: r.filed_by,
     itemId: r.item_id,
+    inDrive: !!r.drive_file_id,
   };
 }
