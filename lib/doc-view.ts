@@ -1,7 +1,7 @@
 // Preparação dos ficheiros recebidos para os componentes do painel (textos e linhas já formatadas).
 import type { DocTexts, DocView } from "@/components/doc-files";
 import { isChannel } from "@/components/channel-icon";
-import { formatDate, type Dictionary, type Locale } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 
 export const DOC_COLUMNS = "id, request_id, item_id, client_id, filename, size_bytes, channel, created_at, filed_by, state";
 
@@ -47,13 +47,22 @@ export function docTexts(d: Dictionary): DocTexts {
   };
 }
 
-export function docView(r: DocRow, locale: Locale): DocView {
+// Dia e hora de chegada, no fuso horário do escritório (ex.: «30 de outubro, 14:32»)
+function arrivedAt(iso: string, locale: Locale, timeZone?: string) {
+  const d = new Date(iso);
+  const opt = timeZone ? { timeZone } : {};
+  const day = new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", ...opt }).format(d);
+  const time = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false, ...opt }).format(d);
+  return `${day}, ${time}`;
+}
+
+export function docView(r: DocRow, locale: Locale, timeZone?: string): DocView {
   return {
     id: r.id,
     filename: r.filename,
     size: r.size_bytes,
     channel: isChannel(r.channel) ? r.channel : "other",
-    date: formatDate(r.created_at, locale, false),
+    date: arrivedAt(r.created_at, locale, timeZone),
     filedBy: r.filed_by,
     itemId: r.item_id,
   };

@@ -53,7 +53,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const items = (it ?? []) as Item[];
   const note = (noteRow as { note: string | null } | null)?.note;
   // Ficheiros recebidos: por documento do pedido, e os que ainda estão por confirmar
-  const docs = ((dr ?? []) as DocRow[]).map((row) => docView(row, locale));
+  const docs = ((dr ?? []) as DocRow[]).map((row) => docView(row, locale, office.timezone));
   const loose = docs.filter((f) => !f.itemId);
   const byItem = (itemId: string) => docs.filter((f) => f.itemId === itemId);
   const dt = docTexts(d);

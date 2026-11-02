@@ -103,7 +103,7 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
                     </Link>
                   )}
                 </p>
-                <DocList docs={g.docs.map((r) => docView(r, locale))} items={itemsOf.get(g.requestId) ?? []} t={dt} review />
+                <DocList docs={g.docs.map((r) => docView(r, locale, office.timezone))} items={itemsOf.get(g.requestId) ?? []} t={dt} review />
               </div>
             ))}
           </div>
@@ -159,7 +159,7 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
                     {byItem.map((i) => (
                       <div key={i.id}>
                         <p className="mb-1.5 text-[13.5px] font-medium">{i.label}</p>
-                        <DocList docs={i.docs.map((r) => docView(r, locale))} items={items} t={dt} />
+                        <DocList docs={i.docs.map((r) => docView(r, locale, office.timezone))} items={items} t={dt} />
                       </div>
                     ))}
                   </div>
