@@ -4,7 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 // A Vercel serve a página em www.bilonai.com (bilonai.com redireciona para lá)
 const MAIN = "www.bilonai.com";
 const APP = "app.bilonai.com";
-const CLIENT = "entrega.bilonai.com";
+const CLIENT = "docs.bilonai.com";
+// Endereço antigo das páginas dos clientes: os links já enviados continuam a funcionar (redirecionam)
+const OLD_CLIENT = "entrega.bilonai.com";
+// Domínios nossos; qualquer outro que chegue aqui é o domínio próprio de um escritório (plano Escritório)
+const OURS = (h: string) => h === "bilonai.com" || h.endsWith(".bilonai.com") || h.endsWith(".vercel.app") || h === "localhost" || h === "127.0.0.1";
 // Painel administrativo da plataforma (só para os e-mails em ADMIN_EMAILS)
 const ADMIN = "admin.bilonai.com";
 // Entrada e autenticação (no domínio do painel)
@@ -39,7 +43,7 @@ const under = (path: string, list: string[]) => list.some((p) => path === p || p
 const short = (path: string) => path.replace(/^\/app(?=\/|$)/, "") || "/";
 
 // 1. Põe cada página no domínio certo: página pública em www.bilonai.com, painel em app.bilonai.com
-//    (com endereços curtos: app.bilonai.com/clientes, sem o /app) e páginas dos clientes em entrega.bilonai.com.
+//    (com endereços curtos: app.bilonai.com/clientes, sem o /app) e páginas dos clientes em docs.bilonai.com (ou no domínio do escritório).
 // 2. Renova a sessão e protege o painel.
 export async function middleware(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
@@ -54,6 +58,12 @@ export async function middleware(request: NextRequest) {
   const isAdminPath = under(path, ["/admin"]);
   if (host === ADMIN && isAdminPath) return go(ADMIN, path.replace(/^\/admin(?=\/|$)/, "") || "/");
   if (host !== ADMIN && isAdminPath) return go(MAIN, "/");
+  if (host === OLD_CLIENT) return isClient ? go(CLIENT) : go(isAuth || isPanel ? APP : MAIN, short(path));
+  // Domínio do escritório: só mostra páginas de pedidos; o resto dá a página neutra «não encontrado» (sem a nossa marca)
+  if (!OURS(host)) {
+    if (isClient) return NextResponse.next();
+    return NextResponse.rewrite(new URL("/p/-", request.url));
+  }
   if (host === CLIENT && !isClient) return go(isAuth || isPanel ? APP : MAIN, short(path));
   if ((isMain || host === APP) && isClient) return go(CLIENT);
   if (isMain && (isAuth || isPanel)) return go(APP, short(path));

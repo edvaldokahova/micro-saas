@@ -491,7 +491,7 @@ const dict: Dictionary = {
     closed: "Esta solicitud está cerrada. Ya no se puede modificar.",
     notFoundTitle: "Enlace no válido o caducado",
     notFoundText: "Pide a tu asesoría un enlace nuevo.",
-    footer: (office: string) => `Página privada de ${office}, creada con Bilonai.`,
+    footer: (office: string) => `Página privada de ${office}. Tus datos están protegidos y solo el despacho ve los archivos.`,
     error: "No se ha podido guardar. Revisa la conexión e inténtalo de nuevo.",
     uploadButton: "Elegir archivos o hacer una foto",
     uploadHint: (office: string) => `Fotos, PDF, Excel o Word, hasta 25 MB. Llegan directamente a ${office}.`,

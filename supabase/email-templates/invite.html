@@ -1,6 +1,6 @@
 <!-- Supabase > Authentication > Emails > Invite user
      Assunto: Convite para o Bilonai / Invitación a Bilonai
-     O logotipo vem de https://entrega.bilonai.com/email/logo-entrega.png (o Gmail não mostra SVG, por isso usamos PNG). -->
+     O logotipo vem de https://docs.bilonai.com/email/logo-entrega.png (o Gmail não mostra SVG, por isso usamos PNG). -->
 <!doctype html>
 <html lang="pt">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>Bilonai</title></head>
@@ -9,7 +9,7 @@
   <tr><td align="center" style="padding:40px 16px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
       <tr><td style="padding:0 4px 24px;">
-        <img src="https://entrega.bilonai.com/email/logo.png" width="127" height="24" alt="Bilonai" style="display:block;border:0;outline:none;width:127px;height:24px;">
+        <img src="https://docs.bilonai.com/email/logo.png" width="127" height="24" alt="Bilonai" style="display:block;border:0;outline:none;width:127px;height:24px;">
       </td></tr>
       <tr><td bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e2e3e7;border-radius:16px;padding:36px 32px;">
       <div style="height:3px;width:100%;border-top:1px solid #c7c9cf;border-bottom:1px solid #c7c9cf;margin:0 0 28px;line-height:1px;font-size:0;">&nbsp;</div>
@@ -20,7 +20,7 @@
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
         <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Aceptar la invitación</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">El enlace solo funciona una vez. Después, entra siempre en entrega.bilonai.com con este correo.</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">El enlace solo funciona una vez. Después, entra siempre en app.bilonai.com con este correo.</p>
       <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Si el botón no funciona, copia esta dirección en el navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="color:#2563eb;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app</a></p>
       <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Si no esperabas esta invitación, ignora este correo.</p>
@@ -31,7 +31,7 @@
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
         <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Aceitar o convite</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link só funciona uma vez. Depois, entre sempre em entrega.bilonai.com com este e-mail.</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link só funciona uma vez. Depois, entre sempre em app.bilonai.com com este e-mail.</p>
       <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se o botão não funcionar, copie este endereço no navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="color:#2563eb;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app</a></p>
       <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se você não esperava este convite, ignore este e-mail.</p>
@@ -42,7 +42,7 @@
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr><td bgcolor="#121316" style="border-radius:10px;background:#121316;">
         <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="display:inline-block;padding:14px 28px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#f7f7f8;text-decoration:none;border-radius:10px;">Aceitar o convite</a>
       </td></tr></table>
-      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link só funciona uma vez. Depois, entre sempre em entrega.bilonai.com com este e-mail.</p>
+      <p style="margin:0 0 20px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:20px;color:#60636b;">O link só funciona uma vez. Depois, entre sempre em app.bilonai.com com este e-mail.</p>
       <p style="margin:0 0 6px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se o botão não funcionar, copie este endereço para o navegador:</p>
       <p style="margin:0 0 24px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app" style="color:#2563eb;text-decoration:underline;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/app</a></p>
       <p style="margin:0;padding-top:20px;border-top:1px solid #e2e3e7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#60636b;">Se não esperava este convite, ignore este e-mail.</p>

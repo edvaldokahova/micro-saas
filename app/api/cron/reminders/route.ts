@@ -20,7 +20,7 @@ const DAY = 86_400_000;
 
 type OfficeRow = Pick<
   Office,
-  "id" | "name" | "locale" | "plan" | "plan_status" | "trial_ends_at" | "contact_email" | "owner_id" | "auto_days_before" | "auto_repeat_days" | "auto_max" | "email_subject" | "email_message" | "timezone"
+  "id" | "name" | "locale" | "plan" | "plan_status" | "trial_ends_at" | "contact_email" | "owner_id" | "auto_days_before" | "auto_repeat_days" | "auto_max" | "email_subject" | "email_message" | "timezone" | "custom_domain" | "custom_domain_status"
 > & { billing_email: string | null };
 
 type RequestRow = {
@@ -80,7 +80,7 @@ export async function GET(request: Request) {
 
   const { data: officeData } = await admin
     .from("offices")
-    .select("id, name, locale, plan, plan_status, trial_ends_at, contact_email, billing_email, owner_id, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, timezone")
+    .select("id, name, locale, plan, plan_status, trial_ends_at, contact_email, billing_email, owner_id, auto_days_before, auto_repeat_days, auto_max, email_subject, email_message, timezone, custom_domain, custom_domain_status")
     .eq("auto_remind", true);
   // Com a tarefa a correr de hora a hora (Vercel Pro, CRON_HOURLY=1), cada escritório recebe às 9h da sua hora local.
   // No plano gratuito corre uma vez por dia e envia a todos nessa altura.
@@ -159,7 +159,7 @@ export async function GET(request: Request) {
         dueLabel: r.due_date ? formatDate(r.due_date, locale, false) : null,
         missing: items.filter((i) => i.status === "pending").length,
         total: items.length,
-        link: publicLink(r.token),
+        link: publicLink(r.token, o),
         subject: o.email_subject,
         message: o.email_message,
       });

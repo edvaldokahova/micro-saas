@@ -387,7 +387,7 @@ export default async function Painel({
                       <div className="order-2 flex shrink-0 items-center justify-end gap-2 lg:order-none">
                         {wa && <ReminderButton requestId={r.id} href={wa} label={d.app.remind} compact />}
                         {mail && <ReminderButton requestId={r.id} href={mail} label={d.app.remindEmail} channel="email" compact />}
-                        <CopyButton value={publicLink(r.token)} label={d.common.copy} done={d.common.copied} compact />
+                        <CopyButton value={publicLink(r.token, office)} label={d.common.copy} done={d.common.copied} compact />
                       </div>
                     </div>
 

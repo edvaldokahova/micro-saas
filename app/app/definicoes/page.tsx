@@ -1,3 +1,6 @@
+import { clientBase, cnameHost, CNAME_TARGET } from "@/lib/domains";
+import { domainTexts } from "@/lib/domain-texts";
+import { DomainCard } from "@/components/domain-card";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { X } from "lucide-react";
@@ -110,7 +113,7 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
             test: t.auto.test,
           }}
           email={d.autoEmail}
-          sample={{ ...t.auto.sample, link: `${site.clientUrl}/p/exemplo` }}
+          sample={{ ...t.auto.sample, link: `${clientBase(office)}/p/exemplo` }}
           office={office.name}
           replyTo={office.contact_email || user.email || null}
           defaults={{
@@ -141,6 +144,15 @@ export default async function Definicoes({ searchParams }: { searchParams: Promi
           <p className="mt-3 text-xs leading-5 text-muted">{t.inbox.note}</p>
         </section>
       )}
+
+      <DomainCard
+        t={domainTexts(locale)}
+        domain={office.custom_domain}
+        status={office.custom_domain_status}
+        canUse={office.plan === "office" || office.plan === "trial"}
+        cname={office.custom_domain ? { host: cnameHost(office.custom_domain), target: CNAME_TARGET } : null}
+        closeLabel={d.common.cancel}
+      />
 
       <section id="equipa" className="card mt-8 scroll-mt-24 p-5 sm:p-6">
         <h2 className="font-display text-lg">{tm.title}</h2>

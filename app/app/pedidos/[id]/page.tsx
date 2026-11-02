@@ -63,7 +63,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
   const pendingLabels = items.filter((i) => i.status === "pending").map((i) => i.label);
   const wa = done ? null : reminderUrl(office, locale, d, req, pendingLabels);
   const mail = done ? null : reminderMailto(office, locale, d, req, pendingLabels);
-  const link = publicLink(req.token);
+  const link = publicLink(req.token, office);
   const st = deadlineState(req.due_date, done);
   const dl = deadlineLabel(st, d);
   const periodLabel = formatPeriod(req.period, locale, req.months);

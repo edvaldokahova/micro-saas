@@ -489,7 +489,7 @@ const dict: Dictionary = {
     closed: "Esta solicitação está encerrada. Não é mais possível alterar.",
     notFoundTitle: "Link inválido ou expirado",
     notFoundText: "Peça um link novo ao seu escritório de contabilidade.",
-    footer: (office: string) => `Página privada de ${office}, criada com Bilonai.`,
+    footer: (office: string) => `Página privada de ${office}. Seus dados estão protegidos e só o escritório vê os arquivos.`,
     error: "Não foi possível salvar. Verifique a conexão e tente de novo.",
     uploadButton: "Escolher arquivos ou tirar foto",
     uploadHint: (office: string) => `Fotos, PDF, Excel ou Word, até 25 MB. Chegam direto para ${office}.`,

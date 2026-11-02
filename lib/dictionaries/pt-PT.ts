@@ -487,7 +487,7 @@ const dict = {
     closed: "Este pedido está fechado. Já não é possível alterar.",
     notFoundTitle: "Link inválido ou expirado",
     notFoundText: "Peça ao seu escritório de contabilidade um link novo.",
-    footer: (office: string) => `Página privada de ${office}, criada com Bilonai.`,
+    footer: (office: string) => `Página privada de ${office}. Os seus dados estão protegidos e só o escritório vê os ficheiros.`,
     error: "Não foi possível guardar. Verifique a ligação e tente de novo.",
     uploadButton: "Escolher ficheiros ou tirar foto",
     uploadHint: (office: string) => `Fotos, PDF, Excel ou Word, até 25 MB. Chegam direto a ${office}.`,

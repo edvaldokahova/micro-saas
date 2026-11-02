@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { after } from "next/server";
+import { headers } from "next/headers";
 import { Lock, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/preferences";
 import { formatPeriod, getDictionary, isLocale, periodOf, type Locale } from "@/lib/i18n";
@@ -40,7 +41,22 @@ const loadRequest = cache(async (token: string): Promise<PublicRequest | null> =
   if (!/^[A-Za-z0-9_-]{12}$|^[A-Za-z0-9_-]{32}$/.test(token)) return null;
   const supabase = await createClient();
   const { data } = await supabase.rpc("get_public_request", { p_token: token });
-  return (data as PublicRequest | null) ?? null;
+  if (!data) return null;
+  // No domínio próprio de um escritório, só abrem os pedidos desse escritório
+  const host = await ownHost();
+  if (host) {
+    const { data: row } = await createAdminClient().from("requests").select("offices(custom_domain)").eq("token", token).maybeSingle();
+    const domain = (row as { offices: { custom_domain: string | null } | null } | null)?.offices?.custom_domain?.toLowerCase();
+    if (domain !== host) return null;
+  }
+  return data as PublicRequest;
+});
+
+// O domínio do escritório quando a página é aberta nele (null nos nossos domínios)
+const ownHost = cache(async (): Promise<string | null> => {
+  const host = ((await headers()).get("host") ?? "").split(":")[0].toLowerCase();
+  const ours = host === "bilonai.com" || host.endsWith(".bilonai.com") || host.endsWith(".vercel.app") || host === "localhost" || host === "127.0.0.1" || !host;
+  return ours ? null : host;
 });
 
 // Pré-visualização no WhatsApp/e-mail: nome do escritório e período, para o link não parecer suspeito.
@@ -49,7 +65,10 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   const { token } = await params;
   const req = await loadRequest(token);
   const robots = { index: false, follow: false };
-  if (!req) return { title: "Bilonai", robots };
+  // No domínio do escritório a página não mostra a nossa marca (nem no separador do navegador)
+  const own = await ownHost();
+  const icons = own ? { icon: "data:,", apple: "data:," } : undefined;
+  if (!req) return { title: own ? { absolute: "—" } : "Bilonai", robots, icons };
   const locale: Locale = isLocale(req.locale) ? req.locale : "pt-PT";
   const t = getDictionary(locale).public;
   const title = t.metaTitle(periodOf(req.period, locale, req.months ?? 1), req.office_name);
@@ -58,6 +77,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
     title: { absolute: title },
     description,
     robots,
+    icons,
     openGraph: { title, description, type: "website", siteName: req.office_name },
     twitter: { card: "summary", title, description },
   };

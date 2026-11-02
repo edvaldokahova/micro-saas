@@ -1,10 +1,11 @@
 import "server-only";
 import { fill, formatPeriod, periodOf, whatsappNumber, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Office } from "@/lib/office";
-import { site } from "@/lib/site";
+import { clientBase } from "@/lib/domains";
 
-export function publicLink(token: string): string {
-  return `${site.clientUrl}/p/${token}`;
+// No domínio próprio do escritório quando está ativo (plano Escritório), senão em docs.bilonai.com
+export function publicLink(token: string, office?: Parameters<typeof clientBase>[0]): string {
+  return `${clientBase(office)}/p/${token}`;
 }
 
 type ReminderReq = { token: string; period: string; months?: number; client_name: string; client_phone: string | null; client_email?: string | null };
@@ -21,7 +22,7 @@ function reminderText(office: Office, locale: Locale, d: Dictionary, req: Remind
     lista: pendingLabels.map((l) => `• ${l}`).join("\n"),
     // Quantos faltam (o padrão não lista quais: o cliente abre o link para os ver)
     em_falta: pendingLabels.length === 1 ? d.autoEmail.missingOne : fill(d.autoEmail.missingMany, { n: String(pendingLabels.length) }),
-    link: publicLink(req.token),
+    link: publicLink(req.token, office),
     escritorio: office.name,
   });
 }

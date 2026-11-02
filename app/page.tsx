@@ -64,7 +64,7 @@ export default async function Home() {
   // "Como funciona": o painel no portátil e a página do cliente no iPhone (dados fictícios)
   const clients = [...h.mock.clients, ...h.story.extraClients];
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
-  const link = "entrega.bilonai.com/p/q4hfp7k2mx9a";
+  const link = "docs.bilonai.com/p/q4hfp7k2mx9a";
   // Plano Escritório: as páginas dos clientes saem com o domínio do escritório
   const officeDomain = { "pt-PT": "doc.contabilidadesilva.pt", "pt-BR": "doc.contabilidadesilva.com.br", "es-ES": "doc.asesoriasilva.es" }[locale];
   const ios = {
