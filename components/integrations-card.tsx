@@ -142,12 +142,10 @@ export function IntegrationsCard({ t, drive }: { t: IntegrationTexts; drive: Dri
 
         {/* OneDrive e SharePoint: brevemente */}
         <div className="flex items-start gap-3 rounded-2xl border border-dashed border-line-strong p-4 sm:self-start">
-          {/* Logótipos do OneDrive e do SharePoint, lado a lado */}
+          {/* Logótipo do OneDrive */}
           <span className="flex shrink-0 items-center" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/onedrive.png" alt="" width={32} height={32} className="h-8 w-8" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/sharepoint.png" alt="" width={26} height={26} className="-ml-1.5 h-[26px] w-[26px]" />
           </span>
           <div className="min-w-0">
             <p className="text-[15px] font-medium text-muted">{t.soon.name}</p>

@@ -141,7 +141,40 @@ export default function Privacidade() {
       </section>
 
       <section>
-        <h2>9. Os seus direitos</h2>
+        <h2>9. Integração com o Google Drive</h2>
+        <p>
+          O escritório pode ligar o seu Google Drive para o {site.name} copiar para lá os documentos já arrumados. É
+          opcional e pode ser desligada a qualquer momento nas Definições.
+        </p>
+        <ul>
+          <li>
+            <strong>O que pedimos à Google</strong>: o endereço de e-mail da conta (para mostrar qual conta está ligada) e a
+            permissão <em>drive.file</em>, que só dá acesso às pastas e aos ficheiros que o próprio {site.name} cria. Não
+            vemos, não lemos e não alteramos nenhum outro ficheiro do Drive.
+          </li>
+          <li>
+            <strong>Para que usamos</strong>: apenas para criar a pasta «{site.name}» e copiar para ela os documentos que os
+            clientes do escritório enviaram. Não usamos estes dados para publicidade, não os vendemos e não os usamos para
+            treinar modelos de inteligência artificial.
+          </li>
+          <li>
+            <strong>Como guardamos</strong>: a autorização da Google fica cifrada na nossa base de dados na União Europeia.
+            Ao desligar, revogamos a autorização junto da Google e apagamo-la. Os ficheiros já copiados ficam no Drive do
+            escritório.
+          </li>
+          <li>
+            A utilização e a transferência para qualquer outra aplicação de informações recebidas das APIs da Google
+            cumprem a{" "}
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+              Política de dados do utilizador dos serviços de API da Google
+            </a>
+            , incluindo os requisitos de utilização limitada.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>10. Os seus direitos</h2>
         <p>
           Pode pedir o acesso, a retificação, a eliminação, a limitação, a portabilidade e opor-se ao tratamento dos
           seus dados. Escreva para <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>. Se for cliente de um
@@ -152,7 +185,7 @@ export default function Privacidade() {
       </section>
 
       <section>
-        <h2>10. Segurança</h2>
+        <h2>11. Segurança</h2>
         <p>
           Os dados de cada escritório ficam isolados dos restantes por regras de acesso ao nível da base de dados, as
           comunicações são cifradas e o acesso à administração é restrito. Nenhum sistema é infalível; se ocorrer uma
@@ -161,7 +194,7 @@ export default function Privacidade() {
       </section>
 
       <section>
-        <h2>11. Alterações</h2>
+        <h2>12. Alterações</h2>
         <p>
           Se esta política mudar de forma relevante, avisamos por e-mail ou na plataforma antes de a mudança produzir
           efeitos.
