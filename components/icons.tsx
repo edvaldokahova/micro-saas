@@ -189,6 +189,16 @@ export function IconSpark({ className = "h-4 w-4" }: P) {
   );
 }
 
+// Símbolo de IA: a nossa estrela de quatro pontas, com as pontas arredondadas, e uma pequena em baixo à esquerda
+export function IconAI({ className = "h-3 w-3" }: P) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" strokeWidth={1.1} strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M11.8 2.2Q12.6 7.6 18 8.6Q12.6 9.6 11.8 15Q11 9.6 5.6 8.6Q11 7.6 11.8 2.2Z" />
+      <path d="M4.6 12.6Q4.95 15.05 7.4 15.4Q4.95 15.75 4.6 18.2Q4.25 15.75 1.8 15.4Q4.25 15.05 4.6 12.6Z" />
+    </svg>
+  );
+}
+
 // Selo: escudo arredondado com o visto, para garantias
 export function IconSeal({ className = "h-5 w-5" }: P) {
   return (

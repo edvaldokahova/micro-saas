@@ -1,6 +1,7 @@
 // O painel do Bilonai na versão de computador (1280 × 800 lógicos), para a gravação no portátil.
 // Mesmos textos, marcas e ícones do painel real; os alvos dos cliques têm data-t.
-import { IconClients, IconDocs, IconLedger, IconSettings, IconTrash } from "@/components/icons";
+import { IconAI, IconClients, IconDocs, IconLedger, IconSettings, IconTrash } from "@/components/icons";
+import { ChannelLogo } from "@/components/channel-logo";
 import { Avatar } from "@/components/avatar";
 import { Wordmark } from "@/components/logo";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
@@ -293,7 +294,10 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
                       s.reminded ? (
                         <span className="text-[12.5px] text-muted">{u.reminded}</span>
                       ) : (
-                        <span data-t="remind" className="btn btn-secondary btn-sm">{u.remind}</span>
+                        <span data-t="remind" className="btn btn-secondary btn-sm">
+                          <ChannelLogo channel="whatsapp" className="h-[18px] w-[18px]" />
+                          {u.remind}
+                        </span>
                       )
                     ) : (
                       <span className="btn btn-secondary btn-sm opacity-70">{u.copy}</span>
@@ -430,7 +434,10 @@ function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
                           <span className="inline-flex items-center gap-1.5">
                             <ChannelIcon via={via} className="h-3 w-3" /> {u.channels[via]}
                           </span>
-                          · {u.dates[gi * n + k]} · {u.sizes[k]} · {u.filedBy}
+                          · {u.dates[gi * n + k]} · {u.sizes[k]}
+                          <span className="inline-flex items-center gap-1">
+                            <IconAI className="h-[13px] w-[13px] text-ivory" /> {u.filedBy}
+                          </span>
                         </span>
                       </span>
                       <span className="flex shrink-0 items-center gap-1.5">

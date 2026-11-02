@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChannelIcon, type Channel } from "@/components/channel-icon";
 import { Select } from "@/components/select";
-import { IconTrash } from "@/components/icons";
+import { IconAI, IconTrash } from "@/components/icons";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { BusyLabel, Spinner } from "@/components/spinner";
 import { ACCEPT } from "@/lib/file-types";
@@ -89,7 +89,14 @@ export function DocList({ docs, items, t, review = false }: { docs: DocView[]; i
                   <ChannelIcon via={f.channel} className="h-3 w-3" /> {t.via[f.channel]}
                 </span>
                 · {f.date} · {size(f.size)}
-                {f.filedBy && !review && <> · {t.by[f.filedBy]}</>}
+                {/* Arrumado pela IA: o símbolo de IA no lugar do ponto, para se perceber que foi a IA */}
+                {f.filedBy && !review && (f.filedBy === "ai" ? (
+                  <span className="inline-flex items-center gap-1">
+                    <IconAI className="h-[13px] w-[13px] text-ivory" /> {t.by.ai}
+                  </span>
+                ) : (
+                  <> · {t.by[f.filedBy]}</>
+                ))}
               </span>
             </span>
             <span className="flex w-full items-center justify-end gap-1.5 sm:w-auto sm:shrink-0">
