@@ -33,7 +33,7 @@ export function HeaderShell({ children }: { children: React.ReactNode }) {
     <header
       data-solid={solid || undefined}
       className={`sticky top-0 z-30 transition-[background-color] duration-300 ${
-        solid ? "bg-ink-2 [[data-theme=dark]_&]:bg-ink" : "bg-transparent"
+        solid ? "bg-ink" : "bg-transparent"
       }`}
     >
       {children}
