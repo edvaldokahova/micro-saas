@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* «Passar o rato» só com rato a sério: em telemóveis que dizem ter rato (alguns Android),
+   o efeito ficava preso depois do toque até se tocar noutro sítio */
+@custom-variant hover-fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+@custom-variant group-hover-fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:is(:where(.group):hover *) {
+      @slot;
+    }
+  }
+}
+
 /* Identidade do Bilonai.
    Branco frio e tinta quase preta, uma só família de letra (Instrument Sans, mais estreita nos títulos)
    e um azul sóbrio só para o que pede atenção (documentos por confirmar, foco). Cantos arredondados conforme a hierarquia:

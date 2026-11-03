@@ -58,7 +58,7 @@ export function MobileMenu({ links, signIn, tryFree, label, closeLabel }: { link
         transition: open ? `transform 180ms ${EASE}` : `transform 200ms ${EASE} 200ms`,
       }}
     >
-      <span className={`block h-full transition-[width] duration-200 ${open || dir === 1 ? "w-full" : "w-[55%] group-hover:w-full"}`}>
+      <span className={`block h-full transition-[width] duration-200 ${open || dir === 1 ? "w-full" : "w-[55%] group-hover-fine:w-full"}`}>
         <span
           className="block h-full w-full rounded-full bg-current"
           style={{
@@ -116,14 +116,14 @@ export function MobileMenu({ links, signIn, tryFree, label, closeLabel }: { link
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? closeLabel : label}
-        className="group grid h-10 w-10 place-items-center rounded-full text-ivory transition-colors hover:bg-ivory/[0.06]"
+        className="group grid h-10 w-10 place-items-center rounded-full text-ivory transition-colors [-webkit-tap-highlight-color:transparent] hover-fine:bg-ivory/[0.06]"
       >
         <span className="relative block h-5 w-5" aria-hidden>
           {outer(1)}
           {/* Meio: mais curto, recolhe para a direita e desaparece */}
           <span className="absolute inset-x-0 top-1/2 -mt-[0.9px] flex h-[1.8px] justify-end">
             <span
-              className={`block h-full rounded-full bg-current transition-[width] duration-200 ${open ? "w-full" : "w-[78%] group-hover:w-full"}`}
+              className={`block h-full rounded-full bg-current transition-[width] duration-200 ${open ? "w-full" : "w-[78%] group-hover-fine:w-full"}`}
               style={{
                 transform: open ? "scaleX(0)" : "scaleX(1)",
                 transformOrigin: "right center",
