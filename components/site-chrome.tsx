@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CookieSettings } from "@/components/meta-pixel";
 import { MobileMenu } from "@/components/mobile-menu";
+import { HeaderShell } from "@/components/header-shell";
 import { Logo } from "@/components/logo";
 import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getDictionary } from "@/lib/i18n";
@@ -17,7 +18,7 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
+    <HeaderShell>
       <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between gap-3 px-4 sm:px-5">
         <Link href={`${site.url}/`} aria-label={site.name} className="shrink-0">
           <Logo />
@@ -38,13 +39,14 @@ export async function SiteHeader() {
           </Link>
           <MobileMenu
             label="Menu"
+            closeLabel={locale === "es-ES" ? "Cerrar menú" : "Fechar menu"}
             links={links}
             signIn={{ href: `${site.appUrl}/entrar`, label: d.nav.signIn }}
             tryFree={{ href: `${site.appUrl}/registar`, label: d.nav.tryFree }}
           />
         </nav>
       </div>
-    </header>
+    </HeaderShell>
   );
 }
 

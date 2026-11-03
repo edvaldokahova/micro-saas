@@ -21,8 +21,9 @@ export function IconLedger({ className = "h-5 w-5", active = false }: N) {
   return (
     <svg {...base} className={className}>
       <rect x="2.75" y="2.75" width="6" height="6" rx="1.8" fill={f} />
-      <rect x="11.25" y="2.75" width="6" height="6" rx="1.8" fill="currentColor" />
-      <path d="M12.75 5.9l1.15 1.1 2-2.1" stroke={hole} strokeWidth="1.4" />
+      {/* Quadrado de cima à direita: igual aos outros; só na página ativa fica preenchido com o visto */}
+      <rect x="11.25" y="2.75" width="6" height="6" rx="1.8" fill={f} />
+      {active && <path d="M12.75 5.9l1.15 1.1 2-2.1" stroke={hole} strokeWidth="1.4" />}
       <rect x="2.75" y="11.25" width="6" height="6" rx="1.8" fill={f} />
       <rect x="11.25" y="11.25" width="6" height="6" rx="1.8" fill={f} />
     </svg>

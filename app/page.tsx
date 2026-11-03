@@ -14,6 +14,7 @@ import { getLocale } from "@/lib/prefs";
 import { site } from "@/lib/site";
 import { integrationTexts } from "@/lib/integration-texts";
 import { StickyCta } from "@/components/sticky-cta";
+import { HeroOps } from "@/components/hero-ops";
 
 export async function generateMetadata(): Promise<Metadata> {
   const d = getDictionary(await getLocale());
@@ -218,10 +219,16 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="overflow-x-clip">
-        {/* Abertura: o título é a imagem */}
-        <section>
+        {/* Abertura: o título sobre a central de operações (animação de fundo, por trás do cabeçalho transparente) */}
+        <section data-hero className="relative isolate -mt-[68px] overflow-hidden pt-[68px]">
           <HeroIntro>
-            <div className="relative mx-auto max-w-6xl px-5 pb-6 pt-16 text-center sm:pt-28">
+            <div className="absolute inset-0 -z-10" data-hero-rest aria-hidden>
+              <HeroOps />
+              {/* Véu: mantém o texto limpo por cima da animação e funde o fundo com a secção seguinte */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_50%_at_50%_40%,var(--color-ink)_32%,transparent_78%)] opacity-90" />
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-ink" />
+            </div>
+            <div className="relative mx-auto flex min-h-[calc(100svh-8px)] max-w-6xl flex-col px-5 pb-[34svh] pt-16 text-center sm:pt-24 lg:min-h-[max(calc(100svh+40px),860px)] lg:pb-[30vh]">
               <h1 data-hero-title data-parallax="0.35" className="mx-auto max-w-[12ch] font-display text-[clamp(3.1rem,8.4vw,6.4rem)] lg:max-w-[18ch] leading-[0.93] tracking-[-0.045em]">
                 {h.title}
               </h1>
@@ -239,17 +246,17 @@ export default async function Home() {
                   <p className="text-[13.5px] text-muted">{h.finalText(site.trialDays)}</p>
                 </div>
               </div>
-              <div className="mt-16 flex justify-center" data-hero-rest>
-                <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
-              </div>
             </div>
           </HeroIntro>
         </section>
 
         {/* O problema, numa frase que acende à medida que se desce */}
         <section>
-          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
-            <p data-scrub className="mx-auto max-w-[24ch] text-center font-display text-[clamp(2rem,5.2vw,4.3rem)] leading-[1.06] tracking-[-0.035em]">
+          <div className="mx-auto max-w-6xl px-5 py-24 sm:py-36">
+            <div className="flex justify-center">
+              <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
+            </div>
+            <p data-scrub className="mx-auto mt-20 max-w-[24ch] text-center font-display text-[clamp(2rem,5.2vw,4.3rem)] leading-[1.06] tracking-[-0.035em] sm:mt-28">
               {h.statement}
             </p>
           </div>

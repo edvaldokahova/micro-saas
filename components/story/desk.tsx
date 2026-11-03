@@ -372,7 +372,7 @@ function Dash({ s, t }: { s: DeskState; t: DeskTexts }) {
                           {/* Como a descarga aparece no navegador: ícone do ZIP, nome do ficheiro e tamanho */}
                           {s.zipped && (
                             <span className="flex animate-rise items-center gap-2 rounded-lg border border-line bg-ink-2 py-1 pl-1.5 pr-2.5 shadow-[0_6px_16px_-10px_rgba(18,19,22,0.35)]">
-                              <span className="grid h-6 w-5 place-items-center rounded-[4px] bg-[#f4c542] font-mono text-[7px] font-bold text-[#5c4300]">ZIP</span>
+                              <ZipFile className="h-7 w-[22px]" />
                               <span className="leading-tight">
                                 <span className="block text-[11.5px] font-medium">{u.zipDone}</span>
                                 <span className="block text-[10px] text-muted">2,4 MB</span>
@@ -435,7 +435,7 @@ function Docs({ s, t }: { s: DeskState; t: DeskTexts }) {
                 {/* A descarga aparece por baixo do botão, como no navegador, sem mexer no resto */}
                 {g.main && s.zipped && (
                   <span className="absolute right-0 top-full z-10 mt-1.5 flex animate-rise items-center gap-1.5 whitespace-nowrap rounded-lg border border-line bg-ink-2 py-1 pl-1.5 pr-2 shadow-[0_6px_16px_-10px_rgba(18,19,22,0.35)]">
-                    <span className="grid h-5 w-4 place-items-center rounded-[3px] bg-[#f4c542] font-mono text-[6px] font-bold text-[#5c4300]">ZIP</span>
+                    <ZipFile className="h-6 w-[19px]" />
                     <span className="text-[11px] font-medium">{u.zipDone}</span>
                     <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ok" aria-hidden><path d="M2.5 6.3l2.2 2.2L9.5 3.6" /></svg>
                   </span>
@@ -695,5 +695,25 @@ function Settings({ s, t }: { s: DeskState; t: DeskTexts }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Ícone de ficheiro ZIP como nos sistemas: folha com o canto dobrado e um fecho de correr ao longo,
+// com o puxador em baixo. Nas cores do produto (folha clara, fecho escuro).
+function ZipFile({ className = "" }: { className?: string }) {
+  const teeth = [0, 1, 2, 3, 4, 5];
+  return (
+    <svg viewBox="0 0 22 28" className={`shrink-0 ${className}`} aria-hidden>
+      <path d="M3 1.5h11l6 6V25a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 2 25V3a1.5 1.5 0 0 1 1-1.5z" fill="var(--color-ink-2)" stroke="var(--color-line-strong)" strokeWidth="1" />
+      <path d="M14 1.5V6a1.5 1.5 0 0 0 1.5 1.5H20" fill="var(--color-ink-3)" stroke="var(--color-line-strong)" strokeWidth="1" strokeLinejoin="round" />
+      {teeth.map((i) => (
+        <g key={i} fill="var(--color-ivory)">
+          <rect x="8" y={2.4 + i * 2.2} width="2.6" height="1.1" rx="0.4" />
+          <rect x="10.6" y={3.5 + i * 2.2} width="2.6" height="1.1" rx="0.4" />
+        </g>
+      ))}
+      <rect x="8.1" y="16" width="5" height="7" rx="1.4" fill="var(--color-ivory)" />
+      <rect x="9.35" y="19.4" width="2.5" height="2.2" rx="0.5" fill="var(--color-ink-2)" />
+    </svg>
   );
 }

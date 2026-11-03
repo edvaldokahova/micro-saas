@@ -44,7 +44,7 @@ export function LocaleSwitcher({ locale, label, align = "right" }: { locale: Loc
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`${label}: ${localeMeta[locale].name}`}
-        className={`flex h-9 items-center gap-1.5 rounded-lg border border-line px-2.5 text-xs font-medium transition hover:border-ivory ${open ? "border-ivory" : ""} ${pending ? "opacity-60" : ""}`}
+        className={`flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition hover:bg-ivory/[0.06] ${open ? "bg-ivory/[0.06]" : ""} ${pending ? "opacity-60" : ""}`}
       >
         <Globe className="h-4 w-4 text-ivory" strokeWidth={1.6} aria-hidden />
         <span className="hidden sm:inline">{localeMeta[locale].short}</span>
@@ -102,7 +102,7 @@ export function ThemeToggle({ labels }: { labels: { light: string; dark: string 
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="grid h-9 w-9 place-items-center rounded-lg border border-line text-muted transition hover:border-line-strong hover:text-ivory"
+      className="grid h-9 w-9 place-items-center rounded-full text-ivory/80 transition hover:bg-ivory/[0.06] hover:text-ivory"
     >
       {theme === "light" ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
     </button>
