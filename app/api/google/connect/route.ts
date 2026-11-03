@@ -7,7 +7,7 @@ import { authUrl, driveReady } from "@/lib/gdrive";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const { isManager, office, user } = await getSession();
+  const { isManager, office, user, locale } = await getSession();
   const back = new URL("/definicoes", request.url);
   if (!isManager || !driveReady()) {
     back.searchParams.set("erro", "drive");
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   }
   const nonce = randomBytes(18).toString("base64url");
   const redirectUri = new URL("/api/google/callback", request.url).toString();
-  const res = NextResponse.redirect(authUrl(redirectUri, nonce, user.email ?? undefined));
+  const res = NextResponse.redirect(authUrl(redirectUri, nonce, user.email ?? undefined, locale));
   res.cookies.set("bl_gstate", `${nonce}.${office.id}`, { httpOnly: true, secure: true, sameSite: "lax", path: "/api/google", maxAge: 600 });
   return res;
 }

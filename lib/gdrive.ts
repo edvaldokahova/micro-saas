@@ -15,7 +15,8 @@ export function driveReady(): boolean {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.INTEGRATIONS_KEY);
 }
 
-export function authUrl(redirectUri: string, state: string, loginHint?: string): string {
+// lang: idioma do escritório, para o ecrã do Google aparecer em pt-PT, pt-BR ou espanhol
+export function authUrl(redirectUri: string, state: string, loginHint?: string, lang?: string): string {
   const q = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
     redirect_uri: redirectUri,
@@ -26,6 +27,7 @@ export function authUrl(redirectUri: string, state: string, loginHint?: string):
     include_granted_scopes: "true",
     state,
     ...(loginHint ? { login_hint: loginHint } : {}),
+    ...(lang ? { hl: lang === "es-ES" ? "es" : lang } : {}),
   });
   return `https://accounts.google.com/o/oauth2/v2/auth?${q}`;
 }
