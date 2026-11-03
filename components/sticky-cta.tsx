@@ -36,7 +36,8 @@ export function StickyCta({ label, href = "/registar" }: { label: string; href?:
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4"
+      data-sticky-cta
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 transition-opacity duration-200"
       style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
       aria-hidden={!show}
     >

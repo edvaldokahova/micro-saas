@@ -1,7 +1,7 @@
 "use client";
 
 // Cabeçalho do site público: transparente enquanto se está na abertura (hero) e,
-// ao sair dela, ganha um fundo claro de vidro desfocado. Sem linha por baixo.
+// ao sair dela, fica com o fundo da página (sem sombra nem linha: não se vê onde acaba).
 // Nas páginas sem abertura marcada ([data-hero]), muda logo ao primeiro scroll.
 import { useEffect, useState } from "react";
 
@@ -32,8 +32,8 @@ export function HeaderShell({ children }: { children: React.ReactNode }) {
   return (
     <header
       data-solid={solid || undefined}
-      className={`sticky top-0 z-30 transition-[background-color,backdrop-filter,box-shadow] duration-300 ${
-        solid ? "bg-ink/70 shadow-[0_8px_30px_-22px_rgba(18,19,22,0.35)] backdrop-blur-xl backdrop-saturate-150" : "bg-transparent"
+      className={`sticky top-0 z-30 transition-[background-color] duration-300 ${
+        solid ? "bg-ink-2 [[data-theme=dark]_&]:bg-ink" : "bg-transparent"
       }`}
     >
       {children}

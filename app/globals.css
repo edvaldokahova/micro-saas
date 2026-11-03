@@ -595,3 +595,9 @@ button:has(.spinner),
     display: none;
   }
 }
+
+/* Com o menu do telemóvel aberto, o botão flutuante da página inicial sai de cena */
+html[data-menu-open] [data-sticky-cta] {
+  opacity: 0;
+  visibility: hidden;
+}

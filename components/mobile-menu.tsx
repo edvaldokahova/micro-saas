@@ -36,11 +36,13 @@ export function MobileMenu({ links, signIn, tryFree, label, closeLabel }: { link
     const html = document.documentElement;
     const prev = html.style.overflow;
     html.style.overflow = "hidden";
+    html.dataset.menuOpen = "1";
     document.addEventListener("keydown", onKey);
     const toWide = () => window.innerWidth >= 640 && setOpen(false);
     window.addEventListener("resize", toWide);
     return () => {
       html.style.overflow = prev;
+      delete html.dataset.menuOpen;
       document.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", toWide);
     };
@@ -73,7 +75,7 @@ export function MobileMenu({ links, signIn, tryFree, label, closeLabel }: { link
   const panel = mounted
     ? createPortal(
         <div
-          className={`fixed inset-0 z-[29] flex flex-col bg-ink px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[88px] transition-opacity duration-[250ms] sm:hidden ${open ? "opacity-100" : "opacity-0"}`}
+          className={`fixed inset-0 z-[29] flex flex-col bg-ink-2 [[data-theme=dark]_&]:bg-ink px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[88px] transition-opacity duration-[250ms] sm:hidden ${open ? "opacity-100" : "opacity-0"}`}
           role="dialog"
           aria-modal="true"
           aria-label={label}

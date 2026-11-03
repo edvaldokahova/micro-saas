@@ -66,7 +66,8 @@ export function HeroOps() {
       const r = canvas.getBoundingClientRect();
       w = Math.max(1, r.width);
       h = Math.max(1, r.height);
-      dpr = Math.min(window.devicePixelRatio || 1, w < 640 ? 1.5 : 2);
+      // Nitidez total no telemóvel (ecrãs de 2× a 3×) e no computador
+      dpr = Math.min(window.devicePixelRatio || 1, w < 640 ? 3 : 2);
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
