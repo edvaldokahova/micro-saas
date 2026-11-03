@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { costSummary, getFinSettings, loadCosts, marketRates, monthKey, ratesFrom, usd } from "@/lib/finance";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin";
-import { getSetting, limitsFor, PIXEL_EVENTS, PLAN_INFO, type Pixel, type Plans } from "@/lib/platform";
+import { getSetting, limitsFor, PIXEL_EVENTS, type Pixel, type Plans } from "@/lib/platform";
 import { OfficesRing, RevenueChart, type Segment } from "@/components/admin-charts";
 import { site } from "@/lib/site";
-import { adminSignOut, saveMetaPixel, sendUtmifyTest, setAdminName, setPlan } from "./actions";
+import { adminSignOut, saveMetaPixel, sendUtmifyTest, setAdminName } from "./actions";
 import { utmifyEnabled } from "@/lib/utmify";
 import { Toast } from "@/components/toast";
 import { SubmitButton } from "@/components/app-buttons";
@@ -100,12 +102,15 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const tested = sp.utmify;
   const utmOn = utmifyEnabled();
   const admin = createAdminClient();
-  const [{ data, error }, { data: rev }, { data: rel }, plans, pixel] = await Promise.all([
+  const [{ data, error }, { data: rev }, { data: rel }, plans, pixel, finSettings, finMarket, finCosts] = await Promise.all([
     admin.rpc("platform_stats"),
     admin.rpc("platform_revenue"),
     admin.from("platform_releases").select("version, released_on, title, notes").order("released_on", { ascending: false }).order("id", { ascending: false }),
     getSetting<Plans>("plans", { vercel: "hobby", supabase: "free", resend: "free" }),
     getSetting<Pixel>("meta_pixel", { id: null, events: [] }),
+    getFinSettings(),
+    marketRates(),
+    loadCosts(monthKey(new Date())),
   ]);
   const s = (data ?? { db_bytes: 0, storage_bytes: 0, emails_today: 0, emails_month: 0, offices: [] }) as Stats;
   const offices = s.offices ?? [];
@@ -129,7 +134,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const endingSoon = offices.filter((o) => stateOf(o).key === "trial" && Date.parse(o.trial_ends_at) - Date.now() < 2 * 86_400_000).length;
   const aiCalls = offices.reduce((a, o) => a + Number(o.ai_calls), 0);
   const aiTokens = offices.reduce((a, o) => a + Number(o.ai_tokens), 0);
-  const costs = (Object.keys(PLAN_INFO) as (keyof Plans)[]).reduce((a, k) => a + (plans[k] === "pro" ? PLAN_INFO[k].cost : 0), 0);
+  const fin = costSummary(finCosts, finSettings, ratesFrom(finSettings, finMarket));
 
   // Receita recebida nos últimos 6 meses (pagamentos reais registados pela Paddle), em euros
   const revRows = (rev ?? []) as { month: string; currency: string; total: number; earnings: number; count: number }[];
@@ -184,8 +189,9 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
             <Logo />
             <span className="rounded-full border border-line-strong px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">Admin</span>
           </div>
-          <form action={adminSignOut} className="flex items-center gap-3">
-            <span className="hidden text-[13px] text-muted sm:inline">{user.email}</span>
+          <form action={adminSignOut} className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden text-[13px] text-muted md:inline">{user.email}</span>
+            <Link href="/financas" className="btn btn-primary btn-sm">Finanças</Link>
             <button className="btn btn-secondary btn-sm">Sair</button>
           </form>
         </div>
@@ -227,7 +233,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
               value: [mrr.eur || !mrr.brl ? `${num(Math.round(mrr.eur))} €` : "", mrr.brl ? `R$ ${num(Math.round(mrr.brl))}` : ""].filter(Boolean).join(" + "),
               hint: "Recorrente, antes da taxa da Paddle",
             },
-            { label: "Custos fixos", value: `$${costs}`, hint: costs ? "Planos Pro ativos, por mês" : "Tudo em planos gratuitos" },
+            { label: "Custos do mês", value: usd(fin.total, 0), hint: fin.total ? "Ferramentas, IA, anúncios e extra" : "Tudo em planos gratuitos" },
             { label: "Ativos 7 dias", value: num(active7), hint: `de ${num(offices.length)} escritórios` },
             { label: "IA este mês", value: num(aiCalls), hint: `ficheiros · ${num(aiTokens)} tokens` },
           ].map((k) => (
@@ -279,23 +285,10 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           )}
           <Meter label="E-mails este mês" used={Number(s.emails_month)} max={limits.emailsMonth} format={num} />
         </div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          {(Object.keys(PLAN_INFO) as (keyof Plans)[]).map((k) => {
-            const info = PLAN_INFO[k];
-            const pro = plans[k] === "pro";
-            return (
-              <form key={k} action={setPlan} className="card flex items-center justify-between gap-3 p-4">
-                <input type="hidden" name="tool" value={k} />
-                <input type="hidden" name="tier" value={pro ? info.free === "Hobby" ? "hobby" : "free" : "pro"} />
-                <span>
-                  <span className="block text-[15px] font-medium">{info.name}</span>
-                  <span className={`mt-0.5 block text-[12.5px] ${pro ? "text-ok" : "text-muted"}`}>{pro ? `Pro ativo · $${info.cost}/mês` : `Plano ${info.free}`}</span>
-                </span>
-                <SubmitButton className={`btn btn-sm ${pro ? "btn-secondary" : "btn-primary"}`}>{pro ? `Voltar ao ${info.free}` : "Ativei o Pro"}</SubmitButton>
-              </form>
-            );
-          })}
-        </div>
+        <p className="mt-3 text-[13px] text-muted">
+          Os planos das ferramentas (Vercel, Supabase, Resend, Claude) ativam-se em{" "}
+          <Link href="/financas#custos" className="text-ivory underline underline-offset-4">Finanças → Custos do mês</Link>: os limites acima acompanham o plano.
+        </p>
 
         {/* Integrações */}
         <h2 id="utmify" className="mt-10 scroll-mt-24 text-[17px] font-semibold">Integrações</h2>

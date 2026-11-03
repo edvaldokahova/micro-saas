@@ -70,9 +70,14 @@ async function classifyOne(admin: ReturnType<typeof createAdminClient>, key: str
     }),
   });
   if (!res.ok) throw new Error(`gemini ${res.status}`);
-  const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[]; usageMetadata?: { totalTokenCount?: number } };
-  // Consumo por escritório (para o painel administrativo); nunca bloqueia a arrumação
-  await admin.rpc("track_ai_usage", { p_office: d.office_id, p_tokens: body.usageMetadata?.totalTokenCount ?? 0 }).then(
+  const body = (await res.json()) as {
+    candidates?: { content?: { parts?: { text?: string }[] } }[];
+    usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number };
+  };
+  // Consumo por escritório (para o painel administrativo e o custo real da IA): entrada e saída à parte,
+  // porque a Google cobra preços diferentes (o «raciocínio» do modelo conta como saída). Nunca bloqueia a arrumação.
+  const u = body.usageMetadata ?? {};
+  await admin.rpc("track_ai_usage_v2", { p_office: d.office_id, p_in: u.promptTokenCount ?? 0, p_out: (u.candidatesTokenCount ?? 0) + (u.thoughtsTokenCount ?? 0) }).then(
     () => null,
     () => null,
   );

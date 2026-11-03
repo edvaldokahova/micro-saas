@@ -58,6 +58,28 @@
   --color-accent: #f1f1f3;
 }
 
+/* Painel administrativo: sempre claro, mesmo que o modo escuro esteja escolhido no resto do site */
+.admin-light {
+  color-scheme: light;
+  --color-ink: #f7f7f8;
+  --color-ink-2: #ffffff;
+  --color-ink-3: #eeeff1;
+  --color-line: #e2e3e7;
+  --color-line-strong: #c7c9cf;
+  --color-ivory: #121316;
+  --color-muted: #60636b;
+  --color-gold: #2f5bea;
+  --color-gold-2: #2248c9;
+  --color-ok: #1e7a52;
+  --color-warn: #9a6114;
+  --color-bad: #b4352b;
+  --color-on-accent: #ffffff;
+  --color-accent: #121316;
+  min-height: 100dvh;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+
 body {
   background: var(--color-ink);
   color: var(--color-ivory);

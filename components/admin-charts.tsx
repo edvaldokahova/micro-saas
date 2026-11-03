@@ -32,12 +32,15 @@ function smooth(pts: [number, number][]): string {
 }
 
 // Também serve para contagens (unit="count"): ex.: documentos recebidos por mês no Desempenho
-export function RevenueChart({ points, currency = "EUR", unit = "money", noun }: { points: RevenuePoint[]; currency?: "EUR" | "BRL"; unit?: "money" | "count"; noun?: [string, string] }) {
+// net: a linha é o valor líquido (total) e o aviso mostra o faturado (earnings) e a taxa da Paddle
+export function RevenueChart({ points, currency = "EUR", unit = "money", noun, net = false }: { points: RevenuePoint[]; currency?: "EUR" | "BRL" | "USD"; unit?: "money" | "count"; noun?: [string, string]; net?: boolean }) {
   const id = useId().replace(/:/g, "");
   const [hover, setHover] = useState<number | null>(null);
+  // Dólares com «$» à frente (igual ao resto do painel de finanças), em vez de «US$»
+  const dollar = (s: string) => (currency === "USD" ? `$${s.replace(/\s?US\$/, "").trim()}` : s);
   const money = (cents: number) =>
     unit === "count" ? new Intl.NumberFormat("pt-PT").format(cents) :
-    new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
+    dollar(new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100));
   // Escala «redonda» (ex.: 0, 50 €, 100 €, 150 €) para o eixo vertical
   const top = Math.max(unit === "count" ? 4 : 100, ...points.map((p) => p.total));
   const rough = top / 4;
@@ -47,7 +50,7 @@ export function RevenueChart({ points, currency = "EUR", unit = "money", noun }:
   const ticks = Array.from({ length: Math.round(max / step) + 1 }, (_, i) => i * step);
   const axis = (cents: number) =>
     unit === "count" ? new Intl.NumberFormat("pt-PT").format(cents) :
-    new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, notation: cents >= 1_000_000 ? "compact" : "standard", maximumFractionDigits: 0 }).format(cents / 100);
+    dollar(new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "pt-PT", { style: "currency", currency, notation: cents >= 1_000_000 ? "compact" : "standard", maximumFractionDigits: 0 }).format(cents / 100));
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
   const x = (i: number) => PAD.left + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW);
@@ -127,7 +130,7 @@ export function RevenueChart({ points, currency = "EUR", unit = "money", noun }:
           <p className="mt-0.5 font-semibold tabular-nums">{money(h.total)}</p>
           {unit === "money" ? (
             <p className="text-muted tabular-nums">
-              Líquido {money(h.earnings)} · {h.count} {h.count === 1 ? "pagamento" : "pagamentos"}
+              {net ? `Faturado ${money(h.earnings)} · taxa Paddle ${money(Math.max(0, h.earnings - h.total))}` : `Líquido ${money(h.earnings)}`} · {h.count} {h.count === 1 ? "pagamento" : "pagamentos"}
             </p>
           ) : (
             noun && <p className="text-muted">{h.total === 1 ? noun[0] : noun[1]}</p>
@@ -137,8 +140,9 @@ export function RevenueChart({ points, currency = "EUR", unit = "money", noun }:
     </div>
       {/* Meses, só por baixo do gráfico (o eixo vertical fica na mesma altura do desenho) */}
       <div className="col-start-2 mt-2 flex justify-between px-1 font-mono text-[10.5px] uppercase tracking-wider text-muted">
-        {points.map((p) => (
-          <span key={p.label}>{p.label}</span>
+        {/* Com muitos meses, no telemóvel mostra um sim, um não */}
+        {points.map((p, i) => (
+          <span key={p.label} className={points.length > 7 && (points.length - 1 - i) % 2 ? "invisible sm:visible" : ""}>{p.label}</span>
         ))}
       </div>
     </div>
