@@ -4,8 +4,23 @@
 // sucesso desaparece sozinho; erro fica até ser fechado. Não mexe no scroll da página.
 import { useEffect, useState } from "react";
 
+// Avisos que chegam no endereço (?ok=…, ?erro=…): saem do endereço depois de mostrados,
+// para não voltarem a aparecer ao atualizar a página
+const ONE_SHOT = ["ok", "erro", "convite", "teste", "utmify", "email"];
+
 export function Toast({ tone, text }: { tone: "ok" | "bad"; text: string }) {
   const [open, setOpen] = useState(true);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    let changed = false;
+    for (const k of ONE_SHOT) {
+      if (url.searchParams.has(k)) {
+        url.searchParams.delete(k);
+        changed = true;
+      }
+    }
+    if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }, []);
   useEffect(() => {
     setOpen(true);
     if (tone !== "ok") return;
