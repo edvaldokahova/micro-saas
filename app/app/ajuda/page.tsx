@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { getSession } from "@/lib/office";
 import { site } from "@/lib/site";
+import { FeedbackForm } from "@/components/feedback";
+import { feedbackTexts } from "@/lib/feedback-texts";
 
 export const metadata: Metadata = { title: "Ajuda" };
 
 // Ajuda e suporte dentro do painel (com sessão): o mesmo conteúdo da página pública de suporte
 export default async function Ajuda() {
-  const { d, user, office } = await getSession();
+  const { d, user, office, locale } = await getSession();
   const s = d.support;
   const subject = encodeURIComponent(`${site.name} · ${office.name}`);
   const body = encodeURIComponent(`\n\n—\n${user.email ?? ""} · ${office.name}`);
@@ -27,6 +29,8 @@ export default async function Ajuda() {
           <path d="M7.5 4.5L13 10l-5.5 5.5" />
         </svg>
       </a>
+
+      <FeedbackForm t={feedbackTexts(locale)} />
 
       <section className="mt-10">
         <h2 className="text-[17px] font-semibold">{s.faqTitle}</h2>

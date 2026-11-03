@@ -102,7 +102,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const tested = sp.utmify;
   const utmOn = utmifyEnabled();
   const admin = createAdminClient();
-  const [{ data, error }, { data: rev }, { data: rel }, plans, pixel, finSettings, finMarket, finCosts] = await Promise.all([
+  const [{ data, error }, { data: rev }, { data: rel }, plans, pixel, finSettings, finMarket, finCosts, { count: unreadCount }] = await Promise.all([
     admin.rpc("platform_stats"),
     admin.rpc("platform_revenue"),
     admin.from("platform_releases").select("version, released_on, title, notes").order("released_on", { ascending: false }).order("id", { ascending: false }),
@@ -111,7 +111,9 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     getFinSettings(),
     marketRates(),
     loadCosts(monthKey(new Date())),
+    admin.from("feedback").select("id", { count: "exact", head: true }).is("read_at", null),
   ]);
+  const unreadFeedback = unreadCount ?? 0;
   const s = (data ?? { db_bytes: 0, storage_bytes: 0, emails_today: 0, emails_month: 0, offices: [] }) as Stats;
   const offices = s.offices ?? [];
   const limits = limitsFor(plans);
@@ -191,6 +193,10 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           </div>
           <form action={adminSignOut} className="flex items-center gap-2 sm:gap-3">
             <span className="hidden text-[13px] text-muted md:inline">{user.email}</span>
+            <Link href="/feedback" className="btn btn-secondary btn-sm">
+              Opiniões
+              {unreadFeedback > 0 && <span className="ml-1.5 rounded-full bg-gold px-1.5 text-[11px] font-semibold leading-5 text-white tabular-nums">{unreadFeedback}</span>}
+            </Link>
             <Link href="/financas" className="btn btn-primary btn-sm">Finanças</Link>
             <button className="btn btn-secondary btn-sm">Sair</button>
           </form>

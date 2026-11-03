@@ -12,6 +12,9 @@ import { LocaleSwitcher, ThemeToggle } from "@/components/preferences";
 import { getSession, officeAccess } from "@/lib/office";
 import { Welcome } from "@/components/welcome";
 import { accountTexts } from "@/lib/account-texts";
+import { FeedbackPrompt } from "@/components/feedback";
+import { feedbackTexts } from "@/lib/feedback-texts";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = { robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -28,6 +31,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (role === "owner" && !office.onboarded_at) return <Welcome t={accountTexts(locale).welcome} office={office.name} />;
   const access = officeAccess(office);
   const b = d.app.banner;
+  // Pedido de opinião: a partir do 4.º dia do teste, só ao dono da conta, uma única vez
+  const trialDay = Math.floor((Date.now() - (new Date(office.trial_ends_at).getTime() - site.trialDays * 864e5)) / 864e5) + 1;
+  const askFeedback = role === "owner" && access.state === "trial" && !office.feedback_prompt_at && trialDay >= 4;
 
   const banner =
     access.state === "trial" && role === "owner"
@@ -90,6 +96,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </Suspense>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">{children}</main>
       <AppTabBar labels={navLabels} show={show} />
+      {askFeedback && <FeedbackPrompt t={feedbackTexts(locale)} />}
     </div>
   );
 }
