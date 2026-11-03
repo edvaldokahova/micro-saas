@@ -229,10 +229,10 @@ export default async function Home() {
                   {h.lead}
                 </p>
                 <div data-hero-rest className="flex flex-col items-start gap-3 md:items-end">
-                  <Link href="/registar" data-magnetic className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
+                  <Link href="/registar" data-magnetic data-hero-cta className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
                     {h.ctaTime}
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-ivory" aria-hidden>
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" /></svg>
+                      <svg data-cta-arrow width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" /></svg>
                     </span>
                   </Link>
                   <p className="text-[13.5px] text-muted">{h.finalText(site.trialDays)}</p>

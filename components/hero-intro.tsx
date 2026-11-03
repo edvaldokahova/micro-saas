@@ -19,6 +19,8 @@ export function HeroIntro({ children }: { children: React.ReactNode }) {
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const title = el.querySelector<HTMLElement>("[data-hero-title]");
       const rest = el.querySelectorAll<HTMLElement>("[data-hero-rest]");
+      const cta = el.querySelector<HTMLElement>("[data-hero-cta]");
+      const arrow = el.querySelector<SVGElement>("[data-cta-arrow]");
       if (!title) return;
       let split: SplitText | undefined;
       document.fonts.ready.then(() => {
@@ -29,10 +31,17 @@ export function HeroIntro({ children }: { children: React.ReactNode }) {
           autoSplit: true,
           onSplit(self) {
             gsap.set(title, { autoAlpha: 1 });
-            return gsap
+            const tl = gsap
               .timeline()
               .from(self.chars, { yPercent: 120, rotationX: -80, transformPerspective: 700, transformOrigin: "50% 100%", opacity: 0, duration: 1.25, ease: "expo.out", stagger: 0.022 })
               .from(rest, { autoAlpha: 0, y: 14, duration: 0.8, ease: "power3.out", stagger: 0.08 }, "-=0.75");
+            // O botão: nasce do círculo da seta e abre-se para a esquerda (o texto vai sendo revelado),
+            // e a seta dá um único toque para a frente, só para chamar o olhar. Acontece uma vez.
+            if (cta) {
+              tl.fromTo(cta, { clipPath: "inset(0 0 0 80% round 999px)" }, { clipPath: "inset(0 0 0 0% round 999px)", duration: 1, ease: "expo.out", clearProps: "clipPath" }, "<0.12");
+              if (arrow) tl.fromTo(arrow, { x: 0 }, { x: 5, duration: 0.28, ease: "power2.out", yoyo: true, repeat: 1, clearProps: "transform" }, ">-0.15");
+            }
+            return tl;
           },
         });
       });
