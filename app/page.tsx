@@ -68,7 +68,7 @@ export default async function Home() {
   const period = locale === "es-ES" ? periodOf("2026-07-01", locale, 3) : periodOf("2026-09-01", locale);
   const link = "docs.bilonai.com/p/q4hfp7k2mx9a";
   // Plano Escritório: as páginas dos clientes saem com o domínio do escritório
-  const officeDomain = { "pt-PT": "doc.contabilidadesilva.pt", "pt-BR": "doc.contabilidadesilva.com.br", "es-ES": "doc.asesoriasilva.es" }[locale];
+  const officeDomain = { "pt-PT": "docs.contabilidadesilva.pt", "pt-BR": "docs.contabilidadesilva.com.br", "es-ES": "docs.asesoriasilva.es" }[locale];
   const it = integrationTexts(locale);
   const ios = {
     "pt-PT": { cancel: "Cancelar", add: "Adicionar", photos: "Fotografias", recents: "Recentes", search: "Pesquisar", today: "Hoje" },
