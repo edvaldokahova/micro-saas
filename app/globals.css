@@ -552,3 +552,46 @@ button:has(.spinner),
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* Reflexo do botão principal: uma faixa de luz fina e suave atravessa o botão de vez em quando,
+   como luz a passar num objeto polido. Muito discreta; desliga-se com «reduzir movimento». */
+:root {
+  --shine-edge: rgba(255, 255, 255, 0.1);
+  --shine-core: rgba(255, 255, 255, 0.34);
+}
+:root[data-theme="dark"] {
+  --shine-edge: rgba(16, 17, 20, 0.05);
+  --shine-core: rgba(16, 17, 20, 0.16);
+}
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: 0;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 0%, var(--shine-edge) 30%, var(--shine-core) 50%, var(--shine-edge) 70%, transparent 100%);
+  transform: translateX(-180%) skewX(-20deg);
+  animation: btn-shine 6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  animation-delay: var(--shine-delay, 0.2s);
+}
+@keyframes btn-shine {
+  0% {
+    transform: translateX(-180%) skewX(-20deg);
+  }
+  24%,
+  100% {
+    transform: translateX(340%) skewX(-20deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-shine::after {
+    display: none;
+  }
+}

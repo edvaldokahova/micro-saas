@@ -108,16 +108,16 @@ export function WindowStory({ t }: { t: WindowTexts }) {
 
   return (
     <section id="como-funciona" className="scroll-mt-16">
-      <div className="mx-auto grid max-w-6xl items-end gap-10 px-5 pt-28 sm:pt-40 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-5 pt-28 text-center sm:pt-40">
         <div>
-          <h2 data-split="chars" className="max-w-[18ch] font-display text-[clamp(2.3rem,5.4vw,4.4rem)] leading-[1.0]">
+          <h2 data-split="chars" className="mx-auto max-w-[18ch] font-display text-[clamp(2.3rem,5.4vw,4.4rem)] leading-[1.0]">
             {t.title}
           </h2>
-          <p data-split="lines" className="mt-5 max-w-[52ch] text-[17px] leading-[1.6] text-muted sm:text-[19px]">
+          <p data-split="lines" className="mx-auto mt-5 max-w-[52ch] text-[17px] leading-[1.6] text-muted sm:text-[19px]">
             {t.lead}
           </p>
         </div>
-        <div className="flex justify-center lg:block">{t.art}</div>
+        <div className="flex justify-center">{t.art}</div>
       </div>
 
       <div ref={pin} className={`relative flex flex-col justify-center ${reduced ? "py-10" : "h-[100svh] pb-4 pt-[80px]"}`}>

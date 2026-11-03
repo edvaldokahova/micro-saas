@@ -132,7 +132,7 @@ export function FitStory({ t }: { t: FitTexts }) {
     <section id="para-quem-e" className="border-t border-line">
       <div ref={pin} className={`relative ${reduced ? "py-24" : "h-[100svh] pt-[76px]"}`}>
         <div className="mx-auto grid h-full max-w-6xl content-center gap-9 px-5 pb-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20">
-          <h2 data-split="chars" className="max-w-[17ch] font-display text-[clamp(2rem,5vw,3.9rem)] leading-[1.02]">
+          <h2 data-split="chars" className="mx-auto max-w-[17ch] text-center font-display lg:mx-0 lg:text-left text-[clamp(2rem,5vw,3.9rem)] leading-[1.02]">
             {t.title}
           </h2>
           <ol ref={list}>

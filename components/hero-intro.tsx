@@ -40,6 +40,8 @@ export function HeroIntro({ children }: { children: React.ReactNode }) {
             if (cta) {
               tl.fromTo(cta, { clipPath: "inset(0 0 0 80% round 999px)" }, { clipPath: "inset(0 0 0 0% round 999px)", duration: 1, ease: "expo.out", clearProps: "clipPath" }, "<0.12");
               if (arrow) tl.fromTo(arrow, { x: 0 }, { x: 5, duration: 0.28, ease: "power2.out", yoyo: true, repeat: 1, clearProps: "transform" }, ">-0.15");
+              // Depois da entrada: o reflexo de luz passa pelo botão de tempos a tempos
+              tl.call(() => cta.classList.add("btn-shine"), undefined, "+=0.1");
             }
             return tl;
           },

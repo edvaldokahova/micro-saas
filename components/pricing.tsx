@@ -12,14 +12,14 @@ const OWN_DOMAIN: Record<Locale, string> = {
 };
 
 // Os dois planos, com a escolha mensal/anual. Usado na página inicial e na página de preços.
-export function PricingPlans({ locale }: { locale: Locale }) {
+export function PricingPlans({ locale, center = false }: { locale: Locale; center?: boolean }) {
   const d = getDictionary(locale);
   const h = d.home;
   const plans = Object.keys(site.plans) as PlanKey[];
   const brl = localeMeta[locale].currency === "BRL";
   return (
-    <IntervalToggle className="mt-10" labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+    <IntervalToggle className={`mt-10 ${center ? "text-center" : ""}`} labels={{ month: d.common.monthly, year: d.common.yearly, badge: d.common.twoMonthsFree }}>
+      <div className="mt-8 grid gap-4 text-left md:grid-cols-2">
         {plans.map((key) => {
           const p = site.plans[key];
           const featured = key === "office";
@@ -59,7 +59,7 @@ export function PricingPlans({ locale }: { locale: Locale }) {
                   </li>
                 ))}
               </ul>
-              <Link href="/registar" className={`btn mt-9 w-full min-h-[3rem] ${featured ? "btn-primary" : "btn-secondary"}`}>
+              <Link href="/registar" className={`btn mt-9 w-full min-h-[3rem] ${featured ? "btn-primary btn-shine" : "btn-secondary"}`}>
                 {d.common.trialFree(site.trialDays)}
               </Link>
             </div>

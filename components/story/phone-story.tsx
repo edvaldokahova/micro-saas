@@ -102,7 +102,7 @@ export function PhoneStory({ t }: { t: PhoneStoryTexts }) {
         <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)_auto] gap-3 px-5 pb-3 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-x-16 lg:gap-y-2">
           <div className="lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:justify-center">
             <div className="mb-4 hidden origin-bottom-left scale-[0.82] lg:block [@media(max-height:860px)]:!hidden">{t.art}</div>
-            <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(1.6rem,4.4vw,3.6rem)] leading-[1.02]">{t.title}</h2>
+            <h2 data-split="chars" className="mx-auto max-w-[16ch] text-center font-display text-[clamp(1.6rem,4.4vw,3.6rem)] leading-[1.02] lg:mx-0 lg:text-left">{t.title}</h2>
             <p data-split="lines" className="mt-4 hidden max-w-[44ch] text-[17px] leading-[1.6] text-muted lg:block">{t.lead}</p>
           </div>
           <div className="relative z-0 order-3 lg:order-none lg:col-span-2 lg:col-start-1 lg:row-start-2">

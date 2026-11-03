@@ -13,6 +13,7 @@ import { fill, formatDate, formatPeriod, getDictionary, periodOf, type Locale } 
 import { getLocale } from "@/lib/prefs";
 import { site } from "@/lib/site";
 import { integrationTexts } from "@/lib/integration-texts";
+import { StickyCta } from "@/components/sticky-cta";
 
 export async function generateMetadata(): Promise<Metadata> {
   const d = getDictionary(await getLocale());
@@ -220,15 +221,15 @@ export default async function Home() {
         {/* Abertura: o título é a imagem */}
         <section>
           <HeroIntro>
-            <div className="relative mx-auto max-w-6xl px-5 pb-6 pt-16 sm:pt-28">
-              <h1 data-hero-title data-parallax="0.35" className="max-w-[12ch] font-display text-[clamp(3.1rem,9.2vw,7.4rem)] lg:max-w-[10.5ch] leading-[0.93] tracking-[-0.045em]">
+            <div className="relative mx-auto max-w-6xl px-5 pb-6 pt-16 text-center sm:pt-28">
+              <h1 data-hero-title data-parallax="0.35" className="mx-auto max-w-[12ch] font-display text-[clamp(3.1rem,8.4vw,6.4rem)] lg:max-w-[18ch] leading-[0.93] tracking-[-0.045em]">
                 {h.title}
               </h1>
-              <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+              <div className="mt-9 flex flex-col items-center gap-9 md:mt-12">
                 <p data-hero-rest className="max-w-[46ch] text-[18px] leading-[1.55] text-muted sm:text-[20px]">
                   {h.lead}
                 </p>
-                <div data-hero-rest className="flex flex-col items-start gap-3 md:items-end">
+                <div data-hero-rest className="flex flex-col items-center gap-3">
                   <Link href="/registar" data-magnetic data-hero-cta className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
                     {h.ctaTime}
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-ivory" aria-hidden>
@@ -238,7 +239,7 @@ export default async function Home() {
                   <p className="text-[13.5px] text-muted">{h.finalText(site.trialDays)}</p>
                 </div>
               </div>
-              <div className="mt-14 flex justify-center lg:absolute lg:right-5 lg:top-24 lg:mt-0 lg:block" data-hero-rest>
+              <div className="mt-16 flex justify-center" data-hero-rest>
                 <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
               </div>
             </div>
@@ -248,7 +249,7 @@ export default async function Home() {
         {/* O problema, numa frase que acende à medida que se desce */}
         <section>
           <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
-            <p data-scrub className="max-w-[24ch] font-display text-[clamp(2rem,5.2vw,4.3rem)] leading-[1.06] tracking-[-0.035em]">
+            <p data-scrub className="mx-auto max-w-[24ch] text-center font-display text-[clamp(2rem,5.2vw,4.3rem)] leading-[1.06] tracking-[-0.035em]">
               {h.statement}
             </p>
           </div>
@@ -261,19 +262,19 @@ export default async function Home() {
         <FitStory t={h.fit} />
 
         {/* Preços */}
-        <section id="precos" className="scroll-mt-16 border-t border-line">
-          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">
-            <h2 data-split="chars" className="max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
-            <p data-split="lines" className="mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
-            <PricingPlans locale={locale} />
+        <section id="precos" data-cta-zone className="scroll-mt-16 border-t border-line">
+          <div className="mx-auto max-w-6xl px-5 py-28 text-center sm:py-36">
+            <h2 data-split="chars" className="mx-auto max-w-[16ch] font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.pricingTitle}</h2>
+            <p data-split="lines" className="mx-auto mt-5 max-w-[56ch] text-[17px] leading-[1.6] text-muted">{h.pricingLead(site.trialDays)}</p>
+            <PricingPlans locale={locale} center />
           </div>
         </section>
 
         {/* Perguntas */}
         <section className="border-t border-line">
-          <div className="mx-auto grid max-w-6xl gap-10 px-5 py-28 sm:py-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
-            <h2 data-split="chars" className="font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.faqTitle}</h2>
-            <div>
+          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-36">
+            <h2 data-split="chars" className="text-center font-display text-[clamp(2.2rem,5vw,3.9rem)] leading-[1.02]">{h.faqTitle}</h2>
+            <div className="mx-auto mt-12 max-w-3xl">
               <div className="divide-y divide-line border-y border-line">
                 {h.faq(site.trialDays).map((f) => (
                   <details key={f.q} className="group py-5">
@@ -287,7 +288,7 @@ export default async function Home() {
                   </details>
                 ))}
               </div>
-              <p className="mt-8 text-[15px] text-muted">
+              <p className="mt-8 text-center text-[15px] text-muted">
                 {h.moreQuestions}{" "}
                 <a className="text-ivory underline decoration-line-strong underline-offset-4 hover:decoration-ivory" href={`mailto:${site.supportEmail}`}>
                   {site.supportEmail}
@@ -299,11 +300,11 @@ export default async function Home() {
         </section>
 
         {/* Chamada final */}
-        <section className="border-t border-line">
-          <div className="mx-auto max-w-6xl px-5 py-28 sm:py-40">
-            <h2 data-split="chars" className="max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/registar" data-magnetic className="group btn btn-primary min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
+        <section data-cta-zone className="border-t border-line">
+          <div className="mx-auto max-w-6xl px-5 py-28 text-center sm:py-40">
+            <h2 data-split="chars" className="mx-auto max-w-[14ch] font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.04em]">{h.finalTitle}</h2>
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <Link href="/registar" data-magnetic className="group btn btn-primary btn-shine min-h-[3.5rem] !gap-4 py-1.5 pl-7 pr-1.5 text-[15.5px] font-semibold">
                 {h.ctaTime}
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-ivory" aria-hidden>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:translate-x-0.5"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" /></svg>
@@ -315,6 +316,7 @@ export default async function Home() {
         </section>
       </main>
       <SiteFooter />
+      <StickyCta label={h.ctaTime} />
       <PageMotion />
     </>
   );
