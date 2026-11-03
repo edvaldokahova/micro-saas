@@ -84,7 +84,7 @@ const BOX_LOGOS: Record<BoxKey, string[]> = {
   reinvest: ["/brand/fin/vercel.svg", "/brand/fin/supabase.png", "/brand/fin/claude.svg", "/brand/fin/gemini.png"],
   local: ["/brand/fin/building.png", "/brand/fin/bfa.png"],
   tax: ["/brand/fin/vault.png", "/brand/fin/grey.png"],
-  founder: ["/brand/fin/bai.png", "/brand/fin/grey.png"],
+  founder: ["/brand/fin/bai.png", "/brand/fin/grey-pessoal.png"],
 };
 
 function Logo({ src, size = 28, className = "" }: { src: string; size?: number; className?: string }) {
@@ -275,7 +275,7 @@ function Boxes({ a, usdAoa, baiPct, done, depositId, mes }: { a: Allocation; usd
               <span className="font-mono text-[11px] text-muted">3</span>
               <Logo src="/brand/fin/grey.png" size={20} />
               <ArrowRight className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
-              <Logo src="/brand/fin/grey.png" size={20} />
+              <Logo src="/brand/fin/grey-pessoal.png" size={20} />
               Grey empresa → Grey pessoal
             </p>
             <div className="mt-3 flex-1 space-y-1 text-[12.5px] leading-5">
@@ -560,7 +560,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
             <div className="flex items-center gap-3">
               <Logo src="/brand/fin/gemini.png" size={36} />
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1.5 text-[15px] font-semibold">Gemini API<Sparkles className="h-3.5 w-3.5 text-gold" aria-hidden="true" /></p>
+                <p className="text-[15px] font-semibold">Gemini API</p>
                 <p className="text-[12.5px] text-muted">Arrumação dos documentos pela IA, pago pelo consumo</p>
               </div>
               <span className="text-right text-[12.5px]">
