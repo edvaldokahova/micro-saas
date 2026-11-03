@@ -34,7 +34,7 @@ function Form({ t, source, onDone }: { t: FeedbackTexts; source: "prompt" | "hel
         className="field min-h-[7rem] resize-none py-3 leading-6"
       />
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-        <span className={`text-[12px] tabular-nums ${MAX - msg.length < 50 ? "text-warn" : "text-muted"}`}>{t.left(MAX - msg.length)}</span>
+        <span className={`text-[12px] tabular-nums ${MAX - msg.length < 50 ? "text-warn" : "text-muted"}`}>{t.left.replace("{n}", String(MAX - msg.length))}</span>
         <button type="submit" disabled={pending || !msg.trim()} className="btn btn-primary btn-sm disabled:opacity-50">
           {pending ? t.sending : t.send}
         </button>

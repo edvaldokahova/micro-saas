@@ -11,7 +11,7 @@ export type FeedbackTexts = {
   send: string;
   sending: string;
   close: string;
-  left: (n: number) => string;
+  left: string; // «{n}» é trocado pelo número (texto simples: passa do servidor para o navegador)
   thanks: string;
   thanksText: string;
   error: string;
@@ -29,7 +29,7 @@ const ptPT: FeedbackTexts = {
   send: "Enviar",
   sending: "A enviar…",
   close: "Fechar",
-  left: (n) => `${n} caracteres disponíveis`,
+  left: "{n} caracteres disponíveis",
   thanks: "Obrigado pela sua opinião!",
   thanksText: "Lemos todas as mensagens. É assim que decidimos o que melhorar a seguir.",
   error: "Não foi possível enviar. Tente de novo.",
@@ -57,7 +57,7 @@ const esES: FeedbackTexts = {
   send: "Enviar",
   sending: "Enviando…",
   close: "Cerrar",
-  left: (n) => `${n} caracteres disponibles`,
+  left: "{n} caracteres disponibles",
   thanks: "¡Gracias por su opinión!",
   thanksText: "Leemos todos los mensajes. Así decidimos qué mejorar a continuación.",
   error: "No se pudo enviar. Inténtelo de nuevo.",
