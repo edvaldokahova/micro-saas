@@ -28,6 +28,7 @@ import {
 import { requireAdmin } from "@/lib/admin";
 import { site } from "@/lib/site";
 import { Toast } from "@/components/toast";
+import { Select } from "@/components/select";
 import { SubmitButton } from "@/components/app-buttons";
 import { RevenueChart } from "@/components/admin-charts";
 import { AD_PLATFORMS, BOXES, CURRENCIES, EXTRA_ICONS, TOOLS, type BoxKey } from "@/lib/finance-catalog";
@@ -88,7 +89,7 @@ const BOX_LOGOS: Record<BoxKey, string[]> = {
 
 function Logo({ src, size = 28, className = "" }: { src: string; size?: number; className?: string }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="" width={size} height={size} className={`shrink-0 rounded-[7px] object-contain ${className}`} style={{ width: size, height: size }} />;
+  return <img src={src} alt="" width={size} height={size} className={`shrink-0 object-contain ${className}`} style={{ width: size, height: size }} />;
 }
 
 type Icon = typeof Wallet;
@@ -195,11 +196,9 @@ function Boxes({ a, usdAoa, baiPct, done, depositId, mes }: { a: Allocation; usd
                 <Ico icon={BOX_ICON[b.key]} />
                 Caixa {i + 1}
               </span>
-              <span className="flex -space-x-1.5">
+              <span className="flex items-center gap-1.5">
                 {BOX_LOGOS[b.key].map((src) => (
-                  <span key={src} className="grid h-7 w-7 place-items-center rounded-lg border border-line bg-white">
-                    <Logo src={src} size={18} className="rounded-[4px]" />
-                  </span>
+                  <Logo key={src} src={src} size={24} />
                 ))}
               </span>
             </div>
@@ -514,9 +513,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
             return (
               <section key={t.key} className="card p-4">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white">
-                    <Logo src={t.logo} size={22} />
-                  </span>
+                  <Logo src={t.logo} size={36} />
                   <div className="min-w-0 flex-1">
                     <p className="text-[15px] font-semibold">{t.name}</p>
                     <p className="text-[12.5px] text-muted">{t.what}</p>
@@ -537,18 +534,11 @@ export default async function Financas({ searchParams }: { searchParams: Promise
                   <input type="hidden" name="tool" value={t.key} />
                   <label className="min-w-[8rem] flex-1">
                     <span className="label">Plano</span>
-                    <select name="plan" defaultValue={row?.plan ?? t.plans[0].name} className="field !min-h-0 !py-2">
-                      {t.plans.map((p) => (
-                        <option key={p.name} value={p.name}>
-                          {p.name} · {usd(p.usd, 0)}/mês
-                        </option>
-                      ))}
-                      <option value="Outro">Outro plano (valor à mão)</option>
-                    </select>
+                    <Select name="plan" defaultValue={row?.plan ?? t.plans[0].name} options={[...t.plans.map((p) => ({ value: p.name, label: p.name, hint: `${usd(p.usd, 0)}/mês` })), { value: "Outro", label: "Outro plano", hint: "valor à mão" }]} />
                   </label>
                   <label className="w-28">
                     <span className="label">Valor ($/mês)</span>
-                    <input name="amount" inputMode="decimal" placeholder="Do plano" className="field !min-h-0 !py-2 tabular-nums" />
+                    <input name="amount" inputMode="decimal" placeholder="Do plano" className="field tabular-nums" />
                   </label>
                   <SubmitButton className="btn btn-primary btn-sm">{row ? "Mudar plano" : "Ativei"}</SubmitButton>
                 </form>
@@ -568,9 +558,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           {/* Gemini: custo pelo consumo real */}
           <section className="card p-4">
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white">
-                <Logo src="/brand/fin/gemini.png" size={22} />
-              </span>
+              <Logo src="/brand/fin/gemini.png" size={36} />
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 text-[15px] font-semibold">Gemini API<Sparkles className="h-3.5 w-3.5 text-gold" aria-hidden="true" /></p>
                 <p className="text-[12.5px] text-muted">Arrumação dos documentos pela IA, pago pelo consumo</p>
@@ -648,42 +636,31 @@ export default async function Financas({ searchParams }: { searchParams: Promise
             <input type="hidden" name="mes" value={mes} />
             <label className="lg:col-span-2">
               <span className="label">Custo</span>
-              <input name="name" required maxLength={60} placeholder="Ex.: Renda do escritório" className="field !min-h-0 !py-2" />
+              <input name="name" required maxLength={60} placeholder="Ex.: Renda do escritório" className="field" />
             </label>
             <label>
               <span className="label">Valor</span>
-              <input name="amount" required inputMode="decimal" placeholder="Ex.: 23 000" className="field !min-h-0 !py-2 tabular-nums" />
+              <input name="amount" required inputMode="decimal" placeholder="Ex.: 23 000" className="field tabular-nums" />
             </label>
             <label>
               <span className="label">Moeda</span>
-              <select name="currency" defaultValue="AOA" className="field !min-h-0 !py-2">
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>{c === "AOA" ? "Kwanzas" : c === "USD" ? "Dólares" : "Euros"}</option>
-                ))}
-              </select>
+              <Select name="currency" defaultValue="AOA" options={CURRENCIES.map((c) => ({ value: c, label: c === "AOA" ? "Kwanzas" : c === "USD" ? "Dólares" : "Euros" }))} />
             </label>
             <label>
               <span className="label">Pago</span>
-              <select name="billing" defaultValue="monthly" className="field !min-h-0 !py-2">
-                <option value="monthly">Por mês</option>
-                <option value="yearly">Por ano</option>
-              </select>
+              <Select name="billing" defaultValue="monthly" options={[{ value: "monthly", label: "Por mês" }, { value: "yearly", label: "Por ano" }]} />
             </label>
             <label>
               <span className="label">A partir de</span>
-              <input type="month" name="from" defaultValue={mes} className="field !min-h-0 !py-2" />
+              <Select name="from" defaultValue={mes} options={Array.from({ length: 19 }, (_, i) => addMonths(mes, i - 12)).map((k) => ({ value: k, label: monthName(k).replace(/^./, (c) => c.toUpperCase()) }))} />
             </label>
             <label className="lg:col-span-2">
               <span className="label">Detalhe (opcional)</span>
-              <input name="detail" maxLength={60} placeholder="Ex.: fornecedor, contrato" className="field !min-h-0 !py-2" />
+              <input name="detail" maxLength={60} placeholder="Ex.: fornecedor, contrato" className="field" />
             </label>
             <label>
               <span className="label">Ícone</span>
-              <select name="icon" defaultValue="" className="field !min-h-0 !py-2">
-                <option value="">Inicial do nome</option>
-                <option value="africell">Africell</option>
-                <option value="building">Edifício</option>
-              </select>
+              <Select name="icon" defaultValue="" options={[{ value: "", label: "Inicial do nome" }, { value: "africell", label: "Africell" }, { value: "building", label: "Edifício" }]} />
             </label>
             <div className="flex items-end lg:col-span-3">
               <SubmitButton className="btn btn-primary btn-sm">Adicionar custo</SubmitButton>
@@ -707,11 +684,11 @@ export default async function Financas({ searchParams }: { searchParams: Promise
                   </span>
                   <label>
                     <span className="label">Previsto ($)</span>
-                    <input name={`planned_${p.key}`} inputMode="decimal" defaultValue={a?.planned ? String(a.planned).replace(".", ",") : ""} placeholder="0" className="field !min-h-0 !py-2 tabular-nums" />
+                    <input name={`planned_${p.key}`} inputMode="decimal" defaultValue={a?.planned ? String(a.planned).replace(".", ",") : ""} placeholder="0" className="field tabular-nums" />
                   </label>
                   <label>
                     <span className="label">Gasto real ($){over ? <span className="text-bad"> · acima do previsto</span> : null}</span>
-                    <input name={`spent_${p.key}`} inputMode="decimal" defaultValue={a?.spent != null ? String(a.spent).replace(".", ",") : ""} placeholder="—" className="field !min-h-0 !py-2 tabular-nums" />
+                    <input name={`spent_${p.key}`} inputMode="decimal" defaultValue={a?.spent != null ? String(a.spent).replace(".", ",") : ""} placeholder="—" className="field tabular-nums" />
                   </label>
                 </div>
               );
@@ -796,10 +773,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
               </label>
               <label>
                 <span className="label">Euro → dólar</span>
-                <select name="eur_mode" defaultValue={s.fx.eurUsd == null ? "auto" : "manual"} className="field">
-                  <option value="auto">Automático ({market.eurUsd ? market.eurUsd.toFixed(4).replace(".", ",") : "sem ligação"})</option>
-                  <option value="manual">Manual (campo ao lado)</option>
-                </select>
+                <Select name="eur_mode" defaultValue={s.fx.eurUsd == null ? "auto" : "manual"} options={[{ value: "auto", label: "Automático", hint: market.eurUsd ? market.eurUsd.toFixed(4).replace(".", ",") : "sem ligação" }, { value: "manual", label: "Manual", hint: "campo ao lado" }]} />
               </label>
               <label>
                 <span className="label">Valor manual (1 € em $)</span>
@@ -827,10 +801,10 @@ export default async function Financas({ searchParams }: { searchParams: Promise
                     <span className="font-medium">{label}</span>
                     <span className="block text-[12px] text-muted">{hint} Hoje: {feeText(f)}.</span>
                   </p>
-                  <label><span className="label">Fixo ($)</span><input name={`${k}_fixed`} inputMode="decimal" defaultValue={String(f.fixed).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
-                  <label><span className="label">%</span><input name={`${k}_pct`} inputMode="decimal" defaultValue={String(f.pct).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
-                  <label><span className="label">Mín. ($)</span><input name={`${k}_min`} inputMode="decimal" defaultValue={String(f.min).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
-                  <label><span className="label">Máx. ($)</span><input name={`${k}_max`} inputMode="decimal" defaultValue={String(f.max).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
+                  <label><span className="label">Fixo ($)</span><input name={`${k}_fixed`} inputMode="decimal" defaultValue={String(f.fixed).replace(".", ",")} className="field tabular-nums" /></label>
+                  <label><span className="label">%</span><input name={`${k}_pct`} inputMode="decimal" defaultValue={String(f.pct).replace(".", ",")} className="field tabular-nums" /></label>
+                  <label><span className="label">Mín. ($)</span><input name={`${k}_min`} inputMode="decimal" defaultValue={String(f.min).replace(".", ",")} className="field tabular-nums" /></label>
+                  <label><span className="label">Máx. ($)</span><input name={`${k}_max`} inputMode="decimal" defaultValue={String(f.max).replace(".", ",")} className="field tabular-nums" /></label>
                 </div>
               ))}
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] sm:items-end">
@@ -838,8 +812,8 @@ export default async function Financas({ searchParams }: { searchParams: Promise
                   <span className="font-medium">Comissão do BFA ao receber o SWIFT</span>
                   <span className="block text-[12px] text-muted">Estimativa até ao primeiro envio.</span>
                 </p>
-                <label><span className="label">%</span><input name="bank_ao_pct" inputMode="decimal" defaultValue={String(s.fees.bankInAo.pct).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
-                <label><span className="label">Fixo (Kz)</span><input name="bank_ao_fixed" inputMode="decimal" defaultValue={String(s.fees.bankInAo.fixedKz).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
+                <label><span className="label">%</span><input name="bank_ao_pct" inputMode="decimal" defaultValue={String(s.fees.bankInAo.pct).replace(".", ",")} className="field tabular-nums" /></label>
+                <label><span className="label">Fixo (Kz)</span><input name="bank_ao_fixed" inputMode="decimal" defaultValue={String(s.fees.bankInAo.fixedKz).replace(".", ",")} className="field tabular-nums" /></label>
               </div>
             </div>
           </fieldset>
