@@ -1,5 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  ArrowRight,
+  Banknote,
+  Building2,
+  CalendarClock,
+  ChartLine,
+  Check,
+  Coins,
+  Gauge,
+  HandCoins,
+  Landmark,
+  Megaphone,
+  Percent,
+  PiggyBank,
+  Receipt,
+  Send,
+  Settings2,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
+  UserRound,
+  Vault,
+  Wallet,
+  Wrench,
+} from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
 import { site } from "@/lib/site";
 import { Toast } from "@/components/toast";
@@ -66,27 +91,68 @@ function Logo({ src, size = 28, className = "" }: { src: string; size?: number; 
   return <img src={src} alt="" width={size} height={size} className={`shrink-0 rounded-[7px] object-contain ${className}`} style={{ width: size, height: size }} />;
 }
 
-function Kpi({ label, value, hint, tone = "" }: { label: string; value: string; hint?: string; tone?: string }) {
+type Icon = typeof Wallet;
+
+// Ícone num quadrado discreto (ajuda a reconhecer cada coisa de relance)
+function Ico({ icon: I, tone = "" }: { icon: Icon; tone?: string }) {
+  return (
+    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-white ${tone}`}>
+      <I className="h-4 w-4" aria-hidden="true" />
+    </span>
+  );
+}
+
+function Kpi({ label, value, hint, tone = "", icon: I }: { label: string; value: string; hint?: string; tone?: string; icon: Icon }) {
   return (
     <div className="card p-4">
-      <dt className="mono-label">{label}</dt>
+      <dt className="mono-label flex items-center gap-1.5">
+        <I className="h-3.5 w-3.5" aria-hidden="true" />
+        {label}
+      </dt>
       <dd className={`figure mt-2 text-[24px] leading-none tabular-nums sm:text-[28px] ${tone}`}>{value}</dd>
       {hint && <p className="mt-2 text-[12.5px] leading-5 text-muted">{hint}</p>}
     </div>
   );
 }
 
-function H2({ id, title, lead }: { id: string; title: string; lead?: string }) {
+function H2({ id, title, lead, icon }: { id: string; title: string; lead?: string; icon: Icon }) {
   return (
     <div id={id} className="mt-12 scroll-mt-20">
-      <h2 className="text-[18px] font-semibold">{title}</h2>
-      {lead && <p className="mt-1 max-w-[70ch] text-[13.5px] leading-6 text-muted">{lead}</p>}
+      <h2 className="flex items-center gap-2.5 text-[18px] font-semibold">
+        <Ico icon={icon} />
+        {title}
+      </h2>
+      {lead && <p className="mt-2 max-w-[70ch] text-[13.5px] leading-6 text-muted">{lead}</p>}
     </div>
   );
 }
 
 const feeText = (f: Fee) =>
   [f.fixed ? usd(f.fixed) : "", f.pct ? `${f.pct} %` : "", f.min ? `mín. ${usd(f.min)}` : "", f.max ? `máx. ${usd(f.max)}` : ""].filter(Boolean).join(" + ").replace("+ mín", "· mín").replace("+ máx", "· máx") || "sem custo";
+
+// Barra «chega ou não chega» de uma caixa para os custos que ela paga
+function Cover({ icon, title, sub, need, have, fmt, needText, tip }: { icon: Icon; title: string; sub: string; need: number; have: number; fmt: (v: number) => string; needText: string; tip: string }) {
+  const ratio = need > 0 ? have / need : 1;
+  return (
+    <section className="card p-5">
+      <p className="flex items-center gap-2 text-[15px] font-semibold">
+        <Ico icon={icon} />
+        {title}
+      </p>
+      <p className="mt-1 flex items-center gap-1.5 text-[12.5px] text-muted">
+        <Gauge className="h-3.5 w-3.5" aria-hidden="true" />
+        {sub}
+      </p>
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-ink-3">
+        <div className={`h-full rounded-full ${ratio >= 1 ? "bg-ok" : ratio >= 0.7 ? "bg-warn" : "bg-bad"}`} style={{ width: `${Math.min(100, Math.round(ratio * 100))}%` }} />
+      </div>
+      <p className="mt-3 text-[13.5px] leading-6">
+        Precisa de <strong>{fmt(need)}</strong> ({needText}) e recebe <strong>{fmt(have)}</strong>.{" "}
+        {have >= need ? <span className="text-ok">Sobram {fmt(have - need)}.</span> : <span className="text-bad">Faltam {fmt(need - have)}. {tip}</span>}
+      </p>
+    </section>
+  );
+}
 
 // Aviso quando a taxa fixa de envio come uma fatia grande de uma transferência pequena
 function Heavy({ fee, amount }: { fee: number; amount: number }) {
@@ -100,23 +166,35 @@ function Heavy({ fee, amount }: { fee: number; amount: number }) {
 
 // As 4 caixas para um valor (depósito real ou previsão)
 function Boxes({ a, usdAoa, baiPct, done, depositId, mes }: { a: Allocation; usdAoa: number; baiPct: number; done?: Record<string, boolean>; depositId?: string; mes: string }) {
-  const Check = ({ k, label }: { k: string; label: string }) =>
+  const Done = ({ k, label }: { k: string; label: string }) =>
     depositId ? (
       <form action={toggleDone} className="mt-3">
         <input type="hidden" name="mes" value={mes} />
         <input type="hidden" name="id" value={depositId} />
         <input type="hidden" name="key" value={k} />
-        <SubmitButton className={`btn btn-secondary btn-sm !h-auto min-h-9 w-full whitespace-normal !py-2 text-center leading-tight ${done?.[k] ? "!border-ok/40 !text-ok" : ""}`}>{done?.[k] ? `✓ ${label}: enviado` : `Marcar ${label} como enviado`}</SubmitButton>
+        <SubmitButton className={`btn btn-secondary btn-sm !h-auto min-h-9 w-full whitespace-normal !py-2 text-center leading-tight ${done?.[k] ? "!border-ok/40 !text-ok" : ""}`}>{done?.[k] ? (<span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5" aria-hidden="true" />{label}: feito</span>) : `Marcar ${label} como feito`}</SubmitButton>
       </form>
     ) : null;
+  const BOX_ICON: Record<BoxKey, Icon> = { reinvest: Wrench, local: Building2, tax: Vault, founder: UserRound };
+  const Line = ({ l, v, strong = false, accent = false }: { l: string; v: string; strong?: boolean; accent?: boolean }) => (
+    <p className={`flex justify-between gap-2 ${strong ? "font-semibold" : ""} ${accent ? "rounded-md bg-gold/10 px-1.5 py-0.5 -mx-1.5" : ""}`}>
+      <span className={strong || accent ? "" : "text-muted"}>{l}</span>
+      <span className="tabular-nums">{v}</span>
+    </p>
+  );
+  const rate = new Intl.NumberFormat("pt-PT").format(usdAoa);
   return (
+    <div className="space-y-3">
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {BOXES.map((b, i) => {
         const v = a.boxes[b.key];
         return (
           <section key={b.key} className="card flex flex-col p-4">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-mono text-[11px] tabular-nums text-muted">Caixa {i + 1}</span>
+              <span className="flex items-center gap-2 font-mono text-[11px] tabular-nums text-muted">
+                <Ico icon={BOX_ICON[b.key]} />
+                Caixa {i + 1}
+              </span>
               <span className="flex -space-x-1.5">
                 {BOX_LOGOS[b.key].map((src) => (
                   <span key={src} className="grid h-7 w-7 place-items-center rounded-lg border border-line bg-white">
@@ -129,37 +207,88 @@ function Boxes({ a, usdAoa, baiPct, done, depositId, mes }: { a: Allocation; usd
             <p className="figure mt-2 text-[26px] leading-none tabular-nums">{usd(v)}</p>
             <p className="mt-1 text-[12.5px] text-muted">{Math.round((v / Math.max(a.net, 0.0001)) * 1000) / 10 || 0} % do depósito</p>
             <div className="mt-3 flex-1 space-y-1.5 border-t border-line pt-3 text-[12.5px] leading-5">
-              {b.key === "reinvest" && <p className="text-muted">{b.where}. Paga as ferramentas, a IA e os anúncios.</p>}
+              {b.key === "reinvest" && <p className="text-muted">{b.where}. Paga os custos em dólares: ferramentas, IA e anúncios.</p>}
               {b.key === "tax" && <p className="text-muted">{b.where}. Não se mexe até ao apuramento anual do Imposto Industrial.</p>}
               {b.key === "local" && (
                 <>
-                  <p className="flex justify-between gap-2"><span className="text-muted">Taxa de envio</span><span className="tabular-nums">−{usd(a.local.sendFee)}</span></p>
-                  <p className="flex justify-between gap-2"><span className="text-muted">Comissão do BFA</span><span className="tabular-nums">−{kz(a.local.bankFeeKz)}</span></p>
-                  <p className="flex justify-between gap-2 font-semibold"><span>Chega ao BFA</span><span className="tabular-nums">{kz(a.local.kz)}</span></p>
-                  <p className="text-[11.5px] text-muted">Câmbio {new Intl.NumberFormat("pt-PT").format(usdAoa)} Kz por dólar</p>
-                  <Heavy fee={a.local.sendFee} amount={v} />
+                  <Line l="Segue no SWIFT para o BFA" v={usd(a.local.usd)} />
+                  <Line l="Fica no BFA" v={kz(a.local.kz)} strong />
+                  <p className="text-[11.5px] text-muted">Para os custos em kwanzas: internet, renda, contabilista, impostos, futuro funcionário.</p>
                 </>
               )}
               {b.key === "founder" && (
                 <>
-                  <p className="flex justify-between gap-2"><span className="text-muted">BAI ({baiPct} %)</span><span className="tabular-nums">{usd(a.founder.bai)}</span></p>
-                  <p className="flex justify-between gap-2 font-semibold"><span>Chega ao BAI</span><span className="tabular-nums">{kz(a.founder.baiKz)}</span></p>
-                  <p className="flex justify-between gap-2"><span className="text-muted">Grey pessoal ({100 - baiPct} %)</span><span className="tabular-nums">{usd(a.founder.grey - a.founder.greyFee)}</span></p>
-                  <p className="text-[11.5px] text-muted">Envio para o BAI −{usd(a.founder.baiSendFee)} · comissão −{kz(a.founder.baiBankFeeKz)}</p>
-                  <Heavy fee={a.founder.baiSendFee} amount={a.founder.bai} />
+                  <Line l={`Sua parte no SWIFT (${baiPct} %)`} v={usd(a.founder.bai)} accent />
+                  <Line l="Levanta do BFA para o BAI" v={kz(a.founder.baiKz)} strong />
+                  <Line l={`Grey pessoal (${100 - baiPct} %)`} v={usd(a.founder.grey - a.founder.greyFee)} strong />
                 </>
               )}
             </div>
-            {b.key === "local" && <Check k="local" label="BFA" />}
-            {b.key === "founder" && (
-              <>
-                <Check k="bai" label="BAI" />
-                {depositId && <Check k="grey" label="Grey pessoal" />}
-              </>
-            )}
           </section>
         );
       })}
+    </div>
+
+      {/* O caminho do dinheiro: um só SWIFT para o BFA, depois o levantamento para o BAI */}
+      <section className="card p-4 sm:p-5">
+        <p className="flex items-center gap-2 text-[15px] font-semibold">
+          <Ico icon={Send} />
+          Transferências a fazer
+        </p>
+        <ol className="mt-4 grid gap-3 lg:grid-cols-3">
+          <li className="flex flex-col rounded-xl border border-line p-3.5">
+            <p className="flex items-center gap-2 text-[13.5px] font-semibold">
+              <span className="font-mono text-[11px] text-muted">1</span>
+              <Logo src="/brand/fin/grey.png" size={20} />
+              <ArrowRight className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+              <Logo src="/brand/fin/bfa.png" size={20} />
+              Grey → BFA (SWIFT)
+            </p>
+            <div className="mt-3 flex-1 space-y-1 text-[12.5px] leading-5">
+              <Line l="Caixa 2 (empresa)" v={usd(a.local.usd)} />
+              <Line l={`Sua parte (${baiPct} % da caixa 4)`} v={usd(a.founder.bai)} accent />
+              <Line l="Enviar" v={usd(a.swift.usd)} strong />
+              <Line l="Taxa SWIFT" v={`−${usd(a.swift.fee)}`} />
+              <Line l="Comissão do BFA" v={`−${kz(a.swift.bankFeeKz)}`} />
+              <Line l="Chega ao BFA" v={kz(a.swift.kz)} strong />
+              <p className="text-[11.5px] text-muted">Câmbio {rate} Kz por dólar. As taxas repartem-se na proporção de cada parte.</p>
+              <Heavy fee={a.swift.fee} amount={a.swift.usd} />
+            </div>
+            <Done k="swift" label="SWIFT" />
+          </li>
+          <li className="flex flex-col rounded-xl border border-line p-3.5">
+            <p className="flex items-center gap-2 text-[13.5px] font-semibold">
+              <span className="font-mono text-[11px] text-muted">2</span>
+              <Logo src="/brand/fin/bfa.png" size={20} />
+              <ArrowRight className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+              <Logo src="/brand/fin/bai.png" size={20} />
+              BFA → BAI (sua parte)
+            </p>
+            <div className="mt-3 flex-1 space-y-1 text-[12.5px] leading-5">
+              <Line l="Retirar do BFA" v={kz(a.founder.baiKz)} accent />
+              <Line l="Fica no BFA para a empresa" v={kz(a.local.kz)} strong />
+              <p className="text-[11.5px] text-muted">Transferência local em kwanzas, depois de o SWIFT chegar.</p>
+            </div>
+            <Done k="bai" label="levantamento para o BAI" />
+          </li>
+          <li className="flex flex-col rounded-xl border border-line p-3.5">
+            <p className="flex items-center gap-2 text-[13.5px] font-semibold">
+              <span className="font-mono text-[11px] text-muted">3</span>
+              <Logo src="/brand/fin/grey.png" size={20} />
+              <ArrowRight className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+              <Logo src="/brand/fin/grey.png" size={20} />
+              Grey empresa → Grey pessoal
+            </p>
+            <div className="mt-3 flex-1 space-y-1 text-[12.5px] leading-5">
+              <Line l={`Sua parte em dólares (${100 - baiPct} %)`} v={usd(a.founder.grey)} />
+              {a.founder.greyFee > 0 && <Line l="Taxa" v={`−${usd(a.founder.greyFee)}`} />}
+              <Line l="Chega à Grey pessoal" v={usd(a.founder.grey - a.founder.greyFee)} strong />
+              <p className="text-[11.5px] text-muted">As caixas 1 e 3 ficam na Grey da empresa: {usd(a.boxes.reinvest + a.boxes.tax)}.</p>
+            </div>
+            <Done k="grey" label="Grey pessoal" />
+          </li>
+        </ol>
+      </section>
     </div>
   );
 }
@@ -190,7 +319,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
   const nextFee = feeOf(s.fees.greyIn, sched.next.amount);
   const forecast = allocate(Math.max(0, sched.next.amount - nextFee), s, s.fx.usdAoa);
   const reinvestIn = allocs.reduce((a, x) => a + x.a.boxes.reinvest, 0) || (monthDeposits.length ? 0 : forecast.boxes.reinvest);
-  const coverage = sum.need > 0 ? reinvestIn / sum.need : 1;
+  const localIn = allocs.reduce((a, x) => a + x.a.local.kz, 0) || (monthDeposits.length ? 0 : forecast.local.kz);
 
   const prev = addMonths(mes, -1);
   const next = addMonths(mes, 1);
@@ -233,16 +362,16 @@ export default async function Financas({ searchParams }: { searchParams: Promise
 
         {/* Panorama */}
         <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
-          <Kpi label="Faturado" value={usd(m.gross)} hint={`${m.count} ${m.count === 1 ? "pagamento" : "pagamentos"} · sem IVA`} />
-          <Kpi label="Taxa da Paddle" value={`−${usd(m.fee)}`} hint={m.refunds ? `Reembolsos −${usd(m.refunds)}` : "5 % + 0,50 $ por venda"} />
-          <Kpi label="Líquido" value={usd(m.net)} hint="O que a Paddle vai pagar" />
-          <Kpi label="Custos do mês" value={`−${usd(sum.total)}`} hint="Ferramentas, IA, anúncios e extra" />
-          <Kpi label="Resultado" value={usd(result)} tone={result < 0 ? "text-bad" : "text-ok"} hint={result < 0 ? "Os custos passaram a receita" : "Líquido menos custos"} />
+          <Kpi icon={Receipt} label="Faturado" value={usd(m.gross)} hint={`${m.count} ${m.count === 1 ? "pagamento" : "pagamentos"} · sem IVA`} />
+          <Kpi icon={Percent} label="Taxa da Paddle" value={`−${usd(m.fee)}`} hint={m.refunds ? `Reembolsos −${usd(m.refunds)}` : "5 % + 0,50 $ por venda"} />
+          <Kpi icon={Wallet} label="Líquido" value={usd(m.net)} hint="O que a Paddle vai pagar" />
+          <Kpi icon={Coins} label="Custos do mês" value={`−${usd(sum.total)}`} hint={sum.kzCosts ? `Inclui ${kz(sum.kzCosts)} em kwanzas` : "Ferramentas, IA, anúncios e extra"} />
+          <Kpi icon={result < 0 ? TrendingDown : TrendingUp} label="Resultado" value={usd(result)} tone={result < 0 ? "text-bad" : "text-ok"} hint={result < 0 ? "Os custos passaram a receita" : "Líquido menos custos"} />
         </dl>
 
         <section className="card mt-3 p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-[16px] font-semibold">Valor líquido por mês</h2>
+            <h2 className="flex items-center gap-2.5 text-[16px] font-semibold"><Ico icon={ChartLine} />Valor líquido por mês</h2>
             <p className="text-[12.5px] text-muted">Já sem a taxa da Paddle e sem reembolsos, em dólares</p>
           </div>
           <div className="mt-5">
@@ -253,12 +382,13 @@ export default async function Financas({ searchParams }: { searchParams: Promise
         {/* Pagamentos da Paddle */}
         <H2
           id="pagamentos"
+          icon={CalendarClock}
           title="Pagamentos da Paddle"
           lead={`A Paddle paga uma vez por mês: no dia 1 junta o saldo do mês anterior e, se passar de ${usd(s.threshold, 0)}, envia até ao dia 15. O dinheiro chega à Grey em até 3 dias úteis. Abaixo do mínimo, o saldo passa para o mês seguinte. Quando o dinheiro chegar, registe-o aqui com o valor que a Grey mostra.`}
         />
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
           <section className="card p-5">
-            <p className="mono-label">Próximo pagamento</p>
+            <p className="mono-label flex items-center gap-1.5"><CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />Próximo pagamento</p>
             <p className="figure mt-2 text-[30px] leading-none tabular-nums">{usd(sched.next.amount)}</p>
             <p className="mt-2 text-[13.5px] leading-6">
               {sched.next.reaches ? (
@@ -268,7 +398,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
               )}
             </p>
             <div className="mt-4 space-y-1.5 border-t border-line pt-3 text-[13px]">
-              <p className="flex justify-between gap-3"><span className="text-muted">Taxa de receção na Grey (estimada)</span><span className="tabular-nums">−{usd(nextFee)}</span></p>
+              <p className="flex justify-between gap-3"><span className="text-muted">Taxa de receção na Grey por ACH (estimada)</span><span className="tabular-nums">−{usd(nextFee)}</span></p>
               <p className="flex justify-between gap-3 font-semibold"><span>Fica na Grey da empresa</span><span className="tabular-nums">{usd(Math.max(0, sched.next.amount - nextFee))}</span></p>
             </div>
             {sched.payouts.length > 0 && (
@@ -296,7 +426,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           </section>
 
           <section className="card p-5">
-            <p className="text-[15px] font-semibold">Registar depósito recebido</p>
+            <p className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={Banknote} />Registar depósito recebido</p>
             <p className="mt-1 text-[12.5px] leading-5 text-muted">Use o valor que entrou na Grey e a taxa que a Grey cobrou. O depósito é dividido pelas 4 caixas com as percentagens de hoje, e fica assim guardado.</p>
             <form action={addDeposit} className="mt-4 grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="mes" value={mes} />
@@ -346,10 +476,11 @@ export default async function Financas({ searchParams }: { searchParams: Promise
         {/* As 4 caixas */}
         <H2
           id="caixas"
+          icon={PiggyBank}
           title="As 4 caixas"
           lead={
             monthDeposits.length
-              ? `Quanto vai para cada lugar com ${monthDeposits.length === 1 ? "o depósito" : "os depósitos"} de ${monthName(mes)}. Marque cada transferência quando a fizer.`
+              ? `Quanto vai para cada lugar com ${monthDeposits.length === 1 ? "o depósito" : "os depósitos"} de ${monthName(mes)}. Um só envio SWIFT por depósito, para o BFA da empresa; depois retira a sua parte para o BAI. Marque cada passo quando o fizer.`
               : `Ainda não há depósito em ${monthName(mes)}. Abaixo, a previsão para o próximo pagamento da Paddle (${usd(sched.next.amount)}), já sem a taxa estimada da Grey.`
           }
         />
@@ -368,27 +499,14 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           )}
         </div>
 
-        {/* Cobertura dos custos técnicos */}
-        <section className="card mt-3 p-5">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-[15px] font-semibold">A caixa 1 chega para os custos?</p>
-            <p className="text-[12.5px] text-muted">Custos do mês + {s.buffer} % de folga</p>
-          </div>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-ink-3">
-            <div className={`h-full rounded-full ${coverage >= 1 ? "bg-ok" : coverage >= 0.7 ? "bg-warn" : "bg-bad"}`} style={{ width: `${Math.min(100, Math.round(coverage * 100))}%` }} />
-          </div>
-          <p className="mt-3 text-[13.5px] leading-6">
-            Precisa de <strong>{usd(sum.need)}</strong> ({usd(sum.total)} + folga) e a caixa 1 recebe <strong>{usd(reinvestIn)}</strong>.{" "}
-            {reinvestIn >= sum.need ? (
-              <span className="text-ok">Sobram {usd(reinvestIn - sum.need)}, que ficam para reinvestir.</span>
-            ) : (
-              <span className="text-bad">Faltam {usd(sum.need - reinvestIn)}. Pode baixar custos ou, depois do depósito, subir a percentagem da caixa 1.</span>
-            )}
-          </p>
-        </section>
+        {/* As caixas chegam para os custos? Caixa 1 paga os custos em dólares; caixa 2 (BFA) os custos em kwanzas */}
+        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <Cover icon={Wrench} title="A caixa 1 chega para os custos em dólares?" sub={`Ferramentas, IA e anúncios + ${s.buffer} % de folga`} need={sum.need} have={reinvestIn} fmt={usd} needText={`${usd(sum.usdTotal)} + folga`} tip="Pode baixar custos ou, depois do depósito, subir a percentagem da caixa 1." />
+          <Cover icon={Building2} title="A caixa 2 chega para os custos em kwanzas?" sub="O que fica no BFA depois da sua parte" need={sum.kzCosts} have={localIn} fmt={kz} needText="custos em kwanzas do mês" tip="Pode subir a percentagem da caixa 2 ou juntar mais meses num só SWIFT." />
+        </div>
 
         {/* Custos */}
-        <H2 id="custos" title="Custos do mês" lead="Cada ferramenta só conta depois de ativar o plano. Mudar de plano conta a partir deste mês, e o histórico dos meses anteriores mantém-se." />
+        <H2 id="custos" icon={Coins} title="Custos do mês" lead="Cada ferramenta só conta depois de ativar o plano. Mudar de plano conta a partir deste mês, e o histórico dos meses anteriores mantém-se." />
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
           {TOOLS.map((t) => {
             const row = costs.all.find((c) => c.tool === t.key && !c.active_until) ?? null;
@@ -454,7 +572,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
                 <Logo src="/brand/fin/gemini.png" size={22} />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-semibold">Gemini API</p>
+                <p className="flex items-center gap-1.5 text-[15px] font-semibold">Gemini API<Sparkles className="h-3.5 w-3.5 text-gold" aria-hidden="true" /></p>
                 <p className="text-[12.5px] text-muted">Arrumação dos documentos pela IA, pago pelo consumo</p>
               </div>
               <span className="text-right text-[12.5px]">
@@ -485,8 +603,8 @@ export default async function Financas({ searchParams }: { searchParams: Promise
 
         {/* Custos extra */}
         <section className="card mt-3 p-5">
-          <p className="text-[15px] font-semibold">Outros custos</p>
-          <p className="mt-1 text-[12.5px] text-muted">Internet, renda, domínios, o que for. Em kwanzas, dólares ou euros: o painel converte com o câmbio da empresa.</p>
+          <p className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={HandCoins} />Outros custos</p>
+          <p className="mt-1 text-[12.5px] text-muted">Internet, renda, domínios, o que for. Os custos em kwanzas saem do BFA (caixa 2); os em dólares ou euros, da caixa 1.</p>
           <ul className="mt-4 divide-y divide-line border-y border-line text-[13.5px]">
             {costs.all
               .filter((c) => !c.tool)
@@ -574,7 +692,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
         </section>
 
         {/* Anúncios */}
-        <H2 id="anuncios" title={`Anúncios em ${monthName(mes)}`} lead="Escreva quanto pretende gastar no início do mês e quanto gastou no fim. Enquanto o gasto real estiver vazio, o painel usa o previsto." />
+        <H2 id="anuncios" icon={Megaphone} title={`Anúncios em ${monthName(mes)}`} lead="Escreva quanto pretende gastar no início do mês e quanto gastou no fim. Enquanto o gasto real estiver vazio, o painel usa o previsto." />
         <form action={saveAds} className="card mt-4 p-5">
           <input type="hidden" name="mes" value={mes} />
           <div className="divide-y divide-line">
@@ -610,7 +728,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
 
         {/* Resumo dos custos */}
         <section className="card mt-3 p-5">
-          <p className="text-[15px] font-semibold">Resumo dos custos de {monthName(mes)}</p>
+          <p className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={Receipt} />Resumo dos custos de {monthName(mes)}</p>
           <dl className="mt-3 divide-y divide-line text-[13.5px]">
             {[
               ["Ferramentas (planos)", sum.tools],
@@ -628,18 +746,22 @@ export default async function Financas({ searchParams }: { searchParams: Promise
               <dd className="tabular-nums">{usd(sum.total)}</dd>
             </div>
             <div className="flex justify-between gap-3 py-2">
-              <dt className="text-muted">Com {s.buffer} % de folga</dt>
-              <dd className="tabular-nums">{usd(sum.need)}</dd>
+              <dt className="text-muted">Em dólares, pagos pela caixa 1 (com {s.buffer} % de folga: {usd(sum.need)})</dt>
+              <dd className="tabular-nums">{usd(sum.usdTotal)}</dd>
+            </div>
+            <div className="flex justify-between gap-3 py-2">
+              <dt className="text-muted">Em kwanzas, pagos pelo BFA (caixa 2)</dt>
+              <dd className="tabular-nums">{kz(sum.kzCosts)} <span className="text-muted">≈ {usd(sum.kzUsd)}</span></dd>
             </div>
           </dl>
         </section>
 
         {/* Definições */}
-        <H2 id="definicoes" title="Definições" lead="Percentagens, câmbios e taxas. Os depósitos já registados guardam os valores do dia em que foram registados." />
+        <H2 id="definicoes" icon={Settings2} title="Definições" lead="Percentagens, câmbios e taxas. Os depósitos já registados guardam os valores do dia em que foram registados." />
         <form action={saveFinSettings} className="card mt-4 space-y-8 p-5">
           <input type="hidden" name="mes" value={mes} />
           <fieldset>
-            <legend className="text-[15px] font-semibold">Divisão pelas 4 caixas</legend>
+            <legend className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={PiggyBank} />Divisão pelas 4 caixas</legend>
             <p className={`mt-1 text-[12.5px] ${pctSum === 100 ? "text-muted" : "text-bad"}`}>Somam {pctSum} % (têm de somar 100 %).</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {BOXES.map((b, i) => (
@@ -651,11 +773,11 @@ export default async function Financas({ searchParams }: { searchParams: Promise
             </div>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <label>
-                <span className="label">Do fundador, % para o BAI</span>
+                <span className="label">Da caixa 4, % que segue no SWIFT para o BAI</span>
                 <input name="bai_pct" inputMode="decimal" defaultValue={String(s.baiPct).replace(".", ",")} className="field tabular-nums" />
               </label>
               <label>
-                <span className="label">Folga sobre os custos técnicos (%)</span>
+                <span className="label">Folga sobre os custos em dólares (%)</span>
                 <input name="buffer" inputMode="decimal" defaultValue={String(s.buffer).replace(".", ",")} className="field tabular-nums" />
               </label>
               <label>
@@ -666,7 +788,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           </fieldset>
 
           <fieldset>
-            <legend className="text-[15px] font-semibold">Câmbios</legend>
+            <legend className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={Coins} />Câmbios</legend>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <label>
                 <span className="label">Câmbio da empresa (Kz por 1 $)</span>
@@ -690,13 +812,13 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           </fieldset>
 
           <fieldset>
-            <legend className="text-[15px] font-semibold">Taxas bancárias</legend>
+            <legend className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={Landmark} />Taxas bancárias</legend>
             <p className="mt-1 text-[12.5px] leading-5 text-muted">Valores públicos da Grey como ponto de partida. Depois do primeiro depósito e da primeira transferência, ponha os valores reais. «0» no mínimo ou no máximo quer dizer sem limite.</p>
             <div className="mt-3 space-y-4">
               {(
                 [
-                  ["grey_in", "Receber da Paddle na Grey (por depósito)", s.fees.greyIn, "Wire: 20 $. ACH: 0,8 %, mín. 2 $, máx. 10 $."],
-                  ["to_ao", "Enviar da Grey para Angola (por envio)", s.fees.toAngola, "Transferência internacional (SWIFT)."],
+                  ["grey_in", "Receber da Paddle na Grey (por depósito)", s.fees.greyIn, "Por ACH: 0,8 %, mín. 2 $, máx. 10 $ (por wire seriam 20 $)."],
+                  ["to_ao", "SWIFT da Grey para o BFA (por envio)", s.fees.toAngola, "Um só envio por depósito: caixa 2 + a sua parte para o BAI."],
                   ["g2g", "Grey da empresa → Grey pessoal", s.fees.greyToGrey, "Entre contas Grey."],
                 ] as const
               ).map(([k, label, f, hint]) => (
@@ -713,7 +835,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
               ))}
               <div className="grid gap-3 sm:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] sm:items-end">
                 <p className="text-[13.5px] sm:pb-2.5">
-                  <span className="font-medium">Comissão do BFA / BAI ao receber</span>
+                  <span className="font-medium">Comissão do BFA ao receber o SWIFT</span>
                   <span className="block text-[12px] text-muted">Estimativa até ao primeiro envio.</span>
                 </p>
                 <label><span className="label">%</span><input name="bank_ao_pct" inputMode="decimal" defaultValue={String(s.fees.bankInAo.pct).replace(".", ",")} className="field !min-h-0 !py-2 tabular-nums" /></label>
@@ -723,7 +845,7 @@ export default async function Financas({ searchParams }: { searchParams: Promise
           </fieldset>
 
           <fieldset>
-            <legend className="text-[15px] font-semibold">Preço da IA (Gemini)</legend>
+            <legend className="flex items-center gap-2 text-[15px] font-semibold"><Ico icon={Sparkles} />Preço da IA (Gemini)</legend>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <label><span className="label">Entrada ($ por milhão de tokens)</span><input name="ai_in" inputMode="decimal" defaultValue={String(s.ai.inPerM).replace(".", ",")} className="field tabular-nums" /></label>
               <label><span className="label">Saída ($ por milhão de tokens)</span><input name="ai_out" inputMode="decimal" defaultValue={String(s.ai.outPerM).replace(".", ",")} className="field tabular-nums" /></label>

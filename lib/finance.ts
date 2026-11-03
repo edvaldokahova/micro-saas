@@ -34,9 +34,9 @@ export const DEFAULTS: FinSettings = {
   fx: { usdAoa: 1140, eurUsd: null },
   threshold: 100,
   fees: {
-    // A Paddle paga por transferência bancária; na Grey, uma transferência «wire» custa 20 $ (ACH: 0,8 %, mín. 2 $, máx. 10 $)
-    greyIn: fee(20),
-    // Envio internacional (SWIFT) a partir da Grey: 25 $ por envio (confirmar no 1.º envio)
+    // Depósitos na Grey por ACH: 0,8 %, mín. 2 $, máx. 10 $ (por «wire» seriam 20 $)
+    greyIn: fee(0, 0.8, 2, 10),
+    // Um envio internacional (SWIFT) por depósito, da Grey para o BFA: 25 $ (confirmar no 1.º envio)
     toAngola: fee(25),
     // Comissão do banco angolano ao receber e converter (estimativa até ao 1.º depósito)
     bankInAo: { pct: 1, fixedKz: 0 },
@@ -113,29 +113,32 @@ export function feeOf(f: Fee, amount: number): number {
 export type Allocation = {
   net: number; // o que entrou na Grey da empresa, já sem a taxa de receção
   boxes: Record<BoxKey, number>;
-  local: { sendFee: number; kz: number; bankFeeKz: number };
-  founder: { bai: number; baiSendFee: number; baiKz: number; baiBankFeeKz: number; grey: number; greyFee: number };
+  // Um só envio internacional (SWIFT) da Grey para o BFA da empresa: caixa 2 + a parte do fundador para o BAI
+  swift: { usd: number; fee: number; bankFeeKz: number; kz: number };
+  local: { usd: number; kz: number }; // fica no BFA para os custos da empresa em kwanzas
+  // bai: parte do fundador (em $) que segue no SWIFT; baiKz: o que o fundador levanta do BFA para o BAI
+  founder: { bai: number; baiKz: number; grey: number; greyFee: number };
 };
 
-// Divide o valor depositado pelas 4 caixas e calcula o que chega a cada conta depois das taxas
+// Divide o valor depositado pelas 4 caixas e calcula o que chega a cada conta depois das taxas.
+// A taxa do SWIFT e a comissão do BFA repartem-se na proporção de cada parte.
 export function allocate(net: number, s: Pick<FinSettings, "pct" | "baiPct" | "fees">, usdAoa: number): Allocation {
   const part = (k: BoxKey) => (net * (s.pct[k] ?? 0)) / 100;
   const boxes = { reinvest: part("reinvest"), local: part("local"), tax: part("tax"), founder: part("founder") };
-  const toKz = (usd: number) => {
-    const sendFee = feeOf(s.fees.toAngola, usd);
-    const gross = Math.max(0, usd - sendFee) * usdAoa;
-    const bankFeeKz = gross > 0 ? Math.min(gross, (gross * s.fees.bankInAo.pct) / 100 + s.fees.bankInAo.fixedKz) : 0;
-    return { sendFee, kz: gross - bankFeeKz, bankFeeKz };
-  };
-  const local = toKz(boxes.local);
   const bai = (boxes.founder * s.baiPct) / 100;
-  const baiKz = toKz(bai);
+  const swiftUsd = boxes.local + bai;
+  const fee = feeOf(s.fees.toAngola, swiftUsd);
+  const gross = Math.max(0, swiftUsd - fee) * usdAoa;
+  const bankFeeKz = gross > 0 ? Math.min(gross, (gross * s.fees.bankInAo.pct) / 100 + s.fees.bankInAo.fixedKz) : 0;
+  const kz = gross - bankFeeKz;
+  const baiKz = swiftUsd > 0 ? (kz * bai) / swiftUsd : 0;
   const grey = boxes.founder - bai;
   return {
     net,
     boxes,
-    local,
-    founder: { bai, baiSendFee: baiKz.sendFee, baiKz: baiKz.kz, baiBankFeeKz: baiKz.bankFeeKz, grey, greyFee: feeOf(s.fees.greyToGrey, grey) },
+    swift: { usd: swiftUsd, fee, bankFeeKz, kz },
+    local: { usd: boxes.local, kz: kz - baiKz },
+    founder: { bai, baiKz, grey, greyFee: feeOf(s.fees.greyToGrey, grey) },
   };
 }
 
@@ -310,7 +313,12 @@ export function costSummary(c: Awaited<ReturnType<typeof loadCosts>>, s: FinSett
   const adsSpent = c.ads.reduce((a, x) => a + (x.spent ?? 0), 0);
   const adsUsed = c.ads.reduce((a, x) => a + (x.spent ?? x.planned), 0);
   const total = tools + extra + aiUsd + adsUsed;
-  return { tools, extra, ai: aiUsd, adsPlanned, adsSpent, adsUsed, total, need: total * (1 + s.buffer / 100) };
+  // Custos em kwanzas (internet, renda, contabilista...) saem do BFA (caixa 2); o resto, em dólares, sai da caixa 1
+  const kzRows = c.active.filter((x) => x.currency === "AOA");
+  const kzCosts = kzRows.reduce((a, x) => a + monthlyAmount(x), 0);
+  const kzUsd = kzCosts / r.usdAoa;
+  const usdTotal = total - kzUsd;
+  return { tools, extra, ai: aiUsd, adsPlanned, adsSpent, adsUsed, total, kzCosts, kzUsd, usdTotal, need: usdTotal * (1 + s.buffer / 100) };
 }
 
 export async function loadDeposits(): Promise<Deposit[]> {

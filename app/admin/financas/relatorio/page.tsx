@@ -112,8 +112,9 @@ export default async function Relatorio({ searchParams }: { searchParams: Promis
           <h3 className="mt-4 text-[12.5px] font-semibold">Transferências do mês</h3>
           <table className="mt-1 w-full border-t border-line">
             <tbody className="divide-y divide-line">
-              <Row l="BFA da empresa (kwanzas, já sem comissões)" v={kz(R.transfers.bfaKz)} />
-              <Row l="BAI do fundador (kwanzas, já sem comissões)" v={kz(R.transfers.baiKz)} />
+              <Row l={`Envio SWIFT Grey → BFA (${usd(R.transfers.swiftUsd)}, chega já sem comissões)`} v={kz(R.transfers.swiftKz)} strong />
+              <Row l="· fica no BFA para os custos da empresa em kwanzas" v={kz(R.transfers.bfaKz)} />
+              <Row l="· levantado do BFA para o BAI do fundador" v={kz(R.transfers.baiKz)} />
               <Row l="Grey pessoal do fundador (dólares)" v={usd(R.transfers.greyPersonal)} />
               <Row l="Taxas bancárias do mês (dólares)" v={usd(R.transfers.bankFees)} muted />
               <Row l="Comissões dos bancos angolanos (kwanzas)" v={kz(R.transfers.bankFeesKz)} muted />

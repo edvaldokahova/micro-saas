@@ -31,11 +31,13 @@ export async function monthReport(mes: string) {
     .map((d) => ({ d, a: depositAllocation(d, s), usdAoa: d.snapshot?.usdAoa ?? s.fx.usdAoa }));
   const boxes = BOXES.map((b) => ({ ...b, usd: monthDeposits.reduce((a, x) => a + x.a.boxes[b.key], 0) }));
   const transfers = {
+    swiftUsd: monthDeposits.reduce((a, x) => a + x.a.swift.usd, 0),
+    swiftKz: monthDeposits.reduce((a, x) => a + x.a.swift.kz, 0),
     bfaKz: monthDeposits.reduce((a, x) => a + x.a.local.kz, 0),
     baiKz: monthDeposits.reduce((a, x) => a + x.a.founder.baiKz, 0),
     greyPersonal: monthDeposits.reduce((a, x) => a + x.a.founder.grey - x.a.founder.greyFee, 0),
-    bankFees: monthDeposits.reduce((a, x) => a + x.d.bank_fee + x.a.local.sendFee + x.a.founder.baiSendFee + x.a.founder.greyFee, 0),
-    bankFeesKz: monthDeposits.reduce((a, x) => a + x.a.local.bankFeeKz + x.a.founder.baiBankFeeKz, 0),
+    bankFees: monthDeposits.reduce((a, x) => a + x.d.bank_fee + x.a.swift.fee + x.a.founder.greyFee, 0),
+    bankFeesKz: monthDeposits.reduce((a, x) => a + x.a.swift.bankFeeKz, 0),
   };
   const costLines = [
     ...costs.active.map((c) => ({

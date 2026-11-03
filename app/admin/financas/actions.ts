@@ -198,7 +198,7 @@ export async function toggleDone(f: FormData): Promise<void> {
   const mes = mesOf(f);
   const id = String(f.get("id"));
   const key = String(f.get("key"));
-  if (!["reinvest", "local", "tax", "bai", "grey"].includes(key)) return fail(mes, "generico", "#caixas");
+  if (!["reinvest", "local", "tax", "swift", "bai", "grey"].includes(key)) return fail(mes, "generico", "#caixas");
   const admin = createAdminClient();
   const { data } = await admin.from("fin_deposits").select("done").eq("id", id).maybeSingle();
   const done = { ...((data?.done as Record<string, boolean>) ?? {}) };
