@@ -19,13 +19,20 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(site.url),
     title: { default: `${site.name} — ${d.home.metaTitle}`, template: `%s · ${site.name}` },
     description: d.home.metaDescription(site.trialDays),
+    applicationName: site.name,
     icons: { icon: "/favicon.png", apple: "/android-chrome-512x512.png" },
     openGraph: {
       type: "website",
       siteName: site.name,
+      title: `${site.name} — ${d.home.metaTitle}`,
+      description: d.home.metaDescription(site.trialDays),
       locale: localeMeta[locale].og,
       alternateLocale: locales.filter((l) => l !== locale).map((l) => localeMeta[l].og),
     },
+    twitter: { card: "summary_large_image", title: `${site.name} — ${d.home.metaTitle}`, description: d.home.metaDescription(site.trialDays) },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+    // Resumo do produto para assistentes de IA
+    other: { "llms-txt": `${site.url}/llms.txt` },
   };
 }
 
