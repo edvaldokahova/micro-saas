@@ -10,7 +10,7 @@ import { site } from "@/lib/site";
 import { BUCKET } from "@/lib/documents";
 import { inboxAddress, named } from "@/lib/inbound";
 import { publicLink } from "@/lib/reminder";
-import { isLocale, LOCALE_COOKIE } from "@/lib/i18n";
+import { isLocale, LOCALE_COOKIE, monthTag, periodEnd } from "@/lib/i18n";
 import { cookies } from "next/headers";
 
 // Todas as ações correm com a sessão do utilizador: a RLS da base de dados limita tudo ao seu escritório.
@@ -179,17 +179,40 @@ export async function deleteClient(formData: FormData) {
 /* ---------- Pedidos ---------- */
 
 export async function createRequest(formData: FormData) {
-  const { supabase } = await getSession();
+  const { supabase, locale } = await getSession();
   const client = uuid(formData.get("client"));
-  const period = month(formData.get("period"));
-  if (!client || !period) redirect("/pedidos/novo?erro=generic");
-  const labels = [
+  const picked = month(formData.get("period"));
+  const until = month(formData.get("until"));
+  if (!client || !picked) redirect("/pedidos/novo?erro=generic");
+  let labels = [
     ...formData.getAll("doc").map((v) => String(v)),
     ...formData.getAll("extra").map((v) => String(v)),
   ]
     .map((l) => l.trim().slice(0, 120))
     .filter(Boolean);
-  if (!labels.length) redirect(`/pedidos/novo?cliente=${client}&mes=${period}&erro=items`);
+  if (!labels.length) redirect(`/pedidos/novo?cliente=${client}&mes=${picked}&erro=items`);
+
+  // Vários meses seguidos: do mais antigo ao mais recente (a ordem escolhida não importa), no máximo 12.
+  // Cada documento é pedido uma vez por mês, com o mês no nome, para chegarem separados.
+  let period = picked;
+  let months = 1;
+  if (until && until !== picked) {
+    const [a, b] = until < picked ? [until, picked] : [picked, until];
+    const [ya, ma] = a.split("-").map(Number);
+    const [yb, mb] = b.split("-").map(Number);
+    period = a;
+    months = Math.min(12, (yb - ya) * 12 + (mb - ma) + 1);
+  }
+  if (months > 1) {
+    const { data: c } = await supabase.from("clients").select("cadence").eq("id", client).maybeSingle();
+    if ((c as { cadence: string } | null)?.cadence === "quarterly") months = 1; // trimestral: a base de dados aplica o trimestre
+  }
+  if (months > 1) {
+    const end = periodEnd(`${period}-01`, months);
+    const withYear = period.slice(0, 4) !== end.slice(0, 4);
+    const tags = Array.from({ length: months }, (_, i) => monthTag(periodEnd(`${period}-01`, i + 1), locale, withYear));
+    labels = tags.flatMap((tag) => labels.map((l) => `${l.slice(0, 117 - tag.length)} · ${tag}`));
+  }
 
   const { data, error } = await supabase.rpc("create_request", {
     p_client: client,
@@ -197,9 +220,10 @@ export async function createRequest(formData: FormData) {
     p_due: date(formData.get("due")),
     p_note: text(formData.get("note"), 1000),
     p_labels: labels,
+    p_months: months,
   });
   if (error || !data) {
-    redirect(`/pedidos/novo?cliente=${client}&mes=${period}&erro=${errorCode(error?.message, error?.code)}`);
+    redirect(`/pedidos/novo?cliente=${client}&mes=${picked}&erro=${errorCode(error?.message, error?.code)}`);
   }
   revalidatePath("/app", "layout");
   redirect(`/pedidos/${data}`);

@@ -59,22 +59,50 @@ function quarterLabel(q: number, year: number, locale: Locale): string {
   return `${q}${locale === "pt-BR" ? "º" : ".º"} trimestre de ${year}`;
 }
 
-// "2026-09-01" -> "Setembro de 2026"; com months = 3 -> "3.º trimestre de 2026"
+// Trimestre «de calendário»: 3 meses a começar em janeiro, abril, julho ou outubro
+const isQuarter = (period: string, months: number) => months === 3 && [1, 4, 7, 10].includes(Number(period.slice(5, 7)));
+
+// Nome do mês: "setembro" ou, com ano, "setembro de 2026"
+function monthLabel(period: string, locale: Locale, withYear: boolean): string {
+  const d = new Date(`${period.slice(0, 7)}-01T00:00:00Z`);
+  return new Intl.DateTimeFormat(locale, { month: "long", ...(withYear ? { year: "numeric" as const } : {}), timeZone: "UTC" }).format(d).toLowerCase();
+}
+
+// Último mês de um pedido ("2026-08-01" com 2 meses -> "2026-09-01")
+export function periodEnd(period: string, months: number): string {
+  const [y, m] = period.slice(0, 7).split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1 + months - 1, 1)).toISOString().slice(0, 10);
+}
+
+// "2026-09-01" -> "Setembro de 2026"; trimestre -> "3.º trimestre de 2026";
+// vários meses -> "Agosto a setembro de 2026" (ou "Dezembro de 2025 a fevereiro de 2026")
 export function formatPeriod(period: string, locale: Locale, months = 1): string {
-  if (months === 3) {
+  if (isQuarter(period, months)) {
     const [y, m] = period.slice(0, 7).split("-").map(Number);
     return quarterLabel(Math.floor((m - 1) / 3) + 1, y, locale);
   }
-  const d = new Date(`${period.slice(0, 10)}T00:00:00Z`);
-  const s = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
+  let s: string;
+  if (months > 1) {
+    const end = periodEnd(period, months);
+    const sameYear = period.slice(0, 4) === end.slice(0, 4);
+    s = `${monthLabel(period, locale, !sameYear)} a ${monthLabel(end, locale, true)}`;
+  } else s = monthLabel(period, locale, true);
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 // Período com a preposição certa, para usar a meio de uma frase:
 // "de setembro de 2026" / "do 3.º trimestre de 2026" (PT, BR) · "de septiembre de 2026" / "del 3.er trimestre de 2026" (ES)
+// Vários meses: "de agosto a setembro de 2026"
 export function periodOf(period: string, locale: Locale, months = 1): string {
-  if (months === 3) return `${locale === "es-ES" ? "del" : "do"} ${formatPeriod(period, locale, 3)}`;
-  return `de ${formatPeriod(period, locale).toLowerCase()}`;
+  if (isQuarter(period, months)) return `${locale === "es-ES" ? "del" : "do"} ${formatPeriod(period, locale, 3)}`;
+  return `de ${formatPeriod(period, locale, months).toLowerCase()}`;
+}
+
+// Nome curto do mês para separar os documentos num pedido de vários meses ("agosto", ou "dezembro 2025")
+export function monthTag(period: string, locale: Locale, withYear: boolean): string {
+  const d = new Date(`${period.slice(0, 7)}-01T00:00:00Z`);
+  const name = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(d).toLowerCase();
+  return withYear ? `${name} ${period.slice(0, 4)}` : name;
 }
 
 // Datas "AAAA-MM-DD" (sem hora) ou ISO completas

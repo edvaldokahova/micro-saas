@@ -91,11 +91,22 @@ export default async function NovoPedido({
               searchFrom={99}
               options={months.map((m) => ({ value: m, label: formatPeriod(`${m}-01`, locale) }))}
             />
-            {clients.some((c: { cadence: string }) => c.cadence === "quarterly") && (
-              <span className="mt-1.5 block text-xs text-muted">{t.periodHint}</span>
-            )}
           </div>
-          <label className="block">
+          <div>
+            <label htmlFor="f-until" className="label">{t.until}</label>
+            <Select
+              id="f-until"
+              name="until"
+              defaultValue=""
+              searchFrom={99}
+              options={[{ value: "", label: t.untilOnly }, ...months.map((m) => ({ value: m, label: formatPeriod(`${m}-01`, locale) }))]}
+            />
+          </div>
+          <p className="-mt-2 text-xs leading-5 text-muted sm:col-span-2">
+            {t.untilHint}
+            {clients.some((c: { cadence: string }) => c.cadence === "quarterly") && <> {t.periodHint}</>}
+          </p>
+          <label className="block sm:col-span-2">
             <span className="label">
               {t.due} <span className="opacity-70">({d.common.optional})</span>
             </span>

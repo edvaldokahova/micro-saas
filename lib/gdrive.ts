@@ -6,6 +6,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BUCKET } from "@/lib/documents";
 import { open, seal } from "@/lib/secret-box";
+import { periodEnd } from "@/lib/i18n";
 
 export const SCOPES = "openid email https://www.googleapis.com/auth/drive.file";
 const FOLDER = "application/vnd.google-apps.folder";
@@ -223,7 +224,10 @@ export async function syncOffice(officeId: string, opts: { limit?: number; retry
     for (const d of docs) {
       try {
         const client = await findOrCreate(token, clean(d.clients?.name ?? "Sem cliente"), root!, cache);
-        const period = d.requests?.period ? d.requests.period.slice(0, 7) : "Sem período";
+        // Pasta do período: "2026-09"; trimestre: o primeiro mês; vários meses: "2026-08 a 2026-09"
+        const rq = d.requests;
+        const multi = rq && (rq.months ?? 1) > 1 && !((rq.months ?? 1) === 3 && [1, 4, 7, 10].includes(Number(rq.period.slice(5, 7))));
+        const period = rq?.period ? (multi ? `${rq.period.slice(0, 7)} a ${periodEnd(rq.period, rq.months ?? 1).slice(0, 7)}` : rq.period.slice(0, 7)) : "Sem período";
         const month = client && (await findOrCreate(token, period, client, cache));
         const item = month && (await findOrCreate(token, clean(d.request_items?.label ?? "Outros"), month, cache));
         if (!item) throw new Error("pasta");

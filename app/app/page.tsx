@@ -7,7 +7,7 @@ import { ChannelIcon, isChannel, type Channel } from "@/components/channel-icon"
 import { CopyButton, ReminderButton, SubmitButton } from "@/components/app-buttons";
 import { ListSearch } from "@/components/list-search";
 import { Flash } from "@/components/flash";
-import { formatDate, formatPeriod, periodOf } from "@/lib/i18n";
+import { formatDate, formatPeriod, monthTag, periodEnd, periodOf } from "@/lib/i18n";
 import { getSession, isQuarterEnd, officeAccess, quarterStart, resolvePeriod, shiftPeriod } from "@/lib/office";
 import { deadlineLabel, deadlineOrder, deadlineState, deadlineTone, statusText, suggestedDue, type Deadline } from "@/lib/deadline";
 import { publicLink, reminderMailto, reminderUrl } from "@/lib/reminder";
@@ -56,29 +56,29 @@ export default async function Painel({
   const ym = period.slice(0, 7);
   const canWrite = officeAccess(office).canWrite;
   const filter = filterKeys.find((k) => k === sp.f) as Filter | undefined;
-  // No último mês de cada trimestre, o painel junta os pedidos trimestrais desse trimestre
+  // Cada pedido aparece no último mês que cobre: os mensais no seu mês, os trimestrais no fim do
+  // trimestre e os de vários meses (ex.: agosto a setembro) no último desses meses
   const quarterEnd = isQuarterEnd(period);
   const qStart = quarterStart(period);
-  const periodFilter = quarterEnd
-    ? `and(period.eq.${period},months.eq.1),and(period.eq.${qStart},months.eq.3)`
-    : `and(period.eq.${period},months.eq.1)`;
 
   // Quatro consultas em paralelo
-  const [{ data: reqData }, { data: clientData }, { data: teamData }, { data: items }] = await Promise.all([
+  const [{ data: reqData }, { data: clientData }, { data: teamData }, { data: items }, { data: covering }] = await Promise.all([
     supabase
       .from("requests_overview")
       .select(
         "id, client_id, client_name, client_phone, client_email, assignee_id, assignee_name, period, months, due_date, token, reminder_count, last_reminder_at, total_items, received_items, sent_items",
       )
-      .or(periodFilter),
+      .eq("last_period", period),
     supabase.from("clients").select("id, cadence, is_sample").is("archived_at", null),
     supabase.from("team_members").select("id, name").order("name"),
     // Documentos em falta ou enviados deste mês (para a mensagem de WhatsApp e os canais)
     supabase
       .from("request_items")
-      .select("id, request_id, label, status, sent_via, client_marked_at, position, requests!inner(period, months)")
-      .or(periodFilter, { referencedTable: "requests" })
+      .select("id, request_id, label, status, sent_via, client_marked_at, position, requests!inner(period, months, last_period)")
+      .eq("requests.last_period", period)
       .order("position"),
+    // Clientes com este mês já coberto por um pedido de vários meses que só aparece mais à frente
+    supabase.from("requests").select("client_id").lte("period", period).gt("last_period", period),
   ]);
   const team = (teamData ?? []) as { id: string; name: string }[];
   const resp = team.some((m) => m.id === sp.resp) ? sp.resp : undefined;
@@ -106,10 +106,10 @@ export default async function Painel({
     );
   }
   const activeClients = clients.length;
-  const withRequest = new Set(allRows.map((r) => r.client_id));
+  const withRequest = new Set([...allRows.map((r) => r.client_id), ...((covering ?? []) as { client_id: string }[]).map((r) => r.client_id)]);
   // Clientes que deviam ter pedido neste painel: os mensais e, no fim do trimestre, os trimestrais
   const withoutRequest = clients.filter((c) => (c.cadence !== "quarterly" || quarterEnd) && !withRequest.has(c.id)).length;
-  const hasQuarterly = allRows.some((r) => r.months === 3);
+  const hasQuarterly = allRows.some((r) => r.months === 3 && r.period.slice(0, 10) === qStart);
 
   const pendingByRequest = new Map<string, string[]>();
   const viasByRequest = new Map<string, Channel[]>();
@@ -337,7 +337,14 @@ export default async function Painel({
                           <Link href={`/pedidos/${r.id}`} className="truncate font-medium underline-offset-4 hover:underline">
                             {r.client_name}
                           </Link>
-                          {r.months === 3 && <span className="mono-label hidden shrink-0 border border-line px-1.5 py-px !text-[9.5px] sm:inline">{d.common.cadence.quarterly}</span>}
+                          {r.months === 3 && r.period.slice(0, 10) === qStart ? (
+                            <span className="mono-label hidden shrink-0 border border-line px-1.5 py-px !text-[9.5px] sm:inline">{d.common.cadence.quarterly}</span>
+                          ) : r.months > 1 ? (
+                            // Pedido de vários meses: «ago–set»
+                            <span className="mono-label shrink-0 border border-line px-1.5 py-px !text-[9.5px]">
+                              {monthTag(r.period, locale, false).slice(0, 3)}–{monthTag(periodEnd(r.period, r.months), locale, false).slice(0, 3)}
+                            </span>
+                          ) : null}
                           {r.assignee_name && !resp && <span className="hidden shrink-0 text-xs text-muted sm:inline">· {r.assignee_name}</span>}
                         </div>
                         {(r.client_phone || r.client_email) && (
