@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { preload } from "react-dom";
 import { HeroIntro } from "@/components/hero-intro";
+import { FormatosMarquee } from "@/components/formatos-marquee";
 import { PageMotion } from "@/components/page-motion";
 import { WindowStory, type WindowTexts } from "@/components/story/window-story";
 import { DocsArt, LinkArt, MonthArt } from "@/components/art";
@@ -243,7 +244,10 @@ export default async function Home() {
                   <p className="text-[13.5px] text-muted">{h.finalText(site.trialDays)}</p>
                 </div>
               </div>
-              <div className="mt-16 flex justify-center" data-hero-rest>
+              <div className="mt-14 sm:mt-16" data-hero-rest>
+                <FormatosMarquee />
+              </div>
+              <div className="mt-12 sm:mt-14 flex justify-center" data-hero-rest>
                 <DocsArt docs={h.demo.docs} client={clients[1]} labels={{ sent: d.public.sent, received: d.public.received }} />
               </div>
             </div>
